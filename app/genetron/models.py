@@ -17,7 +17,13 @@ class Table(db.Model):
        """Return object data in easily serializeable format"""
        return [self.name,
         self.age]
+    @property
+    def json(self):
 
+        return {'id':self.id,
+               'first_name':self.name,
+               'last_name':self.name
+               }
 
 class Patient(db.Model):
     __tablename__ = 'patient'
@@ -52,7 +58,26 @@ class Project(db.Model):
         backref=db.backref('project', lazy='dynamic'))
     t_samp=db.Column(db.String(20))
 #
-#
+#     def __init__(self):
+#         self
+    def __repr__(self):
+        return self.t_samp
+
+class EditorTable(db.Model):
+    __tablename__='editortable'
+    id = db.Column(db.Integer, primary_key=True)
+    first_name=db.Column(db.String(20))
+    last_name=db.Column(db.String(20))
+    @property
+    def serialize(self):
+       """Return object data in easily serializeable format"""
+       return {'id':self.id,
+               'first_name':self.first_name,
+               'last_name':self.last_name
+               }
+
+
+
 #
 # class Role(db.Model):
 #     __tablename__ = 'roles'

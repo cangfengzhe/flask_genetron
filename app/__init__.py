@@ -19,7 +19,7 @@ pagedown = PageDown()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
-from admin.app import MyModelView
+from admin.app import MyModelView, ProjectView
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -38,7 +38,7 @@ def create_app(config_name):
     from genetron.models import Patient,Project
     admin.add_view(MyModelView(User, db.session))
     admin.add_view(MyModelView(Patient, db.session))
-    admin.add_view(MyModelView(Project, db.session))
+    admin.add_view(ProjectView(Project, db.session))
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask_sslify import SSLify
         sslify = SSLify(app)
