@@ -38,7 +38,7 @@
         <thead>
             <tr>
                 <th>Name</th>
-                <th>age</th>
+                <th>Age</th>
 
             </tr>
         </thead>
@@ -68,11 +68,11 @@ $(document).ready(function() {
         ajax: "{{ url_for('genetron.editorresponse') }}",
         table: "#example",
         fields: [ {
-                label: "First name:",
-                name: "first_name"
+                label: "Name:",
+                name: "name"
             }, {
-                label: "Last name:",
-                name: "last_name"
+                label: "Age:",
+                name: "age"
             },
 {#                label: "Position:",#}
 {#                name: "position"#}
@@ -93,15 +93,22 @@ $(document).ready(function() {
         ]
     } );
 
+ $('#example').on( 'click', 'tbody td', function (e) {
+        editor.inline( this, {
+            onBlur: 'submit'
+        } );
+    } );
+
     $('#example').DataTable( {
         dom: "Bfrtip",
         ajax: "{{ url_for('genetron.editortable') }}",
         columns: [
+
             { data: null, render: function ( data, type, row ) {
                 // Combine the first and last names into a single table field
-                return data.first_name+' '+data.last_name;
+                return data.name;
             } },
-{#            { data: "position" },#}
+            { data: 'age' },
 {#            { data: "office" },#}
 {#            { data: "extn" },#}
 {#            { data: "start_date" },#}

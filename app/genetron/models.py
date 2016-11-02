@@ -1,49 +1,74 @@
+#coding=utf-8
 from .. import db
-from datetime import datetime
 
-class Table(db.Model):
-    __tablename__ = 'table'
+
+class Patient(db.Model):
+    __tablename__ = 'patient'
+    SEX = [
+        (u'M', u'男'),
+        (u'F', u'女')
+    ]
     id = db.Column(db.Integer, primary_key=True)
+    patient_id=db.Column(db.String(20))
     name = db.Column(db.String(120))
     age = db.Column(db.Integer)
+    sex = db.Column(db.String(10))
+    hospital = db.Column(db.String(30))
+    histology = db.Column(db.String(100))
     # addr= db.Column(db.String(50))
+    tissue=db.Column(db.String(150))
+    indication=db.Column(db.String(150))
+    panel=db.Column(db.String(20))
+    bioinfo=db.Column(db.Boolean, default=False)
+    start_time=db.Column(db.Date)
+    dead_line=db.Column(db.Date)
+    is_finish=db.Column(db.Boolean, default=False)
+    note=db.Column(db.Text)
 
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
+    def __init__(self, **kwargs):
+        super(Patient, self).__init__(**kwargs)
+        if kwargs:
+            self.from_dict(kwargs)
 
     @property
     def serialize(self):
        """Return object data in easily serializeable format"""
-       return [self.name,
-        self.age]
+       return [self.patient_id,
+               self.name,
+               self.age,
+               self.sex,
+               self.hospital,
+               self.histology,
+               self.tissue,
+               self.indication,
+               self.panel,
+               self.bioinfo,
+               self.start_time,
+               self.dead_line,
+               self.note]
+
     @property
     def json(self):
-
-        return {'id':self.id,
-               'first_name':self.name,
-               'last_name':self.name
+        return {'DT_RowId' : self.id,
+               'patient_id' : self.patient_id,
+               'name' : self.name,
+               'age' : self.age,
+               'sex' : self.sex,
+               'hospital' : self.hospital,
+               'histology':self.histology,
+               'tissue' : self.tissue,
+               'indication' : self.indication,
+               'panel': self.panel,
+               'bioinfo': self.bioinfo,
+               'start_time' : self.start_time.strftime("%Y-%m-%d"),
+               'dead_line' : self.dead_line.strftime("%Y-%m-%d"),
+               'note' : self.note
                }
 
-class Patient(db.Model):
-    __tablename__ = 'patient'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120))
-    age = db.Column(db.Integer)
-    # addr= db.Column(db.String(50))
-    tissue=db.Column(db.String(150))
-    cancer=db.Column(db.String(150))
-    start_time=db.Column(db.DateTime)
-    finish_time=db.Column(db.DateTime)
-    # project=db.relationship(Project, )
-    def __init__(self, patient_id, name, age, tissue, cancer, start_time=None, finish_time=None):
-        self.patient_id=patient_id
-        self.name=name
-        self.age=age
-        self.tissue=tissue
-        self.cancer=cancer
-        self.start_time=start_time
-        self.finish_time=finish_time
+    def from_dict(self, dick_data):
+        for (k, w) in dick_data.items():
+            setattr(self, k, w)
+
     def __repr__(self):
         return self.name
 
@@ -62,27 +87,3 @@ class Project(db.Model):
 #         self
     def __repr__(self):
         return self.t_samp
-
-class EditorTable(db.Model):
-    __tablename__='editortable'
-    id = db.Column(db.Integer, primary_key=True)
-    first_name=db.Column(db.String(20))
-    last_name=db.Column(db.String(20))
-    @property
-    def serialize(self):
-       """Return object data in easily serializeable format"""
-       return {'id':self.id,
-               'first_name':self.first_name,
-               'last_name':self.last_name
-               }
-
-
-
-#
-# class Role(db.Model):
-#     __tablename__ = 'roles'
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(64), unique=True)
-#     default = db.Column(db.Boolean, default=False, index=True)
-#     permissions = db.Column(db.Integer)
-#     users = db.relationship('User', backref='role', lazy='dynamic')

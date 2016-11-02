@@ -1,0 +1,208 @@
+{% extends "genetron/base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/jquery.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/dataTables.bootstrap.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/buttons.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/select.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='editor/css/editor.dataTables.min.css') }}">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="margin-top:80px">
+
+
+    <!--display table table-striped table-bordered hover-->
+
+    <table id="example" class="display table  table-bordered hover" width="100%" cellspacing="0">
+        <thead>
+        <!--indication=None, start_time=None, dead_line=None,process=None, note=None):-->
+        <!--self.patient_id-->
+        <tr style="font-size:12px">
+            <th>ID</th>
+            <th>姓名</th>
+            <!--<th>Age</th>-->
+            <!--<th>Sex</th>-->
+            <th>医院</th>
+            <th>Panel</th>
+            <th>Bioinfo</th>
+            <th>Histology</th>
+            <th>Tissue</th>
+            <th>Indication</th>
+            <th>开始日期</th>
+            <th>截止日期</th>
+            <th>剩余</th>
+            <th>报告</th>
+            <th>备注</th>
+        </tr>
+        </thead>
+
+    </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.dataTables.min.js') }}"></script>
+
+<script type="text/javascript"
+        src="{{ url_for('static', filename='datatable/js/dataTables.buttons.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.select.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='editor/js/dataTables.editor.min.js') }}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+
+
+<script>
+
+var editor; // use a global for the submit and return data rendering in the examples
+$(document).ready(function() {
+    editor = new $.fn.dataTable.Editor( {
+        ajax: "{{ url_for('genetron.patientresponse') }}",
+        table: "#example",
+        fields: [ {
+                label: "patient_id:",
+                name: "patient_id"
+            },
+            {
+                label: "name:",
+                name: "name"
+            },
+            {
+                label: "hospital:",
+                name: "hospital"
+            },
+            {
+                label: "panel:",
+                name: "panel"
+            },
+             {
+                label: "bioinfo:",
+                name: "bioinfo",
+                type:  "radio",
+                options: [
+                    { label: "未完成", value: '' },
+                    { label: "完成",  value: true }
+                ],
+                def: 0
+            },
+            {
+                label: "histology:",
+                name: "histology"
+            },
+            {
+                label: "tissue:",
+                name: "tissue"
+            },
+            {
+                label:'Indication',
+                name: "indication"
+            },
+
+            {
+                label:  'Start date:',
+                name:   'start_time',
+                type:   'datetime',
+                def:    function () { return new Date(); },
+                format: 'YYYY-M-D',
+
+            },
+             {
+                label:  'End date:',
+                name:   'dead_line',
+                type:   'datetime',
+                def:    function () { return new Date(); },
+                format: 'YYYY-M-D',
+
+            },
+            {
+                label: "is_finish:",
+                name: "is_finish",
+                type:  "radio",
+                options: [
+                    { label: "未完成", value: '' },
+                    { label: "完成",  value: true }
+                ],
+                def: 0
+            },
+            {
+                label: "note:",
+                name: "note"
+            }
+
+        ]
+    } );
+
+ $('#example').on( 'click', 'tbody td:not(:first-child)', function (e) {
+        editor.inline( this, {
+            <!--onBlur: 'submit'-->
+            buttons: { label: '&gt;', fn: function () { this.submit(); } }
+        } );
+
+
+    } );
+
+    $('#example').DataTable( {
+        dom: "Bfrtip",
+        ajax: "{{ url_for('genetron.patient_table') }}",
+        "order": [[ 11, 'desc' ],[ 10, 'desc' ], [ 4, 'asc' ]],
+        "class": "center",
+        "pageLength": 20,
+        columns: [
+            { data: 'patient_id' },
+            { data: "name" },
+            { data: "hospital" },
+            { data: "panel" },
+            <!--{ data: "bioinfo" },-->
+            {
+                "class": "center",
+                "data": "bioinfo",
+                "render": function (val, type, row) {
+                    return val == true ? "完成" : "未完成";
+                }
+            },
+
+
+            { data: "histology" },
+            { data: "tissue" },
+            { data: "indication" },
+            { data: "start_time" },
+            { data: "dead_line" },
+            { data: null,
+                "render":function(data,type, row){
+                    today = new Date()
+                    dead_line = new Date(data.dead_line)
+                    return Math.round((dead_line-today)/(24*60*60*1000))
+                }
+            },
+            {
+                "class": "center",
+                "data": "bioinfo",
+                "render": function (val, type, row) {
+                    return val == true ? "完成" : "未完成";
+                }
+            },
+            { data: "note" }
+
+        ],
+        select: true,
+        buttons: [
+            { extend: "create", editor: editor },
+            { extend: "edit",   editor: editor },
+            { extend: "remove", editor: editor }
+        ]
+    } );
+} );
+
+
+
+</script>
+{% endblock %}
