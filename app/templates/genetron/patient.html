@@ -142,11 +142,11 @@ $(document).ready(function() {
     } );
 
  $('#example').on( 'click', 'tbody td:not(:first-child)', function (e) {
-        editor.inline( this, {
-            <!--onBlur: 'submit'-->
-            buttons: { label: '&gt;', fn: function () { this.submit(); } }
-        } );
-
+        <!--editor.inline( this, {-->
+            <!--&lt;!&ndash;onBlur: 'submit'&ndash;&gt;-->
+            <!--buttons: { label: '&gt;', fn: function () { this.submit(); } }-->
+        <!--} );-->
+        editor.bubble( this );
 
     } );
 
