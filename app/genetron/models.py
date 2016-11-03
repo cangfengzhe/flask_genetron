@@ -20,6 +20,12 @@ class Patient(db.Model):
     indication=db.Column(db.String(150))
     panel=db.Column(db.String(20))
     bioinfo=db.Column(db.Boolean, default=False)
+    # bioinfo_time = db.Column(db.Datetime)
+    #
+    # ask_histology_time = db.Column(db.Datetime)
+    # get_histology_time = db.Column(db.Datetime)
+    # ask_histology = db.Column(db.Boolean, default=False)
+
     start_time=db.Column(db.Date)
     dead_line=db.Column(db.Date)
     is_finish=db.Column(db.Boolean, default=False)
