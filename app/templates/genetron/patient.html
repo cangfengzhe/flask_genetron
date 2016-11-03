@@ -153,7 +153,7 @@ $(document).ready(function() {
     $('#example').DataTable( {
         dom: "Bfrtip",
         ajax: "{{ url_for('genetron.patient_table') }}",
-        "order": [[ 11, 'desc' ],[ 10, 'desc' ], [ 4, 'asc' ]],
+        "order": [[ 11, 'desc' ],[ 10, 'asc' ], [ 4, 'asc' ]],
         "class": "center",
         "pageLength": 20,
         columns: [

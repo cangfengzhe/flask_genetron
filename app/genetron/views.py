@@ -40,7 +40,6 @@ def get_request_data(form):
 @genetron.route('/', methods=['GET', 'POST'])
 @genetron.route('/index', methods=['GET', 'POST'])
 @genetron.route('/patient')
-@login_required
 def patient():
     return render_template('genetron/patient.html')
 
@@ -71,6 +70,17 @@ def patientresponse():
             var['start_time'] = datetime.datetime.strptime(var['start_time'], '%Y-%m-%d').date()
         if not var['dead_line'] == u'':
             var['dead_line'] = datetime.datetime.strptime(var['dead_line'], '%Y-%m-%d').date()
+        if 'bioinfo' in var:
+            if var['bioinfo']=='true':
+                var['bioinfo']=True
+            else:
+                var['bioinfo']=False
+        if 'is_finish' in var:
+            if var['is_finish']=="true":
+                var['is_finish']=True
+            else:
+                var['is_finish']=False
+
         patient = Patient(**var)
         db.session.add(patient)
         db.session.flush()
@@ -85,6 +95,16 @@ def patientresponse():
         if 'dead_line' in var:
             var['dead_line'] = datetime.datetime.strptime(var['dead_line'], '%Y-%m-%d').date()
             print(var['dead_line'])
+	if 'bioinfo' in var:
+            if var['bioinfo']=='true':
+		var['bioinfo']=True
+	    else:
+		var['bioinfo']=False
+	if 'is_finish' in var:
+	    if var['is_finish']=="true":
+		var['is_finish']=True
+	    else:
+		var['is_finish']=False
         patient.from_dict(var)
         print('dead_line', patient.dead_line)
         print('age', patient.age)
