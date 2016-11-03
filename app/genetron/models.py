@@ -20,21 +20,28 @@ class Patient(db.Model):
     indication=db.Column(db.String(150))
     panel=db.Column(db.String(20))
     bioinfo=db.Column(db.Boolean, default=False)
-    # bioinfo_time = db.Column(db.Datetime)
-    #
-    # ask_histology_time = db.Column(db.Datetime)
-    # get_histology_time = db.Column(db.Datetime)
-    # ask_histology = db.Column(db.Boolean, default=False)
+    bioinfo_time = db.Column(db.DateTime)
 
+    ask_histology_time = db.Column(db.DateTime)
+    get_histology_time = db.Column(db.DateTime)
+    ask_histology = db.Column(db.Boolean, default=False)
+#
     start_time=db.Column(db.Date)
     dead_line=db.Column(db.Date)
     is_finish=db.Column(db.Boolean, default=False)
+    is_finish_time = db.Column(db.DateTime)
     note=db.Column(db.Text)
 
     def __init__(self, **kwargs):
         super(Patient, self).__init__(**kwargs)
         if kwargs:
             self.from_dict(kwargs)
+
+    def proc_time(self, time_var, time_fmt = "%Y-%m-%d %H:%M:%S"):
+        if time_var:
+            return time_var.strftime(time_fmt)
+        else:
+            return ''
 
     @property
     def serialize(self):
@@ -66,7 +73,13 @@ class Patient(db.Model):
                'indication' : self.indication,
                'panel': self.panel,
                'bioinfo': self.bioinfo,
-               'start_time' : self.start_time.strftime("%Y-%m-%d"),
+               'bioinfo_time': self.proc_time(self.bioinfo_time, "%Y-%m-%d %H:%M:%S"),
+                'ask_histology': self.ask_histology,
+                'ask_histology_time': self.proc_time(self.ask_histology_time, "%Y-%m-%d %H:%M:%S"),
+                'get_histology_time': self.proc_time(self.get_histology_time, "%Y-%m-%d %H:%M:%S"),
+                'is_finish': self.is_finish,
+                'is_finish_time': self.proc_time(self.is_finish_time, "%Y-%m-%d %H:%M:%S"),
+               'start_time' : self.proc_time(self.start_time, "%Y-%m-%d"),
                'dead_line' : self.dead_line.strftime("%Y-%m-%d"),
                'note' : self.note
                }
@@ -77,6 +90,8 @@ class Patient(db.Model):
 
     def __repr__(self):
         return self.name
+
+
 
 # class Project(db.Model):
 

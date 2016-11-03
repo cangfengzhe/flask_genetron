@@ -1,68 +1,3 @@
-{% extends "genetron/base.html" %}
-
-{% block head %}
-{{ super() }}
-<link rel="stylesheet" type="text/css"
-      href="{{ url_for('static', filename='datatable/css/jquery.dataTables.min.css') }}">
-<link rel="stylesheet" type="text/css"
-      href="{{ url_for('static', filename='datatable/css/dataTables.bootstrap.min.css') }}">
-<link rel="stylesheet" type="text/css"
-      href="{{ url_for('static', filename='datatable/css/buttons.dataTables.min.css') }}">
-<link rel="stylesheet" type="text/css"
-      href="{{ url_for('static', filename='datatable/css/select.dataTables.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='editor/css/editor.dataTables.min.css') }}">
-
-{% endblock %}
-
-{% block content %}
-
-<div class="container" style="margin-top:80px">
-
-
-    <!--display table table-striped table-bordered hover-->
-
-    <table id="example" class="display table  table-bordered hover" width="100%" cellspacing="0">
-        <thead>
-        <!--indication=None, start_time=None, dead_line=None,process=None, note=None):-->
-        <!--self.patient_id-->
-        <tr style="font-size:12px">
-            <th>ID</th>
-            <th>姓名</th>
-            <!--<th>Age</th>-->
-            <!--<th>Sex</th>-->
-            <th>医院</th>
-            <th>Panel</th>
-            <th>Bioinfo</th>
-            <th>Histology</th>
-            <th>Tissue</th>
-            <th>Indication</th>
-            <th>开始日期</th>
-            <th>截止日期</th>
-            <th>剩余</th>
-            <th>报告</th>
-            <th>备注</th>
-        </tr>
-        </thead>
-
-    </table>
-</div>
-
-{% endblock %}
-
-{% block scripts %}
-<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.bootstrap.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.dataTables.min.js') }}"></script>
-
-<script type="text/javascript"
-        src="{{ url_for('static', filename='datatable/js/dataTables.buttons.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.select.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='editor/js/dataTables.editor.min.js') }}"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
-<!--<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/custom.js') }}"></script>-->
-
-
-<script>
 
 function format(d) {
     // `d` is the original data object for the row
@@ -187,12 +122,12 @@ $(document).ready(function() {
         "class": "center",
         "pageLength": 20,
         columns: [
-          <!--{-->
-                <!--"className": 'details-control',-->
-                <!--"orderable":  false,-->
-                <!--"data": null,-->
-                <!--"defaultContent": ''-->
-            <!--},-->
+//          {
+//                "className": 'details-control',
+//                "orderable":  false,
+//                "data": null,
+//                "defaultContent": ''
+//            },
             { data: 'patient_id' },
             { data: "name" },
             { data: "hospital" },
@@ -253,6 +188,3 @@ $(document).ready(function() {
 } );
 
 
-
-</script>
-{% endblock %}
