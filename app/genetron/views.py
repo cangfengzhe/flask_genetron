@@ -119,11 +119,13 @@ def patientresponse():
         db.session.refresh(patient)
         DT_RowId = patient.id
         var['DT_RowId'] = patient.id
-
+        if (('histology' in var) and (not var['histology'] == '')) or (('tissue' in var) and (not var['tissue'] == '')):
+            var['get_histology_time'] = datetime.datetime.now()
+            var['ask_histology_time'] = True
     elif form_data['type'] == 'edit':
         patient = Patient.query.filter_by(id=var['DT_RowId']).first()
         var = proc_now(var, ['bioinfo', 'is_finish', 'ask_histology'])
-        if ('histology' in var) and (not var['histology'] == ''):
+        if ( ('histology' in var) and (not var['histology'] == '') ) or  (('tissue' in var) and (not var['tissue'] == '')):
             var['get_histology_time'] = datetime.datetime.now()
 
 

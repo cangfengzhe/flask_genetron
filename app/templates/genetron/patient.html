@@ -11,7 +11,16 @@
 <link rel="stylesheet" type="text/css"
       href="{{ url_for('static', filename='datatable/css/select.dataTables.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='editor/css/editor.dataTables.min.css') }}">
+<style>
 
+    td.details-control {
+    background: url('{{ url_for("static", filename="datatable/css/details_open.png") }}') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('{{ url_for("static", filename="datatable/css/details_close.png") }}') no-repeat center center;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -26,20 +35,22 @@
         <!--indication=None, start_time=None, dead_line=None,process=None, note=None):-->
         <!--self.patient_id-->
         <tr style="font-size:12px">
+            <th></th>
             <th>ID</th>
             <th>姓名</th>
             <!--<th>Age</th>-->
             <!--<th>Sex</th>-->
             <th>医院</th>
             <th>Panel</th>
-            <th>Bioinfo</th>
+            <th>生信完成</th>
+            <th>索要病理</th>
             <th>Histology</th>
             <th>Tissue</th>
             <th>Indication</th>
             <th>开始日期</th>
             <th>截止日期</th>
             <th>剩余</th>
-            <th>报告</th>
+            <th>报告完成</th>
             <th>备注</th>
         </tr>
         </thead>
@@ -66,10 +77,10 @@
 
 function format(d) {
     // `d` is the original data object for the row
-    return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
-        '<tr>'+
-            '<td>生信完成时间:</td>'+
-            '<td>'+d.bioinfo_time+'</td>'+
+    return '<table class="test" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+        '<tr >'+
+            '<td class="test">生信完成时间:</td>'+
+            '<td class="test">'+d.bioinfo_time+'</td>'+
         '</tr>'+
         '<tr>'+
             '<td>索要病理时间</td>'+
@@ -77,11 +88,11 @@ function format(d) {
         '</tr>'+
         '<tr>'+
             '<td>病理更新时间</td>'+
-            '<td>d.get_histology_time</td>'+
+            '<td>' + d.get_histology_time + '</td>'+
         '</tr>'+
            '<tr>'+
             '<td>报告完成时间</td>'+
-            '<td>d.</td>'+
+            '<td>' + d.is_finish_time + '</td>'+
         '</tr>'+
     '</table>';
 }
@@ -112,8 +123,8 @@ $(document).ready(function() {
                 name: "bioinfo",
                 type:  "radio",
                 options: [
-                    { label: "未完成", value: '' },
-                    { label: "完成",  value: true }
+                    { label: "否", value: '' },
+                    { label: "是",  value: true }
                 ],
                 def: 0
             },
@@ -122,8 +133,8 @@ $(document).ready(function() {
                 name: "ask_histology",
                 type:  "radio",
                 options: [
-                    { label: "未要", value: '' },
-                    { label: "所要",  value: true }
+                    { label: "否", value: '' },
+                    { label: "是",  value: true }
                 ],
                 def: 0
             },
@@ -161,8 +172,8 @@ $(document).ready(function() {
                 name: "is_finish",
                 type:  "radio",
                 options: [
-                    { label: "未完成", value: '' },
-                    { label: "完成",  value: true }
+                    { label: "否", value: '' },
+                    { label: "是",  value: true }
                 ],
                 def: 0
             },
@@ -174,25 +185,25 @@ $(document).ready(function() {
         ]
     } );
 
- $('#example').on( 'click', 'tbody td:not(:first-child)', function (e) {
+ $('#example').on( 'click', 'tbody>tr>td:not("td.test")', function (e) {
 
         editor.bubble( this );
 
     } );
 
-    $('#example').DataTable( {
+  var table =   $('#example').DataTable( {
         dom: "Bfrtip",
         ajax: "{{ url_for('genetron.patient_table') }}",
         "order": [[ 11, 'desc' ],[ 10, 'asc' ], [ 4, 'asc' ]],
         "class": "center",
         "pageLength": 20,
         columns: [
-          <!--{-->
-                <!--"className": 'details-control',-->
-                <!--"orderable":  false,-->
-                <!--"data": null,-->
-                <!--"defaultContent": ''-->
-            <!--},-->
+          {
+                "className": 'details-control',
+                "orderable":  false,
+                "data": null,
+                "defaultContent": ''
+            },
             { data: 'patient_id' },
             { data: "name" },
             { data: "hospital" },
@@ -201,8 +212,16 @@ $(document).ready(function() {
                 "class": "center",
                 "data": "bioinfo",
                 "render": function (val, type, row) {
-                    return val == true ? "完成" : "未完成";
+                    return val == true ? "是" : "否";
                 }
+            },
+            {
+            "data": "ask_histology",
+            "class": "center",
+             "render": function (val, type, row) {
+                    return val == true ? "是" : "否";
+               }
+
             },
             { data: "histology" },
             { data: "tissue" },
@@ -220,7 +239,7 @@ $(document).ready(function() {
                 "class": "center",
                 "data": "is_finish",
                 "render": function (val, type, row) {
-                    return val == true ? "完成" : "未完成";
+                    return val == true ? "是" : "否";
                 }
             },
             { data: "note" }

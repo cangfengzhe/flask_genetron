@@ -11,6 +11,16 @@
 <link rel="stylesheet" type="text/css"
       href="{{ url_for('static', filename='datatable/css/select.dataTables.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='editor/css/editor.dataTables.min.css') }}">
+<style>
+
+    td.details-control {
+    background: url('{{ url_for("static", filename="datatable/css/details_open.png") }}') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('{{ url_for("static", filename="datatable/css/details_close.png") }}') no-repeat center center;
+}
+</style>
 
 {% endblock %}
 
@@ -26,6 +36,7 @@
         <!--indication=None, start_time=None, dead_line=None,process=None, note=None):-->
         <!--self.patient_id-->
         <tr style="font-size:12px">
+            <th></th>
             <th>ID</th>
             <th>姓名</th>
             <!--<th>Age</th>-->
@@ -77,30 +88,31 @@ function format(d) {
         '</tr>'+
         '<tr>'+
             '<td>病理更新时间</td>'+
-            '<td>d.get_histology_time</td>'+
+            '<td>' + d.get_histology_time +'</td>'+
         '</tr>'+
            '<tr>'+
             '<td>报告完成时间</td>'+
-            '<td>d.</td>'+
+            '<td>' + d.bioinfo_time + '</td>'+
         '</tr>'+
     '</table>';
 }
 
 $(document).ready(function() {
 
+console.log('afd');
 
-    $('#example').DataTable( {
-        dom: "Bfrtip",
+   var table =  $('#example').DataTable( {
+        <!--dom: "Bfrtip",-->
         ajax: "{{ url_for('genetron.patient_table') }}",
-        "order": [[ 11, 'desc' ],[ 10, 'asc' ], [ 4, 'asc' ]],
-        "pageLength": 20,
+        <!--"order": [[ 11, 'desc' ],[ 10, 'asc' ], [ 4, 'asc' ]],-->
+        <!--"pageLength": 20,-->
         columns: [
-          <!--{-->
-                <!--"className": 'details-control',-->
-                <!--"orderable":  false,-->
-                <!--"data": 'name',-->
-                <!--"defaultContent": ''-->
-            <!--},-->
+          {
+                'className': 'details-control',
+                'orderable':  false,
+                'data': null,
+                'defaultContent': ''
+            },
             { data: 'patient_id' },
             { data: "name" },
             { data: "hospital" },
@@ -134,25 +146,25 @@ $(document).ready(function() {
             { data: "note" }
 
         ],
-        select: true,
+        "order": [[1, 'asc']]
 
     } );
 
-       <!--$('#example tbody').on('click', 'td.details-control', function () {-->
-        <!--var tr = $(this).closest('tr');-->
-        <!--var row = table.row( tr );-->
+       $('#example tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
 
-        <!--if ( row.child.isShown() ) {-->
-            <!--// This row is already open - close it-->
-            <!--row.child.hide();-->
-            <!--tr.removeClass('shown');-->
-        <!--}-->
-        <!--else {-->
-            <!--// Open this row-->
-            <!--row.child( format(row.data()) ).show();-->
-            <!--tr.addClass('shown');-->
-        <!--}-->
-    <!--} );-->
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } );
 
 } );
 
