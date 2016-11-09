@@ -9,7 +9,7 @@ class Patient(db.Model):
         (u'F', u'女')
     ]
     id = db.Column(db.Integer, primary_key=True)
-    patient_id=db.Column(db.String(20))
+    patient_id=db.Column(db.String(20), nullable=False)
     name = db.Column(db.String(120))
     age = db.Column(db.Integer)
     sex = db.Column(db.String(10))

@@ -60,9 +60,9 @@ def proc_bool(var_dict, keys):
     for xx in keys:
         if xx in var_dict:
             if var_dict[xx] == 'true':
-                var_dict[xx] == True
+                var_dict[xx] = True
             else:
-                var_dict[xx] == False
+                var_dict[xx] = False
     return var_dict
 
 def proc_date(var_dict, keys):
@@ -85,6 +85,9 @@ def patientresponse():
     var = [form_data[x] for x in form_data if x != 'type'][0]
     DT_RowId = var['DT_RowId']
     var = proc_bool(var, ['bioinfo', 'is_finish', 'ask_histology'])
+    var = proc_now(var, ['bioinfo', 'is_finish'])
+   # if ('is_finish' in var) and (var['is_finish']=='true'):
+    #    var['is_finish'] = True
     # if 'bioinfo' in var:
     #     if var['bioinfo'] == 'true':
     #         var['bioinfo'] = True
@@ -105,7 +108,6 @@ def patientresponse():
     # if not var['dead_line'] == u'':
     #     var['dead_line'] = datetime.datetime.strptime(var['dead_line'], '%Y-%m-%d').date()
     var = proc_date(var, ['start_time', 'dead_line'])
-
     if form_data['type'] == 'remove':
         patient = Patient.query.get(int(var['DT_RowId']))
         db.session.delete(patient)
@@ -128,8 +130,9 @@ def patientresponse():
         if ( ('histology' in var) and (not var['histology'] == '') ) or  (('tissue' in var) and (not var['tissue'] == '')):
             var['get_histology_time'] = datetime.datetime.now()
 
-
+	#if  ('is_finish' in var) and (not var['is_finish'] == ''):
         patient.from_dict(var)
+    print(var)
     db.session.commit()
     dt = Patient.query.filter_by(id=DT_RowId).first()
     return jsonify(data=[dt.json])
