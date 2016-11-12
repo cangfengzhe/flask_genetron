@@ -51,10 +51,13 @@ def patient_new():
 
 @genetron.route('/patient_table')
 def patient_table():
-    data = Patient.query.all()
+    data = Patient_info.query.all()
     return jsonify(
         data=[i.json for i in data]
     )
+
+def sample_table():
+    data = Sample_info.query.filter_by('')
 
 def proc_bool(var_dict, keys):
     for xx in keys:
@@ -79,34 +82,13 @@ def proc_now(var_dict, keys):
     return var_dict
 
 
-@genetron.route('/patientresponse', methods=['GET', 'POST'])
-def patientresponse():
+@genetron.route('/sample_response', methods=['GET', 'POST'])
+def sample_response():
     form_data = get_request_data(request.form)
     var = [form_data[x] for x in form_data if x != 'type'][0]
     DT_RowId = var['DT_RowId']
     var = proc_bool(var, ['bioinfo', 'is_finish', 'ask_histology'])
     var = proc_now(var, ['bioinfo', 'is_finish'])
-   # if ('is_finish' in var) and (var['is_finish']=='true'):
-    #    var['is_finish'] = True
-    # if 'bioinfo' in var:
-    #     if var['bioinfo'] == 'true':
-    #         var['bioinfo'] = True
-    # else:
-    #     var['bioinfo'] = False
-    #
-    # if 'is_finish' in var:
-    #     if var['is_finish'] == "true":
-    #         var['is_finish'] = True
-    #     else:
-    #         var['is_finish'] = False
-    #
-    # if 'ask_histology' in var:
-
-
-    # if (var[]) not var['start_time'] == u'':
-    #     var['start_time'] = datetime.datetime.strptime(var['start_time'], '%Y-%m-%d').date()
-    # if not var['dead_line'] == u'':
-    #     var['dead_line'] = datetime.datetime.strptime(var['dead_line'], '%Y-%m-%d').date()
     var = proc_date(var, ['start_time', 'dead_line'])
     if form_data['type'] == 'remove':
         patient = Patient.query.get(int(var['DT_RowId']))
@@ -129,10 +111,8 @@ def patientresponse():
         var = proc_now(var, ['bioinfo', 'is_finish', 'ask_histology'])
         if ( ('histology' in var) and (not var['histology'] == '') ) or  (('tissue' in var) and (not var['tissue'] == '')):
             var['get_histology_time'] = datetime.datetime.now()
-
-	#if  ('is_finish' in var) and (not var['is_finish'] == ''):
         patient.from_dict(var)
     print(var)
     db.session.commit()
-    dt = Patient.query.filter_by(id=DT_RowId).first()
+    dt = Sample_info.query.filter_by(id=DT_RowId).first()
     return jsonify(data=[dt.json])

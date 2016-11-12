@@ -1,39 +1,63 @@
 #coding=utf-8
 from .. import db
 
-
-class Patient(db.Model):
-    __tablename__ = 'patient'
-    SEX = [
-        (u'M', u'男'),
-        (u'F', u'女')
-    ]
+class Patient_info(db.Model):
+    __tablenane__ = 'patient_info'
     id = db.Column(db.Integer, primary_key=True)
-    patient_id=db.Column(db.String(20), nullable=False)
+    patient_id = db.Column(db.String(20), nullable=False)
     name = db.Column(db.String(120))
     age = db.Column(db.Integer)
-    sex = db.Column(db.String(10))
-    hospital = db.Column(db.String(30))
-    histology = db.Column(db.String(100))
-    # addr= db.Column(db.String(50))
-    tissue=db.Column(db.String(150))
-    indication=db.Column(db.String(150))
-    panel=db.Column(db.String(20))
-    bioinfo=db.Column(db.Boolean, default=False)
-    bioinfo_time = db.Column(db.DateTime)
+    birth = db.Column(db.Date)
+    sex = db.Column(db.Integer)
 
+    hospital = db.Column(db.String(30))
+    diagnose_history = db.Column(db.String(500))
+    therapy_history = db.Column(db.String(500))
+    drug_history = db.Column(db.String(500))
+    family_history = db.Column(db.String(500))
+    histology = db.Column(db.String(100))
+    eamil = db.Column(db.String(40))
+    tel = db.Column(db.String(30))
+    # addr= db.Column(db.String(50))
+    tissue = db.Column(db.String(150))
+    indication = db.Column(db.String(150))
     ask_histology_time = db.Column(db.DateTime)
     get_histology_time = db.Column(db.DateTime)
     ask_histology = db.Column(db.Boolean, default=False)
-#
+    note = db.Column(db.Text)
+    sample = db.relationship('Sample_info', backref='patient', lazy="dynamic")
+
+
+
+class Sample_info(db.Model):
+    __tablename__ = 'sample_info'
+    id = db.Column(db.Integer, primary_key=True)
+    sample_id = db.Column(db.String(10), nullable=False)
+    panel=db.Column(db.String(20))
+    tumor_type = db.Column(db.String(50))
+    tumor_pos = db.Column(db.String(50))
+    collect_time = db.Column(db.DateTime)
+    aceept_time = db.Column(db.DateTime)
     start_time=db.Column(db.Date)
     dead_line=db.Column(db.Date)
     is_finish=db.Column(db.Boolean, default=False)
     is_finish_time = db.Column(db.DateTime)
-    note=db.Column(db.Text)
+    class_time = db.Column(db.DateTime)
+    submit_time = db.Column(db.DateTime)
+    bioinfo = db.Column(db.Boolean, default=False)
+    bioinfo_time = db.Column(db.DateTime)
+    tissue = db.Column(db.String(150))
+    indication = db.Column(db.String(150))
+    ask_histology_time = db.Column(db.DateTime)
+    get_histology_time = db.Column(db.DateTime)
+    ask_histology = db.Column(db.Boolean, default=False)
+    patient_id = db.Column(db.Integer, db.ForeignKey('patient_info.id'))
+    flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
+
+
 
     def __init__(self, **kwargs):
-        super(Patient, self).__init__(**kwargs)
+        super(Sample_info, self).__init__(**kwargs)
         if kwargs:
             self.from_dict(kwargs)
 
@@ -92,19 +116,11 @@ class Patient(db.Model):
         return self.name
 
 
-
-# class Project(db.Model):
-
-#
-class Project(db.Model):
-    __tablename__='project'
+class Flowcell_info(db.Model):
+    __tablename__='flowcell_info'
     id = db.Column(db.Integer, primary_key=True)
-    patient_id=db.Column(db.Integer,db.ForeignKey('patient.id'))
-    patient = db.relationship('Patient',
-        backref=db.backref('project', lazy='dynamic'))
-    t_samp=db.Column(db.String(20))
-#
-#     def __init__(self):
-#         self
-    def __repr__(self):
-        return self.t_samp
+    machine_type = db.Column(db.String(10))
+    machine_id = db.Column(db.String(10))
+    xj_time = db.Column(db.DateTime)
+    xj_time = db.Column(db.DateTime)
+    sample = db.relationship('Sample_info', backref='flowcell', lazy="dynamic")

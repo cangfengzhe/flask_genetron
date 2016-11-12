@@ -35,10 +35,10 @@ def create_app(config_name):
     pagedown.init_app(app)
     admin = Admin(app)
     from .models import User
-    from genetron.models import Patient,Project
+    # from genetron.models import *
     admin.add_view(MyModelView(User, db.session))
-    admin.add_view(MyModelView(Patient, db.session))
-    admin.add_view(ProjectView(Project, db.session))
+    # admin.add_view(MyModelView(Patient, db.session))
+    # admin.add_view(ProjectView(Project, db.session))
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask_sslify import SSLify
         sslify = SSLify(app)
