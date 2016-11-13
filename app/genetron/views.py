@@ -37,17 +37,17 @@ def get_request_data(form):
 
 
 
-@genetron.route('/', methods=['GET', 'POST'])
-@genetron.route('/index', methods=['GET', 'POST'])
+
 @genetron.route('/patient')
 def patient():
     return render_template('genetron/patient.html')
 
 
-@genetron.route('/patient_new')
-def patient_new():
-    return render_template('genetron/patient_new.html')
-
+@genetron.route('/', methods=['GET', 'POST'])
+@genetron.route('/index', methods=['GET', 'POST'])
+@genetron.route('/sample')
+def sample():
+    return render_template('genetron/sample.html')
 
 @genetron.route('/patient_table')
 def patient_table():
@@ -56,8 +56,12 @@ def patient_table():
         data=[i.json for i in data]
     )
 
+@genetron.route('/sample_table')
 def sample_table():
-    data = Sample_info.query.filter_by('')
+    data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') )
+    return jsonify(
+        data=[i.json for i in data]
+    )
 
 def proc_bool(var_dict, keys):
     for xx in keys:

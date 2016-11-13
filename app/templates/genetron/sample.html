@@ -1,0 +1,277 @@
+{% extends "genetron/base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/jquery.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/dataTables.bootstrap.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/buttons.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/select.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='editor/css/editor.dataTables.min.css') }}">
+<style>
+
+    td.details-control {
+    background: url('{{ url_for("static", filename="datatable/css/details_open.png") }}') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('{{ url_for("static", filename="datatable/css/details_close.png") }}') no-repeat center center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container" style="margin-top:80px">
+
+
+    <!--display table table-striped table-bordered hover-->
+
+    <table id="example" class="display table  table-bordered hover" width="100%" cellspacing="0">
+        <thead>
+        <!--indication=None, start_time=None, dead_line=None,process=None, note=None):-->
+        <!--self.patient_id-->
+        <tr style="font-size:12px">
+            <th></th>
+            <th>ID</th>
+            <th>姓名</th>
+            <!--<th>Age</th>-->
+            <!--<th>Sex</th>-->
+            <th>医院</th>
+            <th>Panel</th>
+            <th>生信完成</th>
+            <th>索要病理</th>
+            <th>病理提示</th>
+            <th>Tissue</th>
+            <th>Tumor</th>
+            <th>开始日期</th>
+            <th>截止日期</th>
+            <th>剩余</th>
+            <th>报告完成</th>
+            <th>备注</th>
+        </tr>
+        </thead>
+
+    </table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.dataTables.min.js') }}"></script>
+
+<script type="text/javascript"
+        src="{{ url_for('static', filename='datatable/js/dataTables.buttons.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.select.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='editor/js/dataTables.editor.min.js') }}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+<!--<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/custom.js') }}"></script>-->
+
+
+<script>
+
+function format(d) {
+    // `d` is the original data object for the row
+    return '<table class="test" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+        '<tr >'+
+            '<td class="test">生信完成时间:</td>'+
+            '<td class="test">'+d.bioinfo_time+'</td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>索要病理时间</td>'+
+            '<td>'+d.ask_histology_time+'</td>'+
+        '</tr>'+
+        '<tr>'+
+            '<td>病理更新时间</td>'+
+            '<td>' + d.get_histology_time + '</td>'+
+        '</tr>'+
+           '<tr>'+
+            '<td>报告完成时间</td>'+
+            '<td>' + d.is_finish_time + '</td>'+
+        '</tr>'+
+    '</table>';
+}
+
+var editor; // use a global for the submit and return data rendering in the examples
+$(document).ready(function() {
+    editor = new $.fn.dataTable.Editor( {
+        ajax: "{{ url_for('genetron.sample_response') }}",
+        table: "#example",
+        fields: [ {
+                label: "patient_id:",
+                name: "patient_id"
+            },
+            {
+                label: "姓名:",
+                name: "name"
+            },
+            {
+                label: "医院:",
+                name: "hospital"
+            },
+            {
+                label: "panel:",
+                name: "panel"
+            },
+             {
+                label: "生信完成:",
+                name: "bioinfo",
+                type:  "radio",
+                options: [
+                    { label: "否", value: '' },
+                    { label: "是",  value: true }
+                ],
+                def: 0
+            },
+             {
+                label: "索要病理:",
+                name: "ask_histology",
+                type:  "radio",
+                options: [
+                    { label: "否", value: '' },
+                    { label: "是",  value: true }
+                ],
+                def: 0
+            },
+            {
+                label: "histology:",
+                name: "histology"
+            },
+            {
+                label: "tissue:",
+                name: "tissue"
+            },
+            {
+                label:'Indication',
+                name: "indication"
+            },
+
+            {
+                label:  '开始日期:',
+                name:   'start_time',
+                type:   'datetime',
+                def:    function () { return new Date(); },
+                format: 'YYYY-M-D',
+
+            },
+             {
+                label:  '截止日期:',
+                name:   'dead_line',
+                type:   'datetime',
+                def:    function () { return new Date(); },
+                format: 'YYYY-M-D',
+
+            },
+            {
+                label: "报告完成:",
+                name: "is_finish",
+                type:  "radio",
+                options: [
+                    { label: "否", value: '' },
+                    { label: "是",  value: true }
+                ],
+                def: 0
+            },
+            {
+                label: "note:",
+                name: "note"
+            }
+
+        ]
+    } );
+
+ $('#example').on( 'click', 'tbody>tr>td:not("td.test")', function (e) {
+
+        editor.bubble( this );
+
+    } );
+
+  var table =   $('#example').DataTable( {
+        dom: "Bfrtip",
+        ajax: "{{ url_for('genetron.sample_table') }}",
+        "order": [[ 11, 'desc' ],[ 10, 'asc' ], [ 4, 'asc' ]],
+        "class": "center",
+        "pageLength": 20,
+        columns: [
+          {
+                "className": 'details-control',
+                "orderable":  false,
+                "data": null,
+                "defaultContent": ''
+            },
+            { data: 'sample_id' },
+            { data: "name" },
+            { data: "hospital" },
+            { data: "panel" },
+            {
+                "class": "center",
+                "data": "bioinfo",
+                "render": function (val, type, row) {
+                    return val == true ? "是" : "否";
+                }
+            },
+            {
+            "data": "ask_histology",
+            "class": "center",
+             "render": function (val, type, row) {
+                    return val == true ? "是" : "否";
+               }
+
+            },
+            { data: "indication" },
+            { data: "tissue" },
+            { data: "tumor" },
+            { data: "accept_time" },
+            { data: "end_time" },
+            { data: null,
+                "render":function(data,type, row){
+                    today = new Date()
+                    end_time = new Date(data.end_time)
+                    return Math.round((end_time-today)/(24*60*60*1000))
+                }
+            },
+            {
+                "class": "center",
+                "data": "is_finish",
+                "render": function (val, type, row) {
+                    return val == true ? "是" : "否";
+                }
+            },
+            { data: "note" }
+
+        ],
+        select: true,
+        buttons: [
+            { extend: "create", editor: editor },
+            { extend: "edit",   editor: editor },
+            { extend: "remove", editor: editor }
+        ]
+    } );
+
+       $('#example tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
+
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } );
+
+} );
+
+
+
+</script>
+{% endblock %}

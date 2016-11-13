@@ -9,18 +9,18 @@ class Patient_info(db.Model):
     age = db.Column(db.Integer)
     birth = db.Column(db.Date)
     sex = db.Column(db.Integer)
-
+    email = db.Column(db.String(40))
+    tel = db.Column(db.String(30))
     hospital = db.Column(db.String(30))
+    
     diagnose_history = db.Column(db.String(500))
     therapy_history = db.Column(db.String(500))
     drug_history = db.Column(db.String(500))
     family_history = db.Column(db.String(500))
-    histology = db.Column(db.String(100))
-    eamil = db.Column(db.String(40))
-    tel = db.Column(db.String(30))
-    # addr= db.Column(db.String(50))
+    
+    indication = db.Column(db.String(100)) # 病理提示
     tissue = db.Column(db.String(150))
-    indication = db.Column(db.String(150))
+    tumor = db.Column(db.String(150))
     ask_histology_time = db.Column(db.DateTime)
     get_histology_time = db.Column(db.DateTime)
     ask_histology = db.Column(db.Boolean, default=False)
@@ -37,23 +37,23 @@ class Sample_info(db.Model):
     tumor_type = db.Column(db.String(50))
     tumor_pos = db.Column(db.String(50))
     collect_time = db.Column(db.DateTime)
-    aceept_time = db.Column(db.DateTime)
-    start_time=db.Column(db.Date)
-    dead_line=db.Column(db.Date)
+    accept_time = db.Column(db.DateTime)
+    end_time=db.Column(db.Date)
     is_finish=db.Column(db.Boolean, default=False)
     is_finish_time = db.Column(db.DateTime)
     class_time = db.Column(db.DateTime)
     submit_time = db.Column(db.DateTime)
     bioinfo = db.Column(db.Boolean, default=False)
     bioinfo_time = db.Column(db.DateTime)
+    indication = db.Column(db.String(100)) # 病理提示
     tissue = db.Column(db.String(150))
-    indication = db.Column(db.String(150))
+    tumor = db.Column(db.String(150))
     ask_histology_time = db.Column(db.DateTime)
     get_histology_time = db.Column(db.DateTime)
     ask_histology = db.Column(db.Boolean, default=False)
     patient_id = db.Column(db.Integer, db.ForeignKey('patient_info.id'))
     flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
-
+    note = db.Column(db.String(200))
 
 
     def __init__(self, **kwargs):
@@ -86,16 +86,29 @@ class Sample_info(db.Model):
 
     @property
     def json(self):
+        if not self.indication:
+            self.indication = self.patient.indication
+        if not self.tissue:
+            self.tissue = self.patient.tissue
+        if not self.tumor:
+            self.tumor = self.patient.tumor
         return {'DT_RowId' : self.id,
-               'patient_id' : self.patient_id,
-               'name' : self.name,
-               'age' : self.age,
-               'sex' : self.sex,
-               'hospital' : self.hospital,
-               'histology':self.histology,
+               'sample_id' : self.sample_id,
+               'name' : self.patient.name,
+               'age' : self.patient.age,
+               'sex' : self.patient.sex,
+               'hospital' : self.patient.hospital,
+                'panel': self.panel,
+               'indication':self.indication,
                'tissue' : self.tissue,
-               'indication' : self.indication,
-               'panel': self.panel,
+               'tumor' : self.tumor,
+               'tumor_pos':self.tumor_pos,
+               'tumor_type': self.tumor_type,
+               'collect_time':self.proc_time(self.collect_time,"%Y-%m-%d %H:%M:%S"),
+               'accept_time': self.proc_time(self.accept_time,"%Y-%m-%d %H:%M:%S"),
+                'end_time':self.proc_time(self.end_time,"%Y-%m-%d"),
+                'class_time':self.proc_time(self.class_time,"%Y-%m-%d %H:%M:%S"),
+                'submit_time':self.proc_time(self.submit_time,"%Y-%m-%d %H:%M:%S"),
                'bioinfo': self.bioinfo,
                'bioinfo_time': self.proc_time(self.bioinfo_time, "%Y-%m-%d %H:%M:%S"),
                 'ask_histology': self.ask_histology,
@@ -103,9 +116,7 @@ class Sample_info(db.Model):
                 'get_histology_time': self.proc_time(self.get_histology_time, "%Y-%m-%d %H:%M:%S"),
                 'is_finish': self.is_finish,
                 'is_finish_time': self.proc_time(self.is_finish_time, "%Y-%m-%d %H:%M:%S"),
-               'start_time' : self.proc_time(self.start_time, "%Y-%m-%d"),
-               'dead_line' : self.dead_line.strftime("%Y-%m-%d"),
-               'note' : self.note
+                'note' : self.note
                }
 
     def from_dict(self, dick_data):
@@ -113,7 +124,7 @@ class Sample_info(db.Model):
             setattr(self, k, w)
 
     def __repr__(self):
-        return self.name
+        return self.sample_id
 
 
 class Flowcell_info(db.Model):
@@ -121,6 +132,6 @@ class Flowcell_info(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     machine_type = db.Column(db.String(10))
     machine_id = db.Column(db.String(10))
-    xj_time = db.Column(db.DateTime)
+    sj_time = db.Column(db.DateTime)
     xj_time = db.Column(db.DateTime)
     sample = db.relationship('Sample_info', backref='flowcell', lazy="dynamic")
