@@ -6,6 +6,10 @@ from models import *
 from . import genetron
 from flask_login import login_required
 
+@genetron.route('/')
+def index():
+    return render_template('genetron/index.html')
+
 def get_request_data(form):
     '''
     return dict list with data from request.form
@@ -43,7 +47,6 @@ def patient():
     return render_template('genetron/patient.html')
 
 
-@genetron.route('/', methods=['GET', 'POST'])
 @genetron.route('/index', methods=['GET', 'POST'])
 @genetron.route('/sample')
 def sample():
