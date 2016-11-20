@@ -46,7 +46,7 @@ def get_request_data(form):
 def patient():
     return render_template('genetron/patient.html')
 
-@genetron.route('patient/')
+@genetron.route('/patient_info')
 def patient_info(id):
     return render_template('genetron/patient_info.html')
 
@@ -66,8 +66,9 @@ def sample():
 
 @genetron.route('/sample_info')
 def sample_info():
-    id= request.args.get('id')
-    return render_template('genetron/sample_info.html', sample_id=id)
+    id = request.args.get('id')
+    smp = Sample_info.query.filter_by(sample_id=id).first_or_404()
+    return render_template('genetron/sample_info.html', sample=smp)
 
 @genetron.route('/sample_table')
 def sample_table():

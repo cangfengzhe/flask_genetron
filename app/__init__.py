@@ -43,6 +43,9 @@ def create_app(config_name):
         from flask_sslify import SSLify
         sslify = SSLify(app)
 
+
+    from .genetron import genetron as genetron_blueprint
+    app.register_blueprint(genetron_blueprint, url_prefix='/genetron')
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
@@ -51,6 +54,5 @@ def create_app(config_name):
 
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
-    from .genetron import genetron as genetron_blueprint
-    app.register_blueprint(genetron_blueprint, url_prefix='/genetron')
+
     return app

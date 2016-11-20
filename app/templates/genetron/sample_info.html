@@ -1,5 +1,39 @@
 {% extends "genetron/base.html" %}
 
 {% block content %}
- {{sample_id}}
+
+<div class="container" >
+<div class="row">
+ <div class="col-lg-8 col-lg-offset-2">
+            <div class="panel panel-info">
+                        <div class="panel-heading">
+                            患者基本信息
+                        </div>
+                        <div class="panel-body">
+                           <table class="table table-condensed">
+                              <tr>
+                                 <td>患者信息:  {{sample.patient.name}} </td>
+                                <td>患者编号:  {{sample.patient.patient_id}} </td>
+                                </tr>
+                               <tr>
+                                 <td>性别:  {{sample.patient.sex}} </td>
+                                <td>年龄:  {{sample.patient.age}} </td>
+                                </tr>                               <tr>
+                                 <td>既往诊断结果:  {{sample.patient.sex}} </td>
+                                <td>既往治疗方案:  {{sample.patient.age}} </td>
+                                </tr>                               <tr>
+                                 <td>靶向药物服用史:  {{sample.patient.sex}} </td>
+                                <td>癌症家族史:  {{sample.patient.age}} </td>
+                                </tr>
+
+                          </table>
+                        </div>
+
+
+                    </div>
+            <!-- /.panel -->
+            </div>
+</div>
+
+ </div>
 {% endblock %}

@@ -29,8 +29,12 @@ tr.shown td.details-control {
 
 
     <!--display table table-striped table-bordered hover-->
-
-    <table id="example" class="display table  table-bordered hover" width="100%" cellspacing="0">
+ <div class="panel panel-default">
+                        <div class="panel-heading">
+                            临床样本列表
+                        </div>
+     <div>
+          <table id="example" class="display table  table-bordered hover" width="100%" cellspacing="0">
         <thead>
         <!--indication=None, start_time=None, dead_line=None,process=None, note=None):-->
         <!--self.patient_id-->
@@ -56,8 +60,10 @@ tr.shown td.details-control {
         </thead>
 
     </table>
+     </div>
+     </div>
+
 </div>
-{{url_for('genetron.sample')}}
 {% endblock %}
 
 {% block scripts %}
@@ -298,12 +304,13 @@ $(document).ready(function() {
 
        $('#example tbody').on('click', 'td.click a', function () {
         var tr = $(this).closest('a');
-        console.log($(this).text());
-        <!--var row = table.row( tr );-->
-        console.log(tr.href);
-        console.log("{{url_for('genetron.sample_info')}}" );
         location.href = "{{url_for('genetron.sample_info')}}" + '?id=' + $(this).text();
     } );
+
+    $('#example td.click a').on('hover',function(){
+        console.log('asfd');
+        $(this).css('cursor', 'pointer');
+    })
 } );
 
 
