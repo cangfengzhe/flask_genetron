@@ -46,11 +46,10 @@ def get_request_data(form):
 def patient():
     return render_template('genetron/patient.html')
 
+@genetron.route('patient/')
+def patient_info(id):
+    return render_template('genetron/patient_info.html')
 
-@genetron.route('/index', methods=['GET', 'POST'])
-@genetron.route('/sample')
-def sample():
-    return render_template('genetron/sample.html')
 
 @genetron.route('/patient_table')
 def patient_table():
@@ -58,6 +57,17 @@ def patient_table():
     return jsonify(
         data=[i.json for i in data]
     )
+
+
+@genetron.route('/sample')
+def sample():
+    return render_template('genetron/sample.html')
+
+
+@genetron.route('/sample_info')
+def sample_info():
+    id= request.args.get('id')
+    return render_template('genetron/sample_info.html', sample_id=id)
 
 @genetron.route('/sample_table')
 def sample_table():
@@ -96,29 +106,30 @@ def sample_response():
     DT_RowId = var['DT_RowId']
     var = proc_bool(var, ['bioinfo', 'is_finish', 'ask_histology'])
     var = proc_now(var, ['bioinfo', 'is_finish'])
-    var = proc_date(var, ['start_time', 'dead_line'])
+    var = proc_date(var, ['accept_time', 'end_time'])
     if form_data['type'] == 'remove':
-        patient = Patient.query.get(int(var['DT_RowId']))
-        db.session.delete(patient)
+        sample = Sample_info.query.get(int(var['DT_RowId']))
+        db.session.delete(sample)
         db.session.commit()
         return jsonify(data=[])
     if form_data['type'] == 'create':
         var.pop('DT_RowId')
-        patient = Patient(**var)
-        db.session.add(patient)
+
+        sample = Sample_info(**var)
+        db.session.add(sample)
         db.session.flush()
-        db.session.refresh(patient)
-        DT_RowId = patient.id
-        var['DT_RowId'] = patient.id
+        db.session.refresh(sample)
+        DT_RowId = sample.id
+        var['DT_RowId'] = sample.id
         if (('histology' in var) and (not var['histology'] == '')) or (('tissue' in var) and (not var['tissue'] == '')):
             var['get_histology_time'] = datetime.datetime.now()
             var['ask_histology_time'] = True
     elif form_data['type'] == 'edit':
-        patient = Patient.query.filter_by(id=var['DT_RowId']).first()
+        sample = Sample_info.query.filter_by(id=var['DT_RowId']).first()
         var = proc_now(var, ['bioinfo', 'is_finish', 'ask_histology'])
         if ( ('histology' in var) and (not var['histology'] == '') ) or  (('tissue' in var) and (not var['tissue'] == '')):
             var['get_histology_time'] = datetime.datetime.now()
-        patient.from_dict(var)
+        sample.from_dict(var)
     print(var)
     db.session.commit()
     dt = Sample_info.query.filter_by(id=DT_RowId).first()

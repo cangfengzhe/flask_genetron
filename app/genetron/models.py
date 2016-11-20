@@ -33,13 +33,13 @@ class Sample_info(db.Model):
     __tablename__ = 'sample_info'
     id = db.Column(db.Integer, primary_key=True)
     sample_id = db.Column(db.String(10), nullable=False)
-    panel=db.Column(db.String(20))
+    panel = db.Column(db.String(500))
     tumor_type = db.Column(db.String(50))
     tumor_pos = db.Column(db.String(50))
     collect_time = db.Column(db.DateTime)
     accept_time = db.Column(db.DateTime)
-    end_time=db.Column(db.Date)
-    is_finish=db.Column(db.Boolean, default=False)
+    end_time = db.Column(db.Date)
+    is_finish = db.Column(db.Boolean, default=False)
     is_finish_time = db.Column(db.DateTime)
     class_time = db.Column(db.DateTime)
     submit_time = db.Column(db.DateTime)
@@ -98,7 +98,7 @@ class Sample_info(db.Model):
                'age' : self.patient.age,
                'sex' : self.patient.sex,
                'hospital' : self.patient.hospital,
-                'panel': self.panel,
+               'panel': self.panel,
                'indication':self.indication,
                'tissue' : self.tissue,
                'tumor' : self.tumor,

@@ -1,18 +1,16 @@
-{% extends "bootstrap/base.html" %}
 
-{% block title %}GenetronHealth BioInfo{% endblock %}
+{% extends "genetron/base.html" %}
+
+{% block title %}Flasky{% endblock %}
 
 {% block head %}
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='sb-admin/css/sb-admin-2.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
 {% endblock %}
 
 {% block navbar %}
-<div class="navbar navbar-fixed-top navbar-inverse" role="navigation" >
+<div class="navbar navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -21,15 +19,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{{ url_for('genetron.index') }}">GenetronHealth</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">Flasky</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="{{ url_for('genetron.index') }}">Home</a></li>
-                 <li ><a href="{{url_for('genetron.sample')}}">Sample</a></li>
+                <li><a href="{{ url_for('main.index') }}">Home</a></li>
                 {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>
-
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -55,7 +51,6 @@
         </div>
     </div>
 </div>
-<div style="margin-bottom:50px"></div>
 {% endblock %}
 
 {% block content %}

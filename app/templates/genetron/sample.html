@@ -57,7 +57,7 @@ tr.shown td.details-control {
 
     </table>
 </div>
-
+{{url_for('genetron.sample')}}
 {% endblock %}
 
 {% block scripts %}
@@ -99,21 +99,25 @@ function format(d) {
 
 var editor; // use a global for the submit and return data rendering in the examples
 $(document).ready(function() {
+
+
+
     editor = new $.fn.dataTable.Editor( {
         ajax: "{{ url_for('genetron.sample_response') }}",
         table: "#example",
-        fields: [ {
-                label: "patient_id:",
-                name: "patient_id"
-            },
-            {
-                label: "姓名:",
-                name: "name"
-            },
-            {
-                label: "医院:",
-                name: "hospital"
-            },
+        fields: [
+        <!--{-->
+                <!--label: "sample_id:",-->
+                <!--name: "sample_id"-->
+            <!--},-->
+            <!--{-->
+                <!--label: "姓名:",-->
+                <!--name: "name"-->
+            <!--},-->
+            <!--{-->
+                <!--label: "医院:",-->
+                <!--name: "hospital"-->
+            <!--},-->
             {
                 label: "panel:",
                 name: "panel"
@@ -139,21 +143,21 @@ $(document).ready(function() {
                 def: 0
             },
             {
-                label: "histology:",
-                name: "histology"
+                label: "病理提示:",
+                name: "indication"
             },
             {
-                label: "tissue:",
+                label: "组织:",
                 name: "tissue"
             },
             {
-                label:'Indication',
-                name: "indication"
+                label:'癌种',
+                name: "tumor"
             },
 
             {
                 label:  '开始日期:',
-                name:   'start_time',
+                name:   'accept_time',
                 type:   'datetime',
                 def:    function () { return new Date(); },
                 format: 'YYYY-M-D',
@@ -161,7 +165,7 @@ $(document).ready(function() {
             },
              {
                 label:  '截止日期:',
-                name:   'dead_line',
+                name:   'end_time',
                 type:   'datetime',
                 def:    function () { return new Date(); },
                 format: 'YYYY-M-D',
@@ -185,11 +189,17 @@ $(document).ready(function() {
         ]
     } );
 
- $('#example').on( 'click', 'tbody>tr>td:not("td.test")', function (e) {
+ $('#example').on( 'click', 'tbody>tr>td:not(:first-child)', function (e) {
 
         editor.bubble( this );
 
     } );
+
+
+    $('.click a').click(function(){
+        $('.click a').click();
+        console.log('sdaf');
+    });
 
   var table =   $('#example').DataTable( {
         dom: "Bfrtip",
@@ -204,7 +214,22 @@ $(document).ready(function() {
                 "data": null,
                 "defaultContent": ''
             },
-            { data: 'sample_id' },
+            <!--{ data: 'sample_id',-->
+              <!--'class':'click',-->
+             <!--"render": function (val, type, row) {-->
+                    <!--&lt;!&ndash;return 'sdf';&ndash;&gt;-->
+                   <!--return  "<a src=\"{{ url_for('genetron.sample_info', id='val' ) }}\"> dsf </a> ";-->
+               <!--},-->
+
+             <!--},-->
+
+              { data: null,
+                class:'click',
+                "render":function(data,type, row){
+
+                    return "<a src='sfd'>" + data.sample_id + "</a>";
+              }
+            },
             { data: "name" },
             { data: "hospital" },
             { data: "panel" },
@@ -253,6 +278,7 @@ $(document).ready(function() {
         ]
     } );
 
+
        $('#example tbody').on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = table.row( tr );
@@ -261,6 +287,7 @@ $(document).ready(function() {
             // This row is already open - close it
             row.child.hide();
             tr.removeClass('shown');
+
         }
         else {
             // Open this row
@@ -269,9 +296,18 @@ $(document).ready(function() {
         }
     } );
 
+       $('#example tbody').on('click', 'td.click a', function () {
+        var tr = $(this).closest('a');
+        console.log($(this).text());
+        <!--var row = table.row( tr );-->
+        console.log(tr.href);
+        console.log("{{url_for('genetron.sample_info')}}" );
+        location.href = "{{url_for('genetron.sample_info')}}" + '?id=' + $(this).text();
+    } );
 } );
-
 
 
 </script>
 {% endblock %}
+
+
