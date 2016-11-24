@@ -49,10 +49,8 @@ tr.shown td.details-control {
             <th>生信完成</th>
             <th>索要病理</th>
             <th>病理提示</th>
-            <th>Tissue</th>
-            <th>Tumor</th>
-            <th>开始日期</th>
-            <th>截止日期</th>
+            <th>癌种</th>
+            <th>组织</th>
             <th>剩余</th>
             <th>报告完成</th>
             <th>备注</th>
@@ -84,7 +82,20 @@ tr.shown td.details-control {
 function format(d) {
     // `d` is the original data object for the row
     return '<table class="test" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
-            '<tr >'+
+                  '<tr >'+
+            '<td class="test">医院:</td>'+
+            '<td class="test">'+d.hospital+'</td>'+
+        '</tr>'+
+	 '<tr >'+
+            '<td class="test">项目启动日期:</td>'+
+            '<td class="test">'+d.accept_time+'</td>'+
+        '</tr>'+
+	    '<tr >'+
+            '<td class="test">项目截止时间:</td>'+
+            '<td class="test">'+d.end_time+'</td>'+
+        '</tr>'+
+
+	    '<tr >'+
             '<td class="test">样本下机时间:</td>'+
             '<td class="test">'+d.submit_time+'</td>'+
         '</tr>'+
@@ -193,7 +204,7 @@ $(document).ready(function() {
   var table =   $('#example').DataTable( {
         dom: "Bfrtip",
         ajax: "{{ url_for('genetron.sample_table') }}",
-        "order": [[ 13, 'asc' ], [ 5, 'desc' ],[ 12, 'asc' ]],
+        "order": [[ 11, 'asc' ], [ 5, 'desc' ],[ 10, 'asc' ]],
         "class": "center",
         "pageLength": 20,
         columns: [
@@ -213,7 +224,7 @@ $(document).ready(function() {
               }
             },
             { data: "name" },
-            { data: "hospital" },
+            { data: "hospital_alias" },
             { data: "panel" },
             {
                 "class": "center",
@@ -233,8 +244,6 @@ $(document).ready(function() {
             { data: "indication" },
             { data: "tissue" },
             { data: "tumor" },
-            { data: "accept_time" },
-            { data: "end_time" },
             { data: null,
                 "render":function(data,type, row){
                     today = new Date()
@@ -284,10 +293,6 @@ $(document).ready(function() {
         location.href = "{{url_for('genetron.sample_info')}}" + '?id=' + $(this).text();
     } );
 
-    $('#example td.click a').on('hover',function(){
-        console.log('asfd');
-        $(this).css('cursor', 'pointer');
-    })
 } );
 
 

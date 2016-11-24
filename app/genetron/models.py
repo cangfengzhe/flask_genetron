@@ -3,6 +3,7 @@ from .. import db
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+from datetime import datetime
 
 class Patient_info(db.Model):
     __tablenane__ = 'patient_info'
@@ -55,8 +56,11 @@ class Sample_info(db.Model):
     get_histology_time = db.Column(db.DateTime)
     ask_histology = db.Column(db.Boolean, default=False)
     patient_id = db.Column(db.Integer, db.ForeignKey('patient_info.id'))
-    flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
+    #flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
+    sample_flowcell = db.relationship('Sample_flowcell', backref='sample', lazy="dynamic")
     note = db.Column(db.String(200))
+    
+    
 
 
     def __init__(self, **kwargs):
@@ -104,6 +108,14 @@ class Sample_info(db.Model):
             return 'ctDNA'
         else:
             return panel
+    def proc_hospital(self, name):
+        if name:
+            if '北京大学肿瘤医院' in name:
+                return '北肿'
+            if '郑州大学第一附属医院' in name:
+                return '郑大一附院'
+        return '其他'
+
     @property
     def json(self):
         if not self.indication:
@@ -119,6 +131,7 @@ class Sample_info(db.Model):
                'age' : self.patient.age,
                'sex' : self.patient.sex,
                'hospital' : self.patient.hospital,
+               'hospital_alias': self.proc_hospital(self.patient.hospital), 
                'panel': self.proc_panel(self.panel),
                'indication':self.indication,
                'tissue' : self.tissue,
@@ -151,8 +164,27 @@ class Sample_info(db.Model):
 class Flowcell_info(db.Model):
     __tablename__='flowcell_info'
     id = db.Column(db.Integer, primary_key=True)
-    machine_type = db.Column(db.String(10))
-    machine_id = db.Column(db.String(10))
+    flowcell_id = db.Column(db.String(10))
     sj_time = db.Column(db.DateTime)
     xj_time = db.Column(db.DateTime)
-    sample = db.relationship('Sample_info', backref='flowcell', lazy="dynamic")
+    sample_flowcell = db.relationship('Sample_flowcell', backref='flowcell', lazy="dynamic")
+    
+class Sample_flowcell(db.Model):
+    __tablename__='sample_flowcell'
+    id = db.Column(db.Integer, primary_key=True)
+    samle_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
+
+#Cannot drop index 'flowcell_id': needed in a foreign key constraint
+    
+class Sample_time_info(db.Model):
+    __tablename__='sample_time_info'
+    id = db.Column(db.Integer, primary_key=True)
+    sample_flowcell = db.Column(db.Integer, db.ForeignKey('sample_flowcell.id'))
+    user = db.Column(db.Integer, db.ForeignKey('users.id') )
+    item_type = db.Column(db.String(100))
+    item_time = db.Column(db.DateTime, default=datetime.now())
+    item_note = db.Column(db.String(200))
+
+    
+    
