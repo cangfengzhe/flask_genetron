@@ -1,5 +1,8 @@
 #coding=utf-8
 from .. import db
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 class Patient_info(db.Model):
     __tablenane__ = 'patient_info'
@@ -18,7 +21,7 @@ class Patient_info(db.Model):
     drug_history = db.Column(db.String(500))
     family_history = db.Column(db.String(500))
     
-    indication = db.Column(db.String(100)) # 病理提示
+    indication = db.Column(db.String(500)) # 病理提示
     tissue = db.Column(db.String(150))
     tumor = db.Column(db.String(150))
     ask_histology_time = db.Column(db.DateTime)
@@ -45,7 +48,7 @@ class Sample_info(db.Model):
     submit_time = db.Column(db.DateTime)
     bioinfo = db.Column(db.Boolean, default=False)
     bioinfo_time = db.Column(db.DateTime)
-    indication = db.Column(db.String(100)) # 病理提示
+    indication = db.Column(db.String(500)) # 病理提示
     tissue = db.Column(db.String(150))
     tumor = db.Column(db.String(150))
     ask_histology_time = db.Column(db.DateTime)
@@ -84,6 +87,23 @@ class Sample_info(db.Model):
                self.dead_line,
                self.note]
 
+    def proc_panel(self, panel):
+        if '88' in panel:
+            return 'Panel88'
+        elif '203' in panel:
+            return 'Panel203'
+        elif '509' in panel:
+            return 'Panel509'
+        elif '51' in panel:
+            return panel
+        elif '49' in panel:
+            return 'Panel49'
+        elif '泛生子1号' in panel:
+            return 'WES'
+        elif 'ct' in panel:
+            return 'ctDNA'
+        else:
+            return panel
     @property
     def json(self):
         if not self.indication:
@@ -92,13 +112,14 @@ class Sample_info(db.Model):
             self.tissue = self.patient.tissue
         if not self.tumor:
             self.tumor = self.patient.tumor
+        
         return {'DT_RowId' : self.id,
                'sample_id' : self.sample_id,
                'name' : self.patient.name,
                'age' : self.patient.age,
                'sex' : self.patient.sex,
                'hospital' : self.patient.hospital,
-               'panel': self.panel,
+               'panel': self.proc_panel(self.panel),
                'indication':self.indication,
                'tissue' : self.tissue,
                'tumor' : self.tumor,

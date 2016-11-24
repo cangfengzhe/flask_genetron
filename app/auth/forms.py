@@ -15,7 +15,8 @@ class LoginForm(Form):
 
 class RegistrationForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64),
-                                           Email()])
+                                           Email(), Regexp('^[A-Za-z][A-Za-z0-9_.]*@genetronhealth\.com$', 0,
+                                          'Email must be end with genetronhealth.com')])
     username = StringField('Username', validators=[
         Required(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
                                           'Usernames must have only letters, '

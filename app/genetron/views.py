@@ -72,7 +72,7 @@ def sample_info():
 
 @genetron.route('/sample_table')
 def sample_table():
-    data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') )
+    data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') |  Sample_info.panel.like('%ctDNA%'))
     return jsonify(
         data=[i.json for i in data]
     )
@@ -105,14 +105,15 @@ def sample_response():
     form_data = get_request_data(request.form)
     var = [form_data[x] for x in form_data if x != 'type'][0]
     DT_RowId = var['DT_RowId']
-    var = proc_bool(var, ['bioinfo', 'is_finish', 'ask_histology'])
-    var = proc_now(var, ['bioinfo', 'is_finish'])
-    var = proc_date(var, ['accept_time', 'end_time'])
+
     if form_data['type'] == 'remove':
         sample = Sample_info.query.get(int(var['DT_RowId']))
         db.session.delete(sample)
         db.session.commit()
         return jsonify(data=[])
+    var = proc_bool(var, ['bioinfo', 'is_finish', 'ask_histology'])
+    var = proc_now(var, ['bioinfo', 'is_finish'])
+    var = proc_date(var, ['accept_time', 'end_time'])
     if form_data['type'] == 'create':
         var.pop('DT_RowId')
 

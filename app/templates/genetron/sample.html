@@ -28,7 +28,7 @@ tr.shown td.details-control {
 <div class="container" style="margin-top:80px">
 
 
-    <!--display table table-striped table-bordered hover-->
+    <!--display table table-striped table-bed hover-->
  <div class="panel panel-default">
                         <div class="panel-heading">
                             临床样本列表
@@ -84,7 +84,20 @@ tr.shown td.details-control {
 function format(d) {
     // `d` is the original data object for the row
     return '<table class="test" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+            '<tr >'+
+            '<td class="test">样本下机时间:</td>'+
+            '<td class="test">'+d.submit_time+'</td>'+
+        '</tr>'+
+            '<tr >'+
+            '<td class="test">样本分类时间:</td>'+
+            '<td class="test">'+d.submit_time+'</td>'+
+        '</tr>'+
+        
         '<tr >'+
+            '<td class="test">样本提交时间:</td>'+
+            '<td class="test">'+d.submit_time+'</td>'+
+        '</tr>'+
+            '<tr >'+
             '<td class="test">生信完成时间:</td>'+
             '<td class="test">'+d.bioinfo_time+'</td>'+
         '</tr>'+
@@ -106,28 +119,12 @@ function format(d) {
 var editor; // use a global for the submit and return data rendering in the examples
 $(document).ready(function() {
 
-
-
     editor = new $.fn.dataTable.Editor( {
         ajax: "{{ url_for('genetron.sample_response') }}",
         table: "#example",
         fields: [
-        <!--{-->
-                <!--label: "sample_id:",-->
-                <!--name: "sample_id"-->
-            <!--},-->
-            <!--{-->
-                <!--label: "姓名:",-->
-                <!--name: "name"-->
-            <!--},-->
-            <!--{-->
-                <!--label: "医院:",-->
-                <!--name: "hospital"-->
-            <!--},-->
-            {
-                label: "panel:",
-                name: "panel"
-            },
+    
+     
              {
                 label: "生信完成:",
                 name: "bioinfo",
@@ -148,6 +145,7 @@ $(document).ready(function() {
                 ],
                 def: 0
             },
+            {% if current_user.is_administrator() %}
             {
                 label: "病理提示:",
                 name: "indication"
@@ -160,23 +158,8 @@ $(document).ready(function() {
                 label:'癌种',
                 name: "tumor"
             },
-
-            {
-                label:  '开始日期:',
-                name:   'accept_time',
-                type:   'datetime',
-                def:    function () { return new Date(); },
-                format: 'YYYY-M-D',
-
-            },
-             {
-                label:  '截止日期:',
-                name:   'end_time',
-                type:   'datetime',
-                def:    function () { return new Date(); },
-                format: 'YYYY-M-D',
-
-            },
+            {% endif %}
+      
             {
                 label: "报告完成:",
                 name: "is_finish",
@@ -210,7 +193,7 @@ $(document).ready(function() {
   var table =   $('#example').DataTable( {
         dom: "Bfrtip",
         ajax: "{{ url_for('genetron.sample_table') }}",
-        "order": [[ 11, 'desc' ],[ 10, 'asc' ], [ 4, 'asc' ]],
+        "order": [[ 13, 'asc' ], [ 5, 'desc' ],[ 12, 'asc' ]],
         "class": "center",
         "pageLength": 20,
         columns: [
@@ -220,20 +203,13 @@ $(document).ready(function() {
                 "data": null,
                 "defaultContent": ''
             },
-            <!--{ data: 'sample_id',-->
-              <!--'class':'click',-->
-             <!--"render": function (val, type, row) {-->
-                    <!--&lt;!&ndash;return 'sdf';&ndash;&gt;-->
-                   <!--return  "<a src=\"{{ url_for('genetron.sample_info', id='val' ) }}\"> dsf </a> ";-->
-               <!--},-->
-
-             <!--},-->
+ 
 
               { data: null,
                 class:'click',
                 "render":function(data,type, row){
 
-                    return "<a src='sfd'>" + data.sample_id + "</a>";
+                    return "<a src='#'>" + data.sample_id + "</a>";
               }
             },
             { data: "name" },
@@ -278,9 +254,10 @@ $(document).ready(function() {
         ],
         select: true,
         buttons: [
-            { extend: "create", editor: editor },
+           {% if current_user.is_administrator() %}
             { extend: "edit",   editor: editor },
             { extend: "remove", editor: editor }
+            {% endif %}
         ]
     } );
 

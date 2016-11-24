@@ -34,9 +34,10 @@ def create_app(config_name):
     login_manager.init_app(app)
     pagedown.init_app(app)
     admin = Admin(app)
-    from .models import User
+    from .models import User,Role
     # from genetron.models import *
     admin.add_view(MyModelView(User, db.session))
+    admin.add_view(MyModelView(Role, db.session))
     # admin.add_view(MyModelView(Patient, db.session))
     # admin.add_view(ProjectView(Project, db.session))
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
