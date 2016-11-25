@@ -172,9 +172,9 @@ class Flowcell_info(db.Model):
 class Sample_flowcell(db.Model):
     __tablename__='sample_flowcell'
     id = db.Column(db.Integer, primary_key=True)
-    samle_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
     flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
-
+    panel=db.Column(db.String(200))
 #Cannot drop index 'flowcell_id': needed in a foreign key constraint
     
 class Sample_time_info(db.Model):

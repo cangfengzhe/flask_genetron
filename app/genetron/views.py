@@ -1,3 +1,4 @@
+#coding=utf-8
 import datetime
 from flask import jsonify, request
 from flask import render_template
@@ -136,3 +137,75 @@ def sample_response():
     db.session.commit()
     dt = Sample_info.query.filter_by(id=DT_RowId).first()
     return jsonify(data=[dt.json])
+
+def sample_time(sample_id, flowcell_id, item_type, dt,item_note):
+    if not sample_id:
+        return jsonify(info={'status':'error', 'msg':'sample is null'})
+    sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
+    if not sample_index:
+        return jsonify(info={'status':'error', 'msg':'sample does not exists'})
+    flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
+    if not flowcell_index:
+        return jsonify(info={'status':'error', 'msg':'flowcell does not exists'})
+    sample_flowcell = Sample_flowcell.query.filter_by(
+                            sample_id=sample_index.id,
+                            flowcell_id=flowcell_index.id).first()
+    if sample_flowcell:
+        sample_class = Sample_time_info(sample_flowcell=sample_flowcell.id, item_type=item_type, item_time=dt,item_note=item_note)
+    else:
+        sample_flowcell = Sample_flowcell(sample_id=sample_index.id, flowcell_id=flowcell_index.id)
+        db.session.add(sample_flowcell)
+        db.session.flush()
+        db.session.refresh(sample_flowcell)
+        sample_class = Sample_time_info(sample_flowcell=sample_flowcell.id, item_type=item_type, item_time=dt,item_note=item_note )
+    db.session.add(sample_class)
+    db.session.commit()
+    return jsonify(info={'status':'success'})
+
+            
+
+@genetron.route('/api',  methods=['GET', 'POST'])
+def api():
+    """
+    curl "http://127.0.0.1:5000/genetron/api?type=xj_time&time=$(date '+%Y-%m-%d_%H:%M:%S')&flowcell=S05"
+    
+    """
+    api_type = request.args.get('type')
+    if not api_type:
+        return jsonify(info={'status':'error', 'msg':'type is null'})
+        
+    flowcell_id = request.args.get('flowcell')
+    if not flowcell_id:
+        return jsonify(info={'status':'error', 'msg':'flowcell is null'})
+    sample_id = request.args.get('sample')
+    dt = request.args.get('time', datetime.now().strftime('%Y-%m-%d_%H%M%S')) # 传入时间使用 %Y-%m-%d_%H:%M:%S
+    dt = datetime.strptime(dt, '%Y-%m-%d_%H%M%S')
+    item_note = request.args.get('note')
+    # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02
+    if api_type == 'sj_time':
+        flowcell = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
+        if flowcell:
+            flowcell.sj_time=dt
+            db.session.commit()
+        else:
+            flowcell=Flowcell_info(flowcell_id=flowcell_id, sj_time=dt)
+            db.session.add(flowcell)
+            db.session.commit()
+        return jsonify(info={'status':'success'})
+    elif api_type == 'xj_time':    
+        flowcell = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
+        if flowcell:
+            flowcell.xj_time = dt
+            db.session.commit()
+        else:
+            flowcell = Flowcell_info(flowcell_id=flowcell_id, xj_time=dt)
+            db.session.add(flowcell)
+            db.session.commit()
+        return jsonify(info={'status':'success'})
+    else:
+        return sample_time(sample_id, flowcell_id, api_type, dt,item_note )
+        
+    
+
+            
+    
