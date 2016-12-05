@@ -74,23 +74,6 @@ class Sample_info(db.Model):
         else:
             return ''
 
-    @property
-    def serialize(self):
-       """Return object data in easily serializeable format"""
-       return [self.patient_id,
-               self.name,
-               self.age,
-               self.sex,
-               self.hospital,
-               self.histology,
-               self.tissue,
-               self.indication,
-               self.panel,
-               self.bioinfo,
-               self.start_time,
-               self.dead_line,
-               self.note]
-
     def proc_panel(self, panel):
         if '88' in panel:
             return 'Panel88'

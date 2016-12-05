@@ -1,11 +1,13 @@
 #coding=utf-8
-import datetime
+
 from flask import jsonify, request
 from flask import render_template
 from collections import defaultdict
 from models import *
 from . import genetron
 from flask_login import login_required
+import sqlalchemy
+import datetime
 
 @genetron.route('/')
 def index():
@@ -138,29 +140,63 @@ def sample_response():
     dt = Sample_info.query.filter_by(id=DT_RowId).first()
     return jsonify(data=[dt.json])
 
-def sample_time(sample_id, flowcell_id, item_type, dt,item_note):
+def link(sample_id, flowcell_id, panel):
     if not sample_id:
-        return jsonify(info={'status':'error', 'msg':'sample is null'})
+        return jsonify(info={'status':'error', 'msg':'sample is null', 'type':'link'})
     sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
     if not sample_index:
-        return jsonify(info={'status':'error', 'msg':'sample does not exists'})
+        return jsonify(info={'status':'error', 'msg':'sample index does not exists' , 'type':'link'})
     flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
     if not flowcell_index:
-        return jsonify(info={'status':'error', 'msg':'flowcell does not exists'})
+        return jsonify(info={'status':'error', 'msg':'flowcell does not exists', 'type':'link'})
+    if not panel:
+        return jsonify(info={'status':'error', 'msg':'panel does not exists', 'type':'link'})    
+    sample_flowcell = Sample_flowcell.query.filter_by(sample_id=sample_index.id, flowcell_id=flowcell_index.id, panel=panel).first()
+    if not sample_flowcell:
+        sample_flowcell = Sample_flowcell(sample_id=sample_index.id, flowcell_id=flowcell_index.id, panel=panel)
+        db.session.add(sample_flowcell)
+        db.session.commit()
+        return jsonify(info={'status':'success', 'type':'link'})
+    else: 
+        return jsonify(info={'status':'exists', 'type':'link'})
+
+
+def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
+    if not sample_id:
+        return jsonify(info={'status':'error', 'msg':'sample is null', 'type':item_type})
+    sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
+    if not sample_index:
+        return jsonify(info={'status':'error', 'msg':'sample does not exists', 'type':item_type})
+    if (not flowcell_id) and sample_index.sample_flowcell.order_by(
+            sqlalchemy.desc(Sample_flowcell.id)).first():
+        flowcell_id = sample_index.sample_flowcell.order_by(
+            sqlalchemy.desc(Sample_flowcell.id)).first().flowcell.flowcell_id
+        if not flowcell_id:
+            flowcell_id='S00'
+    flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
+
+    
+    if not flowcell_index:
+        return jsonify(info={'status':'error', 'msg':'flowcell does not exists', 'type':item_type})
     sample_flowcell = Sample_flowcell.query.filter_by(
                             sample_id=sample_index.id,
-                            flowcell_id=flowcell_index.id).first()
+                            flowcell_id=flowcell_index.id,
+                            panel=panel).first()
+    
+    # 如果没有sample_flowcell， 可能是 panel 匹配问题，忽略
+    if not sample_flowcell:
+        link(sample_id, flowcell_id, panel)
+        sample_flowcell = Sample_flowcell.query.filter_by(
+                            sample_id=sample_index.id,
+                            flowcell_id=flowcell_index.id
+                            ).order_by(sqlalchemy.desc(Sample_flowcell.id)).first()
     if sample_flowcell:
         sample_class = Sample_time_info(sample_flowcell=sample_flowcell.id, item_type=item_type, item_time=dt,item_note=item_note)
+        db.session.add(sample_class)
+        db.session.commit()
+        return jsonify(info={'status':'success', 'type':item_type})
     else:
-        sample_flowcell = Sample_flowcell(sample_id=sample_index.id, flowcell_id=flowcell_index.id)
-        db.session.add(sample_flowcell)
-        db.session.flush()
-        db.session.refresh(sample_flowcell)
-        sample_class = Sample_time_info(sample_flowcell=sample_flowcell.id, item_type=item_type, item_time=dt,item_note=item_note )
-    db.session.add(sample_class)
-    db.session.commit()
-    return jsonify(info={'status':'success'})
+        return jsonify(info={'status':'error', 'msg': 'the relation between sample and flowcell does not exist', 'type':item_type})
 
             
 
@@ -172,17 +208,19 @@ def api():
     """
     api_type = request.args.get('type')
     if not api_type:
-        return jsonify(info={'status':'error', 'msg':'type is null'})
+        return jsonify(info={'status':'error', 'msg':'type is null', 'type':api_type})
         
     flowcell_id = request.args.get('flowcell')
-    if not flowcell_id:
-        return jsonify(info={'status':'error', 'msg':'flowcell is null'})
+    
     sample_id = request.args.get('sample')
-    dt = request.args.get('time', datetime.now().strftime('%Y-%m-%d_%H%M%S')) # 传入时间使用 %Y-%m-%d_%H:%M:%S
-    dt = datetime.strptime(dt, '%Y-%m-%d_%H%M%S')
+    dt = request.args.get('time', datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')) # 传入时间使用 %Y-%m-%d_%H:%M:%S
+    dt = datetime.datetime.strptime(dt, '%Y-%m-%d_%H%M%S')
     item_note = request.args.get('note')
+    panel = request.args.get('panel')
     # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02
     if api_type == 'sj_time':
+        if not flowcell_id:
+            return jsonify(info={'status':'error', 'msg':'flowcell is null', 'type':api_type})
         flowcell = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
         if flowcell:
             flowcell.sj_time=dt
@@ -191,8 +229,10 @@ def api():
             flowcell=Flowcell_info(flowcell_id=flowcell_id, sj_time=dt)
             db.session.add(flowcell)
             db.session.commit()
-        return jsonify(info={'status':'success'})
-    elif api_type == 'xj_time':    
+        return jsonify(info={'status':'success', 'type':api_type})
+    elif api_type == 'xj_time':  
+        if not flowcell_id:
+            return jsonify(info={'status':'error', 'msg':'flowcell is null', 'type':api_type})
         flowcell = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
         if flowcell:
             flowcell.xj_time = dt
@@ -201,9 +241,11 @@ def api():
             flowcell = Flowcell_info(flowcell_id=flowcell_id, xj_time=dt)
             db.session.add(flowcell)
             db.session.commit()
-        return jsonify(info={'status':'success'})
+        return jsonify(info={'status':'success', 'type':api_type})
+    elif api_type == 'link':
+        return link(sample_id, flowcell_id, panel)
     else:
-        return sample_time(sample_id, flowcell_id, api_type, dt,item_note )
+        return sample_time(sample_id, flowcell_id,panel, api_type, dt,item_note )
         
     
 

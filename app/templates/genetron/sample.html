@@ -220,7 +220,7 @@ $(document).ready(function() {
                 class:'click',
                 "render":function(data,type, row){
 
-                    return "<a src='#'>" + data.sample_id + "</a>";
+                    return '<a href="' + "{{url_for('genetron.sample_info')}}" + '?id=' +  data.sample_id +   '">' + data.sample_id + "</a>";
               }
             },
             { data: "name" },
