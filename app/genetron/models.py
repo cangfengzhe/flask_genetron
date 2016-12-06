@@ -36,7 +36,7 @@ class Patient_info(db.Model):
 class Sample_info(db.Model):
     __tablename__ = 'sample_info'
     id = db.Column(db.Integer, primary_key=True)
-    sample_id = db.Column(db.String(10), nullable=False)
+    sample_id = db.Column(db.String(50), nullable=False)
     panel = db.Column(db.String(500))
     tumor_type = db.Column(db.String(50))
     tumor_pos = db.Column(db.String(50))
@@ -75,22 +75,27 @@ class Sample_info(db.Model):
             return ''
 
     def proc_panel(self, panel):
+        if not panel:
+            return panel
+        panel_name = []
         if '88' in panel:
-            return 'Panel88'
+            panel_name.append('panel88')
         elif '203' in panel:
-            return 'Panel203'
+            panel_name.append('panel203')
         elif '509' in panel:
-            return 'Panel509'
+            panel_name.append('panel509')
         elif '51' in panel:
-            return panel
+            panel_name.append(panel)
         elif '49' in panel:
-            return 'Panel49'
+            panel_name.append('panel49')
         elif '泛生子1号' in panel:
-            return 'WES'
+            panel_name.append('WES')
         elif 'ct' in panel:
-            return 'ctDNA'
+            panel_name.append('ctDNA')
         else:
-            return panel
+            panel_name.append(panel)
+        return '+'.join(panel_name)
+    
     def proc_hospital(self, name):
         if name:
             if '北京大学肿瘤医院' in name:
@@ -101,12 +106,13 @@ class Sample_info(db.Model):
 
     @property
     def json(self):
-        if not self.indication:
-            self.indication = self.patient.indication
-        if not self.tissue:
-            self.tissue = self.patient.tissue
-        if not self.tumor:
-            self.tumor = self.patient.tumor
+        if self.patient:
+            if not self.indication:
+                self.indication = self.patient.indication
+            if not self.tissue:
+                self.tissue = self.patient.tissue
+            if not self.tumor:
+                self.tumor = self.patient.tumor
         
         return {'DT_RowId' : self.id,
                'sample_id' : self.sample_id,
@@ -150,6 +156,7 @@ class Flowcell_info(db.Model):
     flowcell_id = db.Column(db.String(10))
     sj_time = db.Column(db.DateTime)
     xj_time = db.Column(db.DateTime)
+    cf_time = db.Column(db.DateTime)
     sample_flowcell = db.relationship('Sample_flowcell', backref='flowcell', lazy="dynamic")
     
 class Sample_flowcell(db.Model):

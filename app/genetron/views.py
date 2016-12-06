@@ -42,9 +42,6 @@ def get_request_data(form):
     return data
 
 
-
-
-
 @genetron.route('/patient')
 def patient():
     return render_template('genetron/patient.html')
@@ -77,7 +74,7 @@ def sample_info():
 def sample_table():
     data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') |  Sample_info.panel.like('%ctDNA%'))
     return jsonify(
-        data=[i.json for i in data]
+        data=[i.json for i in data if i.patient]
     )
 
 def proc_bool(var_dict, keys):
@@ -140,12 +137,39 @@ def sample_response():
     dt = Sample_info.query.filter_by(id=DT_RowId).first()
     return jsonify(data=[dt.json])
 
+def check_sample(sample_id):
+    # 检查sample， 如果sample不在lims中，则添加信息
+    sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
+    print(sample_id)
+    if not sample_index:
+        print('not link')
+        patient = Patient_info(patient_id=sample_id)
+        db.session.add(patient)
+        db.session.flush()
+        db.session.refresh(patient)
+        sample = Sample_info(sample_id=sample_id,patient_id=patient.id)
+        db.session.add(sample)
+        db.session.flush()
+        db.session.refresh(sample)
+        
+        sample_index = sample
+        db.session.commit()
+    return sample_index
+
+def check_flowcell(flowcell_id):
+    flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
+    if not flowcell_index:
+        flowcell_index = Flowcell_info.query.filter_by(flowcell_id='S00').first()
+    return flowcell_index
+
+
 def link(sample_id, flowcell_id, panel):
+    """
+    建立sample id， flowcell id联系
+    """
     if not sample_id:
         return jsonify(info={'status':'error', 'msg':'sample is null', 'type':'link'})
-    sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
-    if not sample_index:
-        return jsonify(info={'status':'error', 'msg':'sample index does not exists' , 'type':'link'})
+    sample_index = check_sample(sample_id)
     flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
     if not flowcell_index:
         return jsonify(info={'status':'error', 'msg':'flowcell does not exists', 'type':'link'})
@@ -164,20 +188,22 @@ def link(sample_id, flowcell_id, panel):
 def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
     if not sample_id:
         return jsonify(info={'status':'error', 'msg':'sample is null', 'type':item_type})
-    sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
+    #sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
+    sample_index = check_sample(sample_id)
     if not sample_index:
-        return jsonify(info={'status':'error', 'msg':'sample does not exists', 'type':item_type})
+        return jsonify(info={'status':'error', 'msg':'sample is not in LIMS', 'type':item_type})
     if (not flowcell_id) and sample_index.sample_flowcell.order_by(
-            sqlalchemy.desc(Sample_flowcell.id)).first():
+            sqlalchemy.desc(Sample_flowcell.id)).first(): # 查找该样本最近一次的下机flowcell id
         flowcell_id = sample_index.sample_flowcell.order_by(
             sqlalchemy.desc(Sample_flowcell.id)).first().flowcell.flowcell_id
-        if not flowcell_id:
-            flowcell_id='S00'
+    if not flowcell_id:
+        flowcell_id='S00' # 如果该样本没有对应的flowcell id 那么定义为 S00
     flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
-
-    
+    print(flowcell_id)
     if not flowcell_index:
-        return jsonify(info={'status':'error', 'msg':'flowcell does not exists', 'type':item_type})
+        flowcell_id='S00'
+        flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
+        #return jsonify(info={'status':'error', 'msg':'flowcell does not exists', 'type':item_type})
     sample_flowcell = Sample_flowcell.query.filter_by(
                             sample_id=sample_index.id,
                             flowcell_id=flowcell_index.id,
@@ -186,6 +212,7 @@ def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
     # 如果没有sample_flowcell， 可能是 panel 匹配问题，忽略
     if not sample_flowcell:
         link(sample_id, flowcell_id, panel)
+        print(sample_index.id, flowcell_index.id)
         sample_flowcell = Sample_flowcell.query.filter_by(
                             sample_id=sample_index.id,
                             flowcell_id=flowcell_index.id
@@ -234,14 +261,28 @@ def api():
         if not flowcell_id:
             return jsonify(info={'status':'error', 'msg':'flowcell is null', 'type':api_type})
         flowcell = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
-        if flowcell:
-            flowcell.xj_time = dt
-            db.session.commit()
+        if flowcell:# 如果下机时间只记录一次，不会更新
+            if not flowcell.xj_time:
+                flowcell.xj_time = dt
+                db.session.commit()
         else:
             flowcell = Flowcell_info(flowcell_id=flowcell_id, xj_time=dt)
             db.session.add(flowcell)
             db.session.commit()
         return jsonify(info={'status':'success', 'type':api_type})
+    elif api_type == 'cf_time': 
+        if not flowcell_id:
+            return jsonify(info={'status':'error', 'msg':'flowcell is null', 'type':api_type})
+        flowcell = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
+        if flowcell:
+            flowcell.cf_time = dt # 
+            db.session.commit()
+        else:
+            flowcell = Flowcell_info(flowcell_id=flowcell_id, cf_time=dt)
+            db.session.add(flowcell)
+            db.session.commit()
+        return jsonify(info={'status':'success', 'type':api_type})
+    
     elif api_type == 'link':
         return link(sample_id, flowcell_id, panel)
     else:
