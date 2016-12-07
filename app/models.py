@@ -16,6 +16,10 @@ class Permission:
     WRITE_ARTICLES = 0x04
     MODERATE_COMMENTS = 0x08
     ADMINISTER = 0x80
+    CREATE_DB = 0x10
+    CHECK_DB = 0x20
+
+from app.genetron.models import  *
 
 
 class Role(db.Model):
@@ -36,7 +40,16 @@ class Role(db.Model):
                           Permission.COMMENT |
                           Permission.WRITE_ARTICLES |
                           Permission.MODERATE_COMMENTS, False),
-            'Administrator': (0xff, False)
+            'Administrator': (0xff, False),
+            'Reporter': (Permission.FOLLOW |
+                          Permission.COMMENT |
+                          Permission.WRITE_ARTICLES |
+                          Permission.CREATE_DB, False),
+            'Checker':(Permission.FOLLOW |
+                          Permission.COMMENT |
+                          Permission.WRITE_ARTICLES |
+                          Permission.CREATE_DB|
+                       Permission.CHECK_DB, False)
         }
         for r in roles:
             role = Role.query.filter_by(name=r).first()
@@ -61,6 +74,7 @@ class Follow(db.Model):
 
 
 class User(UserMixin, db.Model):
+
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
@@ -86,6 +100,25 @@ class User(UserMixin, db.Model):
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    biomarker_mk_user = db.relationship('Biomarker',
+                                        backref='mk_user',
+                                 foreign_keys=[Biomarker.mk_user_id],
+                                 lazy="dynamic"
+                                 )
+    biomarker_check_user = db.relationship('Biomarker',
+                                           backref='check_user',
+                                        foreign_keys=[Biomarker.check_user_id],
+                                        lazy="dynamic"
+                                        )
+    molecular_function_mk_user = db.relationship('Molecular_function',
+                                              backref='mk_user',
+                                              foreign_keys=[Molecular_function.mk_user_id],
+                                              lazy="dynamic")
+    molecular_function_check_user = db.relationship('Molecular_function',
+                                              backref='check_user',
+                                              foreign_keys=[Molecular_function.check_user_id],
+                                              lazy="dynamic")
+
 
     @staticmethod
     def generate_fake(count=100):

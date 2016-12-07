@@ -177,7 +177,7 @@ class Sample_time_info(db.Model):
     item_note = db.Column(db.String(200))
 
 class Sample_mut_info(db.Model):
-    __tablename__='Sample_mut_info'
+    __tablename__='sample_mut_info'
     id = db.Column(db.Integer, primary_key=True)
     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
     gene_name = db.Column(db.String(100))
@@ -191,6 +191,11 @@ class Sample_mut_info(db.Model):
     t_freq = db.Column(db.Numeric(4,4))
     n_depth = db.Column(db.Integer)
     n_freq = db.Column(db.Numeric(4,4))
+    # mk_user = db.relationship('users', backref='sample_mut_info', lazy="dynamic")
+    # mk_time = db.Column(db.DateTime)
+    # checked = db.Column(db.Boolean, default=False)
+    # check_user = db.relationship('users', backref='sample_mut_info', lazy='dynamic')
+    # check_time = db.Column(db.DateTime)
     
 class Biomarker(db.Model):
     """
@@ -208,13 +213,20 @@ class Biomarker(db.Model):
     incidence_in_disease = db.Column(db.Text)
     effect_of_drug_sensitivity = db.Column(db.Text)
     effect_on_drug_resistance = db.Column(db.Text)
+    mk_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    mk_time = db.Column(db.DateTime)
+    checked = db.Column(db.Boolean, default=False)
+    check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    check_time = db.Column(db.DateTime)
+
     
     
-class Molecular_function():
+class Molecular_function(db.Model):
     """
     Gene	Tissue	Tissue (中文)	核苷酸变化	AA(abb)	AA	molecular function	位点解析（中文）	 更新记录
 """
-    __tablename__='biomarker'
+    __tablename__='molecular_function'
     id = db.Column(db.Integer, primary_key=True)
     gene_name = db.Column(db.String(50))
     tissue_cn = db.Column(db.String(100))
@@ -223,13 +235,17 @@ class Molecular_function():
     pos_info = db.Column(db.Text)
     mf = db.Column(db.Text)
     update_log = db.Column(db.String(200))
-    
-    
-class Target_drug(db.Model):
-    """
-    基因	突变类型	相关通路	Tissue	Tissue (中文)	药品通用名	商品名	靶点/原理	审批状态/临床试验状态	临床试验地点	Drug	Trade Name	Target/Rationale	Current Status	Locations	更新记录	
+    mk_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    mk_time = db.Column(db.DateTime)
+    checked = db.Column(db.Boolean, default=False)
+    check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    check_time = db.Column(db.DateTime)
 
-    """
-    pass
+# class Target_drug(db.Model):
+#     """
+#     基因	突变类型	相关通路	Tissue	Tissue (中文)	药品通用名	商品名	靶点/原理	审批状态/临床试验状态	临床试验地点	Drug	Trade Name	Target/Rationale	Current Status	Locations	更新记录
+#
+#     """
+#     pass
     
     
