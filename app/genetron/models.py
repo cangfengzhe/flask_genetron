@@ -176,5 +176,60 @@ class Sample_time_info(db.Model):
     item_time = db.Column(db.DateTime, default=datetime.now())
     item_note = db.Column(db.String(200))
 
+class Sample_mut_info(db.Model):
+    __tablename__='Sample_mut_info'
+    id = db.Column(db.Integer, primary_key=True)
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    gene_name = db.Column(db.String(100))
+    refseq_id = db.Column(db.String(50))
+    chrome = db.Column(db.String(10))
+    start = db.Column(db.BigInteger)
+    end = db.Column(db.BigInteger)
+    cDNA_change = db.Column(db.String(100))
+    aa_change = db.Column(db.String(100))
+    t_depth = db.Column(db.Integer)
+    t_freq = db.Column(db.Numeric(4,4))
+    n_depth = db.Column(db.Integer)
+    n_freq = db.Column(db.Numeric(4,4))
+    
+class Biomarker(db.Model):
+    """
+    基因	Tissue	Tissue (中文)	基因描述	临床意义	Glossary (Gene review)	Summary	Incidence in disease	Effect on drug sensitivity	Effect on drug resistance
+"""
+    __tablename__='biomarker'
+    id = db.Column(db.Integer, primary_key=True)
+    gene_name = db.Column(db.String(100))
+    tissue_cn = db.Column(db.String(100))
+    tissue_en = db.Column(db.String(100))
+    gene_info = db.Column(db.Text)
+    clinical_info = db.Column(db.Text)
+    glossary = db.Column(db.Text)
+    summary = db.Column(db.Text)
+    incidence_in_disease = db.Column(db.Text)
+    effect_of_drug_sensitivity = db.Column(db.Text)
+    effect_on_drug_resistance = db.Column(db.Text)
+    
+    
+class Molecular_function():
+    """
+    Gene	Tissue	Tissue (中文)	核苷酸变化	AA(abb)	AA	molecular function	位点解析（中文）	 更新记录
+"""
+    __tablename__='biomarker'
+    id = db.Column(db.Integer, primary_key=True)
+    gene_name = db.Column(db.String(50))
+    tissue_cn = db.Column(db.String(100))
+    tissue_en = db.Column(db.String(100))
+    aa_change = db.Column(db.String(50))
+    pos_info = db.Column(db.Text)
+    mf = db.Column(db.Text)
+    update_log = db.Column(db.String(200))
+    
+    
+class Target_drug(db.Model):
+    """
+    基因	突变类型	相关通路	Tissue	Tissue (中文)	药品通用名	商品名	靶点/原理	审批状态/临床试验状态	临床试验地点	Drug	Trade Name	Target/Rationale	Current Status	Locations	更新记录	
+
+    """
+    pass
     
     

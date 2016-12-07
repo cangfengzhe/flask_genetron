@@ -139,15 +139,16 @@ def sample_response():
 
 def check_sample(sample_id):
     # 检查sample， 如果sample不在lims中，则添加信息
+    sample_id = sample_id.split('-')[0].split('NEW')[0]
     sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
     print(sample_id)
     if not sample_index:
         print('not link')
-        patient = Patient_info(patient_id=sample_id)
-        db.session.add(patient)
-        db.session.flush()
-        db.session.refresh(patient)
-        sample = Sample_info(sample_id=sample_id,patient_id=patient.id)
+        # patient = Patient_info(patient_id=sample_id)
+        # db.session.add(patient)
+        # db.session.flush()
+        # db.session.refresh(patient)
+        sample = Sample_info(sample_id=sample_id)
         db.session.add(sample)
         db.session.flush()
         db.session.refresh(sample)
