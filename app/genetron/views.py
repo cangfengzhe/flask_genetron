@@ -77,6 +77,20 @@ def sample_table():
         data=[i.json for i in data if i.patient]
     )
 
+
+# 确定报告人
+@genetron.route('/report_user', methods=['GET'])
+def report_user():
+    print(request.args)
+    sample = request.args.get('sample')
+    report_user = request.args.get('report', 'aa')
+    check_user = request.args.get('check')
+
+    return jsonify(
+        data= {'aa':report_user, 'bb':check_user}
+    )
+
+
 def proc_bool(var_dict, keys):
     for xx in keys:
         if xx in var_dict:
