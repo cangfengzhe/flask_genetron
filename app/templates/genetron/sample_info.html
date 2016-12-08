@@ -2,13 +2,14 @@
 
 {% block content %}
 
-<div class="container" >
+<div class="container-fluid" >
 <div class="row">
- <div class="col-lg-8 col-lg-offset-2">
+ <div class="col-lg-10 col-lg-offset-1">
             <div class="panel panel-info">
                         <div class="panel-heading">
                             患者基本信息
                         </div>
+                {% if sample.patient != None %}
                         <div class="panel-body">
                            <table class="table table-condensed">
                               <tr>
@@ -16,16 +17,106 @@
                                 <td>患者编号:  {{sample.patient.patient_id}} </td>
                                 </tr>
                                <tr>
-                                 <td>性别:  {{sample.patient.sex}} </td>
+                                 <td>性别:{% if sample.patient.sex == 1 %}
+                                            男
+                                        {% else %}
+                                            女
+                                        {% endif %} 
+                                   </td>
                                 <td>年龄:  {{sample.patient.age}} </td>
+                                </tr>                               
+                               <tr>
+                                 <td>既往诊断结果:  {{sample.indication}} </td>
+                                <td>既往治疗方案:   </td>
                                 </tr>                               <tr>
-                                 <td>既往诊断结果:  {{sample.patient.sex}} </td>
-                                <td>既往治疗方案:  {{sample.patient.age}} </td>
-                                </tr>                               <tr>
-                                 <td>靶向药物服用史:  {{sample.patient.sex}} </td>
-                                <td>癌症家族史:  {{sample.patient.age}} </td>
+                                 <td>靶向药物服用史:  </td>
+                                <td>癌症家族史:   </td>
                                 </tr>
 
+                          </table>
+                        </div>
+
+
+                    </div>
+     {% endif %}
+            <!-- /.panel -->
+            </div>
+</div>
+
+    
+    <div class="row">
+ <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                        <div class="panel-heading">
+                            样本基本信息
+                        </div>
+                {% if sample.patient != None %}
+                        <div class="panel-body">
+                           <table class="table table-condensed">
+                              <tr>
+                                 <td>肿瘤样本类型:  {{sample.tumor_type}} </td>
+                                <td>肿瘤样本采集部位:  {{sample.tumor_pos}} </td>
+                                </tr>
+                               <tr>
+                                 <td>肿瘤采集日期: {{ sample.collect_time|datetimeformat("%Y-%m-%d %H:%M:%S") }}
+                                   </td>
+                                <td>肿瘤样本接受日期:  {{ sample.accept_time|datetimeformat("%Y-%m-%d %H:%M:%S") }} </td>
+                                </tr>                               
+                               <tr>
+                                
+
+                          </table>
+                        </div>
+
+
+                    </div>
+     {% endif %}
+            <!-- /.panel -->
+            </div>
+</div>
+    
+    
+    <!-- time -->
+    
+    <div class="row">
+ <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                        <div class="panel-heading">
+                            生物信息分析
+                        </div>
+                        <div class="panel-body">
+                           <table class="table table-condensed">
+                                <tr>
+                                <th>Flowcell_ID</th>
+                                <th>Panel</th>
+                                <th>下机时间</th>
+                                <th>拆分时间</th>
+                                <th>分类时间</th>
+                                 <th>提交时间</th>  
+                                    <th>生信完成时间</th>
+                                    <th>生信报告时间</th>
+                                    
+                              </tr>
+                               {% for flowcell_index in sample.sample_flowcell.all() %}
+                                      
+                                 <tr>
+                                   <td>{{ flowcell_index.flowcell.flowcell_id }}</td>
+                                     <td>{{ flowcell_index.panel }} </td>
+                                     <td>{{ flowcell_index.flowcell.xj_time|datetimeformat("%Y-%m-%d %H:%M:%S") }}</td>
+                                     
+                                      <td>{{ flowcell_index.flowcell.cf_time|datetimeformat("%Y-%m-%d %H:%M:%S") }} </td>
+                                     
+                                      <td>{{flowcell_index|get_item_time('class')}} </td>
+                                      <td>{{flowcell_index|get_item_time('submit')}} </td>
+                                      <td>{{flowcell_index|get_item_time('bioinfo_finish')}} </td>
+                                     <td>
+                                     {{flowcell_index|get_item_time('bioinfo_report')}}
+                                     </td>
+<!--                                      <td>{{ flowcell_index.sample_time.filter_by(item_type='bioinfo_report').first().item_time|datetimeformat("%Y-%m-%d %H:%M:%S") if flowcell_index.sample_time.filter_by(item_type='bioinfo_report').first() != None}} </td> -->
+                                      
+                               </tr>
+                                {% endfor %}
+                              
                           </table>
                         </div>
 
@@ -34,6 +125,48 @@
             <!-- /.panel -->
             </div>
 </div>
+    
+    
+      <div class="row">
+ <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                        <div class="panel-heading">
+                            医学信息解读
+                        </div>
+                        <div class="panel-body">
+                           <table class="table table-condensed">
+                                <tr>
+                                <th>报告初稿</th>
+                                <th>报告完成时间</th>
+                                <th>报告审核</th>
+                                <th>报告审核时间</th>
+                                <th>报告最终完成时间</th>
+                                 
+                              </tr>
+                               {% for flowcell_index in sample.sample_flowcell.all() %}
+                                      
+                                 <tr>
+                                   <td></td>
+                                     <td> </td>
+                                     <td></td>
+                                     
+                                      <td> </td>
+                                     
+                                      <td> </td>
+                                      
+                               </tr>
+                                {% endfor %}
+                              
+                          </table>
+                        </div>
 
+
+                    </div>
+            <!-- /.panel -->
+            </div>
+</div>
+    
+    
+    
  </div>
 {% endblock %}

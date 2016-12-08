@@ -8,3 +8,5 @@ from flask_pagedown.fields import PageDownField
 from ..models import Role, User
 
 
+class Report_from(Form):
+     report_user = SelectField(u'报告完成', choices=[('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')])

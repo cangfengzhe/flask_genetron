@@ -21,10 +21,27 @@ login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 from admin.app import MyModelView, ProjectView
 from genetron.models import *
+import sqlalchemy
 
+def datetimeformat(value, format="%Y-%m"):
+      return value.strftime(format)
+
+def get_item_time(flowcell, item_type):
+    flag = flowcell.sample_time.filter_by(item_type=item_type).first()
+    if flag:
+        return flag.item_time.strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        return ''
+    
 def create_app(config_name):
     app = Flask(__name__)
-
+    
+    #jinja2
+    app.jinja_env.filters['datetimeformat'] = datetimeformat
+    app.jinja_env.filters['get_item_time'] = get_item_time
+    app.jinja_env.globals['sqlalchemy'] = sqlalchemy# Sample_time_info
+    app.jinja_env.globals['Sample_time_info'] = Sample_time_info
+    
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 

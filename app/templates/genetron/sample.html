@@ -97,11 +97,11 @@ function format(d) {
 
 	    '<tr >'+
             '<td class="test">样本下机时间:</td>'+
-            '<td class="test">'+d.submit_time+'</td>'+
+            '<td class="test">'+d.xj_time+'</td>'+
         '</tr>'+
             '<tr >'+
             '<td class="test">样本分类时间:</td>'+
-            '<td class="test">'+d.submit_time+'</td>'+
+            '<td class="test">'+d.class_time+'</td>'+
         '</tr>'+
         
         '<tr >'+
@@ -288,10 +288,10 @@ $(document).ready(function() {
         }
     } );
 
-       $('#example tbody').on('click', 'td.click a', function () {
-        var tr = $(this).closest('a');
-        location.href = "{{url_for('genetron.sample_info')}}" + '?id=' + $(this).text();
-    } );
+    //    $('#example tbody').on('click', 'td.click a', function () {
+    //     var tr = $(this).closest('a');
+    //     location.href = "{{url_for('genetron.sample_info')}}" + '?id=' + $(this).text();
+    // } );
 
 } );
 

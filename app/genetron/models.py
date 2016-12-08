@@ -4,6 +4,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 from datetime import datetime
+import  sqlalchemy
+
 
 class Patient_info(db.Model):
     __tablenane__ = 'patient_info'
@@ -103,6 +105,28 @@ class Sample_info(db.Model):
             if '郑州大学第一附属医院' in name:
                 return '郑大一附院'
         return '其他'
+    
+    def get_flowcell_time(self, item_type):
+        sample_flowcell = self.sample_flowcell.order_by(
+            sqlalchemy.desc(Sample_flowcell.id)).first()
+        if sample_flowcell:
+            flowcell = sample_flowcell.flowcell
+            return self.proc_time(getattr(flowcell,item_type))
+        else:
+            return ''
+    
+    def get_item_time(self, item_type):
+        sample_flowcell = self.sample_flowcell.order_by(
+            sqlalchemy.desc(Sample_flowcell.id)).first()
+        if sample_flowcell:
+            item = sample_flowcell.sample_time.filter_by(item_type=item_type).order_by(sqlalchemy.desc(Sample_time_info.id)).first()
+            if item:
+                return self.proc_time(item.item_time, '%Y-%m-%d %H:%M:%S')
+            else:
+                return ''
+        else:
+            return ''
+        
 
     @property
     def json(self):
@@ -130,10 +154,11 @@ class Sample_info(db.Model):
                'collect_time':self.proc_time(self.collect_time,"%Y-%m-%d %H:%M:%S"),
                'accept_time': self.proc_time(self.accept_time,"%Y-%m-%d %H:%M:%S"),
                 'end_time':self.proc_time(self.end_time,"%Y-%m-%d"),
-                'class_time':self.proc_time(self.class_time,"%Y-%m-%d %H:%M:%S"),
-                'submit_time':self.proc_time(self.submit_time,"%Y-%m-%d %H:%M:%S"),
+                'xj_time': self.get_flowcell_time('xj_time'),
+                'class_time': self.get_item_time('class'),
+                'submit_time':self.get_item_time('submit'),
                'bioinfo': self.bioinfo,
-               'bioinfo_time': self.proc_time(self.bioinfo_time, "%Y-%m-%d %H:%M:%S"),
+               'bioinfo_time': self.get_item_time('bioinfo_finish'),
                 'ask_histology': self.ask_histology,
                 'ask_histology_time': self.proc_time(self.ask_histology_time, "%Y-%m-%d %H:%M:%S"),
                 'get_histology_time': self.proc_time(self.get_histology_time, "%Y-%m-%d %H:%M:%S"),
@@ -165,6 +190,7 @@ class Sample_flowcell(db.Model):
     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
     flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
     panel=db.Column(db.String(200))
+    sample_time =  db.relationship('Sample_time_info', backref='sample_flowcell_id', lazy="dynamic")
 #Cannot drop index 'flowcell_id': needed in a foreign key constraint
     
 class Sample_time_info(db.Model):
@@ -214,7 +240,6 @@ class Biomarker(db.Model):
     effect_of_drug_sensitivity = db.Column(db.Text)
     effect_on_drug_resistance = db.Column(db.Text)
     mk_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
     mk_time = db.Column(db.DateTime)
     checked = db.Column(db.Boolean, default=False)
     check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -241,6 +266,19 @@ class Molecular_function(db.Model):
     check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     check_time = db.Column(db.DateTime)
 
+    
+class Med_report(db.Model):
+    """
+    样本报告、报告完成
+    """
+    __tablename__='med_report'
+    id = db.Column(db.Integer, primary_key=True)
+    reporter_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    report_time = db.Column(db.DateTime)
+    check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    check_time = db.Column(db.DateTime)
+    note=db.Column(db.String(500))
+    
 # class Target_drug(db.Model):
 #     """
 #     基因	突变类型	相关通路	Tissue	Tissue (中文)	药品通用名	商品名	靶点/原理	审批状态/临床试验状态	临床试验地点	Drug	Trade Name	Target/Rationale	Current Status	Locations	更新记录
