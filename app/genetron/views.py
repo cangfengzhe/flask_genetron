@@ -155,6 +155,13 @@ def sample_response():
     dt = Sample_info.query.filter_by(id=DT_RowId).first()
     return jsonify(data=[dt.json])
 
+
+@genetron.route('/kendo')
+def kendo():
+    return render_template('genetron/grid.html')
+
+
+
 def check_sample(sample_id):
     # 检查sample， 如果sample不在lims中，则添加信息
     sample_id = sample_id.split('-')[0].split('NEW')[0]
@@ -244,7 +251,9 @@ def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
     else:
         return jsonify(info={'status':'error', 'msg': 'the relation between sample and flowcell does not exist', 'type':item_type})
 
-            
+
+
+
 
 @genetron.route('/api',  methods=['GET', 'POST'])
 def api():
