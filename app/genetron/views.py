@@ -50,6 +50,10 @@ def patient():
 def patient_info(id):
     return render_template('genetron/patient_info.html')
 
+@genetron.route('/sample_finish')
+def sample_finish():
+    return render_template('genetron/sample_finish.html')
+
 
 @genetron.route('/patient_table')
 def patient_table():

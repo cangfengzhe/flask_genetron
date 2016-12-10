@@ -82,21 +82,22 @@ class Sample_info(db.Model):
         panel_name = []
         if '88' in panel:
             panel_name.append('panel88')
-        elif '203' in panel:
+        if '203' in panel:
             panel_name.append('panel203')
-        elif '509' in panel:
+        if '509' in panel:
             panel_name.append('panel509')
-        elif '51' in panel:
+        if '51' in panel:
             panel_name.append(panel)
-        elif '49' in panel:
+        if '49' in panel:
             panel_name.append('panel49')
-        elif '泛生子1号' in panel:
+        if '泛生子1号' in panel:
             panel_name.append('WES')
-        elif 'ct' in panel:
-            panel_name.append('ctDNA')
+        if 'ct' in panel:
+            panel_name.append('CT_DNA')
+        if panel_name:
+            return '+'.join(panel_name)
         else:
-            panel_name.append(panel)
-        return '+'.join(panel_name)
+            return panel
     
     def proc_hospital(self, name):
         if name:
@@ -159,6 +160,7 @@ class Sample_info(db.Model):
                 'submit_time':self.get_item_time('submit'),
                'bioinfo': self.bioinfo,
                'bioinfo_time': self.get_item_time('bioinfo_finish'),
+                'bioinfo_report_time':self.get_item_time('bioinfo_report'),
                 'ask_histology': self.ask_histology,
                 'ask_histology_time': self.proc_time(self.ask_histology_time, "%Y-%m-%d %H:%M:%S"),
                 'get_histology_time': self.proc_time(self.get_histology_time, "%Y-%m-%d %H:%M:%S"),

@@ -1,0 +1,194 @@
+{% extends "genetron/base.html" %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/jquery.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/dataTables.bootstrap.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/buttons.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for('static', filename='datatable/css/select.dataTables.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='editor/css/editor.dataTables.min.css') }}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  
+<style>
+
+    td.details-control {
+    background: url('{{ url_for("static", filename="datatable/css/details_open.png") }}') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('{{ url_for("static", filename="datatable/css/details_close.png") }}') no-repeat center center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid" style="margin-top:80px">
+    
+    
+<label for="from">From</label>
+<input type="text" id="from" name="from">
+<label for="to">to</label>
+<input type="text" id="to" name="to">
+
+    <!--display table table-striped table-bed hover-->
+ <div class="panel panel-default">
+                        <div class="panel-heading">
+                            临床样本列表
+                        </div>
+     <div>
+          <table id="example" class="display table  table-bordered hover" width="100%" cellspacing="0">
+        <thead>
+        <!--indication=None, start_time=None, dead_line=None,process=None, note=None):-->
+        <!--self.patient_id-->
+        <tr style="font-size:12px">
+           
+            <th>ID</th>
+            <th>姓名</th>
+            <!--<th>Age</th>-->
+            <!--<th>Sex</th>-->
+            <th>医院</th>
+            <th>Panel</th>
+            <th>病理提示</th>
+            <th>癌种</th>
+            <th>组织</th>
+            <th>样本采集时间</th>
+            <th>样本接收时间</th>
+            <th>下机时间</th>
+            <th>分类时间</th>
+            <th>提交时间</th>
+            <th>生信完成时间</th>
+            <th>生信报告时间</th>
+             <th>索要病理时间</th>
+             <th>更新病理时间</th>
+             <th>完成时间</th>
+            <th>截止日期</th>
+             <th>备注</th>
+        </tr>
+        </thead>
+
+    </table>
+     </div>
+     </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.dataTables.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.bootstrap.js') }}"></script>
+
+
+<script type="text/javascript"
+        src="{{ url_for('static', filename='datatable/js/dataTables.buttons.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.select.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='editor/js/dataTables.editor.min.js') }}"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.3/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/buttons/1.2.3/js/buttons.flash.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script type="text/javascript" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/buttons/1.2.3/js/buttons.html5.min.js"></script>
+<!--<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/custom.js') }}"></script>-->
+
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  
+
+
+
+
+<script>
+
+
+
+var editor; // use a global for the submit and return data rendering in the examples
+$(document).ready(function() {
+
+        var dateFormat = "mm/dd/yy",
+      from = $( "#from" )
+        .datepicker({
+          defaultDate: "+1w",
+          changeMonth: true,
+          numberOfMonths: 3
+        })
+        .on( "change", function() {
+          to.datepicker( "option", "minDate", getDate( this ) );
+        }),
+      to = $( "#to" ).datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        numberOfMonths: 3
+      })
+      .on( "change", function() {
+        from.datepicker( "option", "maxDate", getDate( this ) );
+      });
+ 
+    function getDate( element ) {
+      var date;
+      try {
+        date = $.datepicker.parseDate( dateFormat, element.value );
+      } catch( error ) {
+        date = null;
+      }
+ 
+      return date;
+    }
+    
+    
+
+
+  $('#example').DataTable( {
+        dom: "Bfrtip",
+        ajax: "{{ url_for('genetron.sample_table') }}",
+        "order": [[ 11, 'asc' ], [ 5, 'desc' ],[ 10, 'asc' ]],
+        "class": "center",
+        "pageLength": 20,
+        columns: [
+ 
+              { data: null,
+                class:'click',
+                "render":function(data,type, row){
+
+                    return '<a href="' + "{{url_for('genetron.sample_info')}}" + '?id=' +  data.sample_id +   '">' + data.sample_id + "</a>";
+              }
+            },
+            { data: "name" },
+            { data: "hospital_alias" },
+            { data: "panel" },
+
+            { data: "indication" },
+            { data: "tissue" },
+            { data: "tumor" },
+            {data: 'collect_time'},
+            {data:'accept_time'},
+            { data: "xj_time" },
+            {data:'class_time'},
+            {data:'submit_time'},
+            {data:'bioinfo_time'},
+            {data:'bioinfo_report_time'},
+            {data:'ask_histology_time'},
+            {data:'get_histology_time'},
+            {data:'is_finish_time'},
+            {data:'end_time'},
+            { data: "note" }
+
+        ],
+        select: true,
+        buttons: ['csv','excel']
+    } );
+
+
+
+} );
+
+
+</script>
+{% endblock %}
+
+
