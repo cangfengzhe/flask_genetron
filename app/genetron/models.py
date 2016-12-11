@@ -288,4 +288,21 @@ class Med_report(db.Model):
 #     """
 #     pass
     
-    
+class Send_info(db.Model):
+    __tablename__ = 'infomation'
+    id = db.Column(db.Integer, primary_key=True)
+    send_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    receive_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    info_type = db.Column(db.String(100))
+    info_msg = db.Column(db.Text)
+    time = db.Column(db.DateTime, default=datetime.now())
+
+    read = db.Column(db.DateTime, default = False)
+
+
+    def json(self):
+        return {
+            'send_user':self.send_user.username,
+            'info_type':self.info_type,
+            'msg': self.info_msg,
+        }
