@@ -158,7 +158,7 @@ def sample_response():
 
 @genetron.route('/kendo')
 def kendo():
-    return render_template('genetron/grid.html')
+    return render_template('genetron/grid2.html')
 
 
 

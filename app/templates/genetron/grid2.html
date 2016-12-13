@@ -13,85 +13,110 @@
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/people.js')}}"></script>
 
 {% endblock %}
 
 {% block content %}
-<a class="offline-button" href="../index.html">Back</a>
 
-<button id="export">Export to Excel</button>
-<div id="example">
-    <div id="grid"></div>
-    <script>
-$(document).ready(function () {
+     <a class="offline-button" href="../index.html">Back</a>
+
+
+        <div id="example">
+            <div id="grid"></div>
+
+            <script>
+                $(document).ready(function() {
                     $("#grid").kendoGrid({
                         dataSource: {
-                            type: "json",
                             transport: {
-                                read: "{{ url_for('genetron.sample_table') }}"
+                                read:  {
+                                url: "{{ url_for('genetron.sample_table') }}",
+                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                }
                             },
                             schema: {
-                                data:'data',
-                                pageSize: 20,
-                                model: {
-                                    fields: {
-                                        hospital: { type: "string" },
-                                        age: { type: "number" },
-                                        panel: { type: "string" },
-                                        collect_time: { type: "date" },
-                                        sample_id: { type: "string" }
+
+                            type: 'json',
+                            data: "data",
+                            total: function(data) {
+                                return data.data.length;
+                            },
+                            model: {
+                                 fields: {
+                                     City: { type: "string" },
+                                     Title: { type: "string" },
+                                     BirthDate: { type: "date" }
                                     }
                                 }
                             },
+                            sort: {
+                                field: "age",
+                                dir: "desc"
+                            },
+                            pageSize: 20,
+
+
 
                         },
+                        height: 550,
+                        scrollable: true,
+                        filterable: {
+                            extra: false,
+                            operators: {
+                                string: {
+                                    startswith: "Starts with",
+                                    eq: "Is equal to",
+                                    neq: "Is not equal to"
+                                }
+                            }
+                        },
+                        filterable:true,
+                        sortable:true,
+                        pageable: true,
+                        columns: [
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 160,
+                                filterable: false,
 
-                        pageable: {
-                            buttonCount: 5
-                        },
-                        columns:
-                        [{
-                            field: "hospital",
-                            width: 225,
-                            filterable: {
-                                cell: {
-                                    showOperators: false
-                                }
+                            },
+                            {
+                                field: "age",
+                                width: 130,
+
+                            },
+                            {
+                                field: "hospital",
+
+                            },
+                            {
+                                field: "collect_time",
+                                title: "Birth Date",
+                                format: "{0:MM/dd/yyyy HH:mm tt}",
+
                             }
-                        },
-                        {
-                            field: "age",
-                            width: 500,
-                            title: "Ship Name",
-                            filterable: {
-                                cell: {
-                                    operator: "contains"
-                                }
-                            }
-                        },{
-                            field: "panel",
-                            width: 255,
-                            filterable: {
-                                cell: {
-                                    operator: "gte"
-                                }
-                            }
-                        },{
-                            field: "collect_time",
-                            title: "Order Date",
-                            format: "{0:yyyy-MM-dd}"
-                        }]
+                       ],
                     });
+                });
 
+                function titleFilter(element) {
+                    element.kendoAutoComplete({
+                        dataSource: titles
+                    });
+                }
 
+                function cityFilter(element) {
+                    element.kendoDropDownList({
+                        dataSource: cities,
+                        optionLabel: "--Select Value--"
+                    });
+                }
 
-    $("#export").click(function(e) {
-        var grid = $("#grid").data("kendoGrid");
-        grid.saveAsExcel();
-    });
-});
+            </script>
+        </div>
 
-</script>
     {% endblock %}
 
     {% block scripts %}
