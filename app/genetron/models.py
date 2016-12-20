@@ -193,6 +193,7 @@ class Sample_flowcell(db.Model):
     flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
     panel=db.Column(db.String(200))
     sample_time =  db.relationship('Sample_time_info', backref='sample_flowcell_id', lazy="dynamic")
+    check_info = db.relationship('Check_info', backref='sample', lazy="dynamic")
 #Cannot drop index 'flowcell_id': needed in a foreign key constraint
     
 class Sample_time_info(db.Model):
@@ -280,7 +281,24 @@ class Med_report(db.Model):
     check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     check_time = db.Column(db.DateTime)
     note=db.Column(db.String(500))
+
     
+class Check_info(db.Model):
+    """
+    样本验证时间
+    """
+    __tablename__ = 'check_info'
+    id = db.Column(db.Integer, primary_key=True)
+    check_type = db.Column(db.String(200))
+    gene_info = db.Column(db.String(200))
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
+    result = db.Column(db.String(100))
+    note=db.Column(db.String(500))
+    sample_flowcell_id = db.Column(db.Integer, db.ForeignKey('sample_flowcell.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
 # class Target_drug(db.Model):
 #     """
 #     基因	突变类型	相关通路	Tissue	Tissue (中文)	药品通用名	商品名	靶点/原理	审批状态/临床试验状态	临床试验地点	Drug	Trade Name	Target/Rationale	Current Status	Locations	更新记录
@@ -296,7 +314,6 @@ class Send_info(db.Model):
     info_type = db.Column(db.String(100))
     info_msg = db.Column(db.Text)
     time = db.Column(db.DateTime, default=datetime.now())
-
     read = db.Column(db.DateTime, default = False)
 
 

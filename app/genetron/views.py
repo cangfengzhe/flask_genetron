@@ -1,6 +1,6 @@
 #coding=utf-8
 
-from flask import jsonify, request
+from flask import jsonify, request,flash
 from flask import render_template
 from collections import defaultdict
 from models import *
@@ -8,6 +8,8 @@ from . import genetron
 from flask_login import login_required
 import sqlalchemy
 import datetime
+from forms import *
+
 
 @genetron.route('/')
 def index():
@@ -316,7 +318,22 @@ def api():
     else:
         return sample_time(sample_id, flowcell_id,panel, api_type, dt,item_note )
         
+@genetron.route('/check_info',  methods=['GET', 'POST'])    
+def check_info():
+    flowcell = request.values.get('flowcell', '')
+    panel = request.values.get('panel', '')
+    sample_id = request.values.get('sample','')
+    check_type = request.values.get('check_type', '')
+    gene = request.values.get('gene', '')
+    start_time_str = request.values.get('start_time')
+    start_time = datetime.datetime.strptime(start_time_str, '%Y-%m-%d %HH:%MM').datetime() if start_time_str else None
+    end_time_str = request.values.get('end_time')
+    end_time = datetime.datetime.strptime(end_time_str, '%Y-%m-%d %HH:$MM').datetime() if end_time_str else None
+    result = request.values.get('result', '')
+    note = request.values.get('note', '')
+    sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
     
+    return jsonify(info={'status':'success', 'type':'check'})
 
             
     

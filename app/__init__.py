@@ -41,7 +41,7 @@ def create_app(config_name):
     app.jinja_env.filters['get_item_time'] = get_item_time
     app.jinja_env.globals['sqlalchemy'] = sqlalchemy# Sample_time_info
     app.jinja_env.globals['Sample_time_info'] = Sample_time_info
-    
+    # jinja2.Environment(extensions=["jinja2.ext.do",])
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
