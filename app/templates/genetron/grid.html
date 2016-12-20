@@ -4,26 +4,26 @@
 {{ super() }}
 
 <link href="../content/shared/styles/examples-offline.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.common.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.rtl.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.default.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.default.min.css')}}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.common.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.rtl.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.bootstrap.min.css')}}" rel="stylesheet">
 <script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
-    <script type="text/javascript"  src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
-    <script type="text/javascript"  src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
-    <script type="text/javascript"  src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
 
 {% endblock %}
 
 {% block content %}
-        <a class="offline-button" href="../index.html">Back</a>
+<a class="offline-button" href="../index.html">Back</a>
 
-
-        <div id="example">
-            <div id="grid"></div>
-            <script>
-                $(document).ready(function() {
+<button id="export">Export to Excel</button>
+<div id="example">
+    <div id="grid"></div>
+    <script>
+    $(document).ready(function () {
                     $("#grid").kendoGrid({
                         dataSource: {
                             type: "json",
@@ -42,17 +42,39 @@
                                     }
                                 }
                             },
-                            pageSize: 20,
+                            pageSize: 10,
                             serverPaging: false,
                             serverFiltering: false,
                             serverSorting:false,
                         },
                         scrollable: false,
+                        sortable: true,
                         height: 550,
+
                         filterable: {
-                            mode: "row"
+                            extra: false,
+                            operators: {
+                                string: {
+                                    startswith: "Starts with",
+                                    eq: "Is equal to",
+                                    neq: "Is not equal to"
+                                }
+                            }
                         },
-                        pageable: true,
+                        pageable : {
+            messages : {
+                display : "{0} - {1} 共 {2} 条数据",
+                empty : "没有要显示的数据",
+                page : "Page",
+                of : "of {0}", // {0} is total amount of pages
+                itemsPerPage : "items per page",
+                first : "首页",
+                previous : "前一页",
+                next : "下一页",
+                last : "最后一页",
+                refresh : "刷新"
+            }
+        },
                         columns:
                         [{
                             field: "hospital",
@@ -83,12 +105,19 @@
                         },{
                             field: "collect_time",
                             title: "Order Date",
-                            format: "{0:MM/dd/yyyy}"
+                            format: "{0:yyyy-MM-dd}"
                         }]
                     });
-                });
-            </script>
-{% endblock %}
 
-            {% block scripts %}
-            {% endblock %}
+
+    <!--$("#export").click(function(e) {-->
+        <!--var grid = $("#grid").data("kendoGrid");-->
+        <!--grid.saveAsExcel();-->
+    <!--});-->
+});
+
+</script>
+    {% endblock %}
+
+    {% block scripts %}
+    {% endblock %}

@@ -1,0 +1,123 @@
+{% extends "genetron/base.html" %}
+
+{% block head %}
+{{ super() }}
+
+<link href="../content/shared/styles/examples-offline.css" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.common.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.rtl.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.bootstrap.min.css')}}" rel="stylesheet">
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/people.js')}}"></script>
+
+{% endblock %}
+
+{% block content %}
+
+     <a class="offline-button" href="../index.html">Back</a>
+
+
+        <div id="example">
+            <div id="grid"></div>
+
+            <script>
+                $(document).ready(function() {
+                    $("#grid").kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read:  {
+                                url: "{{ url_for('genetron.sample_table') }}",
+                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                }
+                            },
+                            schema: {
+
+                            type: 'json',
+                            data: "data",
+                            total: function(data) {
+                                return data.data.length;
+                            },
+                            model: {
+                                 fields: {
+                                     City: { type: "string" },
+                                     Title: { type: "string" },
+                                     BirthDate: { type: "date" }
+                                    }
+                                }
+                            },
+                            sort: {
+                                field: "age",
+                                dir: "desc"
+                            },
+                            pageSize: 20,
+
+
+
+                        },
+                        height: 550,
+                        scrollable: true,
+                        filterable: {
+                            extra: false,
+                            operators: {
+                                string: {
+                                    startswith: "Starts with",
+                                    eq: "Is equal to",
+                                    neq: "Is not equal to"
+                                }
+                            }
+                        },
+                        filterable:true,
+                        sortable:true,
+                        pageable: true,
+                        columns: [
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 160,
+                                filterable: false,
+
+                            },
+                            {
+                                field: "age",
+                                width: 130,
+
+                            },
+                            {
+                                field: "hospital",
+
+                            },
+                            {
+                                field: "collect_time",
+                                title: "Birth Date",
+                                format: "{0:MM/dd/yyyy HH:mm tt}",
+
+                            }
+                       ],
+                    });
+                });
+
+                function titleFilter(element) {
+                    element.kendoAutoComplete({
+                        dataSource: titles
+                    });
+                }
+
+                function cityFilter(element) {
+                    element.kendoDropDownList({
+                        dataSource: cities,
+                        optionLabel: "--Select Value--"
+                    });
+                }
+
+            </script>
+        </div>
+
+    {% endblock %}
+
+    {% block scripts %}
+    {% endblock %}
