@@ -3,6 +3,7 @@
 {% block head %}
 {{ super() }}
 
+<link href="../content/shared/styles/examples-offline.css" rel="stylesheet">
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.common.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.rtl.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
@@ -18,41 +19,10 @@
 
 {% block content %}
 
-<style>
-      html,
-      body,
-      #parent,
-      #grid
-      {
-        margin: 0;
-        padding: 0;
-        border-width: 0;
-        height: 100%; /* DO NOT USE !important for setting the Grid height! */
-      }
+            <div id="grid"></div>
 
-      html
-      {
-        overflow: hidden;
-        font: 13px sans-serif;
-      }
-#grid{
- height:90%;
-}
-    </style>
-
- <div id='parent'>           <div id="grid"></div> </div>
-<script>
-
-var gridElement = $("#grid");
-
-
-      function resizeGrid() {
-        gridElement.data("kendoGrid").resize();
-      }
-
- $(window).resize(function(){
-        resizeGrid();
-      });
+            <script>
+                $(document).ready(function() {
                     $("#grid").kendoGrid({
                         toolbar: ["excel"],
                         excel: {
@@ -106,7 +76,7 @@ var gridElement = $("#grid");
 
 
                         },
-     //                   height: 800,
+                        height: 800,
                         scrollable: true,
                         filterable: {
                             extra: false,
@@ -262,6 +232,7 @@ var gridElement = $("#grid");
                            
                        ],
                     });
+                });
 
                 function titleFilter(element) {
                     element.kendoAutoComplete({
@@ -274,7 +245,11 @@ var gridElement = $("#grid");
                         dataSource: cities,
                         optionLabel: "--Select Value--"
                     });
-		}
+                }
+ $("#export").click(function(e) {
+        var grid = $("#grid").data("kendoGrid");
+        grid.saveAsExcel();
+    });
             </script>
         </div>
 
