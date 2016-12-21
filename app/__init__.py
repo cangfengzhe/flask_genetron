@@ -51,6 +51,8 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     pagedown.init_app(app)
+    from flask.ext import restful
+    api = restful.Api(app)
     admin = Admin(app)
     from .models import User,Role
     # from genetron.models import *
@@ -73,5 +75,7 @@ def create_app(config_name):
 
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
-
+    
+    from .restful import restful
+    app.register_blueprint(restful, url_prefix='/restful')
     return app

@@ -290,151 +290,191 @@
 <script src="/admin/static/vendor/moment.min.js?v=2.9.0" type="text/javascript"></script>
 <script src="/admin/static/vendor/select2/select2.min.js?v=3.5.2" type="text/javascript"></script>
 <script src="/admin/static/vendor/bootstrap-daterangepicker/daterangepicker.js?v=1.3.22"></script>
-
-
 <script>
-    var editor; // use a global for the submit and return data rendering in the examples
-$(document).ready(function() {
+$(document).ready(function(){
 
-    editor = new $.fn.dataTable.Editor( {
-        ajax: "{{ url_for('genetron.check_info') }}",
-        table: "#check_table",
-        fields: [
-    
+    $('#btn_reporter').click(function(){
+    var select_value =  $("#select_reporter").val();
+
+$.ajax({
+    url:'{{ url_for("genetron.report_user") }}',
+    type:'GET', //GET
+    async:true,    //或false,是否异步
+    data:{
+        report:'yang',
+        check:25
+    },
+    timeout:5000,    //超时时间
+    dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+    beforeSend:function(xhr){
+        console.log(xhr)
+        console.log('发送前')
+    },
+    success:function(data,textStatus,jqXHR){
+        console.log(data)
+        console.log(textStatus)
+        console.log(jqXHR)
+    },
+
+    complete:function(){
+        console.log('结束')
+    }
+})
+    })
+
+   // check table
+    $("button#check_add").click(function(){
+        
+        var tr = 
+          
+            '<tr>' + 
+             
+                            '<td><input  type="text" class="short form-control"  name="flowcell" value= "{{flowcell_list[0][0] if flowcell_list }}"/></td>' + 
+                            '<td><input  type="text" class="short form-control"  name="panel" value= "{{flowcell_list[0][1] if flowcell_list }}"/></td>' + 
+
+                            '<td><input  type="text" class="short form-control"  name="check_type"  /></td>' + 
+
+                           ' <td><input  type="text"  class="short form-control"   name="gene" /></td>' + 
+                            '<td><input name="start_time" type="text" value="" class="daterange form-control" name="check_time"></td>' + 
+                            '<td><input name="end_time" type="text" value=""  class="daterange form-control" name="result_time"></td>' + 
+                            '<td><input name="result" type="text" value=""  class="long form-control" name="result"></td>' + 
+                            '<td><input  type="text"  value="" class="long form-control"  name="note"></td>' +
+                            '<td><button  class="check btn btn-success form-control" >submit</button></td>' + 
+                            '</tr>'               
+        
+        $('table#check_table').append(tr);
+    })
      
-             {
-                label: "生信完成:",
-                name: "bioinfo",
-                type:  "radio",
-                options: [
-                    { label: "否", value: '' },
-                    { label: "是",  value: true }
-                ],
-                def: 0
-            },
-             {
-                label: "索要病理:",
-                name: "ask_histology",
-                type:  "radio",
-                options: [
-                    { label: "否", value: '' },
-                    { label: "是",  value: true }
-                ],
-                def: 0
-            },
-            {% if current_user.is_administrator() %}
-            {
-                label: "病理提示:",
-                name: "indication"
-            },
-            {
-                label: "组织:",
-                name: "tissue"
-            },
-            {
-                label:'癌种',
-                name: "tumor"
-            },
-            {% endif %}
-      
-            {
-                label: "报告完成:",
-                name: "is_finish",
-                type:  "radio",
-                options: [
-                    { label: "否", value: '' },
-                    { label: "是",  value: true }
-                ],
-                def: 0
-            },
-            {
-                label: "note:",
-                name: "note"
-            }
 
-        ]
-    } );
-
- $('#example').on( 'click', 'tbody>tr>td:not(:first-child)', function (e) {
-
-        editor.bubble( this );
-
-    } );
-
-
-  var table =   $('#example').DataTable( {
-        dom: "Bfrtip",
-        ajax: "{{ url_for('genetron.sample_table') }}",
-        "order": [[ 11, 'asc' ], [ 5, 'desc' ],[ 10, 'asc' ]],
-        "class": "center",
-        "pageLength": 20,
-        columns: [
-          {
-                "className": 'details-control',
-                "orderable":  false,
-                "data": null,
-                "defaultContent": ''
-            },
- 
-
-              { data: null,
-                class:'click',
-                "render":function(data,type, row){
-
-                    return '<a href="' + "{{url_for('genetron.sample_info')}}" + '?id=' +  data.sample_id +   '">' + data.sample_id + "</a>";
+    // ajax submit check table
+   var submit_data = {}
+     $("table#check_table").off('click').on('click','input',function(){
+          // console.log($("table#check_table").html())
+         
+             
+                    
+          $('button.check').unbind('click').click(function(){
+              
+               // $("table#check_table tr td").each(function(){
+           
+              $(this).parent().parent().children().each(function(){
+                  dt = $(this).find('input');
+                  // submit_data[dt.attr('name')] = dt.val();
+                  // console.log(dt.attr('value'))
+                  // dt.val('hah')
+                  submit_data[dt.attr('name')] = dt.val();
+              })
+              submit_data['sample'] = {{sample.sample_id  }}
+              if (submit_data['check_type'] == ''){
+                  
+                  alert('验证类型不能为空')
+                  return 0;
               }
-            },
-            { data: "name" },
-            { data: "hospital_alias" },
-            { data: "panel" },
-            {
-                "class": "center",
-                "data": "bioinfo",
-                "render": function (val, type, row) {
-                    return val == true ? "是" : "否";
-                }
-            },
-            {
-            "data": "ask_histology",
-            "class": "center",
-             "render": function (val, type, row) {
-                    return val == true ? "是" : "否";
-               }
+              if (submit_data['start_time'] == ''){
+                  
+                  alert('开始时间不能为空')
+                  return 0;
+              }
+               console.log(submit_data)
+               $.ajax({
+                  type: 'POST',
+                  url: '{{ url_for("genetron.check_info") }}',
+                  data: submit_data,
+                  success: function(data){
+                   console.log(data) 
+                   alert(data)
+                   }
+                  
+                });
+               // console.log('lipidong')
+              // $("table#check_table").off('click'）
+          })
+          
+     })
+   
+
+//     $.ajax({
+//     url:'{{ url_for("genetron.check_info") }}',
+//     type:'GET', //GET
+//     async:true,    //或false,是否异步
+//     data:'',
+//     timeout:5000,    //超时时间
+//     dataType:'json',    //返回的数据格式：json/xml/html/script/jsonp/text
+//     beforeSend:function(xhr){
+//         console.log(xhr)
+//         console.log('发送前')
+//     },
+//     success:function(data,textStatus,jqXHR){
+//         console.log(data)
+//         console.log(textStatus)
+//         console.log(jqXHR)
+//     },
+
+//     complete:function(){
+//         console.log('结束')
+//     }
+// })
+
+    
+    
+    //bubble
+    $(".example")
+        .popover({ title: 'Edit', 
+                  html: true,
+                  content: " <label>" +  $(this).id +":</label> <input id='popover_input' type='text' class='daterange' /> <button id='popover_enter'>Enter</button><button id='popover_cancle'>Cancel</button>"
+                 })
+    .on('click', function(){
+        $('input.daterange').daterangepicker({
+            timePicker: true,
+            singleDatePicker: true,
+            "showWeekNumbers": true,
+            showDropdowns: true,
+            timePickerIncrement: 1,
+            timePicker12Hour: false,
+            format:"YYYY-MM-DD HH:mm",
+            locale: {
+                
+                "applyLabel": "Apply",
+                "cancelLabel": "Cancel",
 
             },
-            { data: "indication" },
-            { data: "tissue" },
-            { data: "tumor" },
-            { data: null,
-                "render":function(data,type, row){
-                    today = new Date()
-                    end_time = new Date(data.end_time)
-                    return Math.round((end_time-today)/(24*60*60*1000))
-                }
+           
+      });
+        $('#popover_cancle').click(function(){
+           $('.example').popover('hide'); 
+        });
+        
+        $('#popover_enter').click(function(){
+          $('.example').text( $('#popover_input').val() )
+          $('.example').popover('hide'); 
+        })
+    })
+
+ $("table#check_table").on('focus','input.daterange',function(){
+          $('input.daterange').daterangepicker({
+            timePicker: true,
+            singleDatePicker: true,
+            "showWeekNumbers": true,
+            showDropdowns: true,
+            timePickerIncrement: 1,
+            timePicker12Hour: false,
+            format:"YYYY-MM-DD HH:mm",
+            locale: {
+                
+                "applyLabel": "Apply",
+                "cancelLabel": "Cancel",
+
             },
-            {
-                "class": "center",
-                "data": "is_finish",
-                "render": function (val, type, row) {
-                    return val == true ? "是" : "否";
-                }
-            },
-            { data: "note" }
+           
+      });
+     });
+    
 
-        ],
-        select: true,
-        buttons: [
-           {% if current_user.is_administrator() %}
-            { extend: "edit",   editor: editor },
-            { extend: "remove", editor: editor }
-            {% endif %}
-        ]
-    } );
-
-
-} );
+    
+});
 
 </script>
+
 
 
 {% endblock %}
