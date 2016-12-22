@@ -1,7 +1,11 @@
 {% extends "genetron/base.html" %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.common.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.rtl.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.bootstrap.min.css')}}" rel="stylesheet">
 <style>
     table#check_table .short{
         width:`60%;
@@ -17,6 +21,7 @@
    text-align: center;   
 }
     </style>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
@@ -186,9 +191,11 @@
 
 
             </div>
-            <!-- /.panel -->
+            <!-- /.panel --> 
         </div>
     </div>
+    
+    
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
             <div class="panel panel-info">
@@ -230,6 +237,25 @@
         </div>
     </div>
 
+    
+       <div class="row">
+        <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    基因点突变、缺失、插入分析结果
+                </div>
+                
+                <div class="panel-body">
+                    <div id='snp_indel'> </div>
+                </div>
+
+
+            </div>
+            <!-- /.panel --> 
+        </div>
+    </div>
+    
+    
     
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
@@ -287,155 +313,161 @@
 <script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
 
 <script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
-<script src="/admin/static/vendor/moment.min.js?v=2.9.0" type="text/javascript"></script>
-<script src="/admin/static/vendor/select2/select2.min.js?v=3.5.2" type="text/javascript"></script>
-<script src="/admin/static/vendor/bootstrap-daterangepicker/daterangepicker.js?v=1.3.22"></script>
 
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/people.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='genetron/js/sample_info.js') }}"></script>
 
 <script>
-    var editor; // use a global for the submit and return data rendering in the examples
-$(document).ready(function() {
+ $("#snp_indel").kendoGrid({
 
-    editor = new $.fn.dataTable.Editor( {
-        ajax: "{{ url_for('genetron.check_info') }}",
-        table: "#check_table",
-        fields: [
-    
-     
-             {
-                label: "生信完成:",
-                name: "bioinfo",
-                type:  "radio",
-                options: [
-                    { label: "否", value: '' },
-                    { label: "是",  value: true }
-                ],
-                def: 0
-            },
-             {
-                label: "索要病理:",
-                name: "ask_histology",
-                type:  "radio",
-                options: [
-                    { label: "否", value: '' },
-                    { label: "是",  value: true }
-                ],
-                def: 0
-            },
-            {% if current_user.is_administrator() %}
-            {
-                label: "病理提示:",
-                name: "indication"
-            },
-            {
-                label: "组织:",
-                name: "tissue"
-            },
-            {
-                label:'癌种',
-                name: "tumor"
-            },
-            {% endif %}
-      
-            {
-                label: "报告完成:",
-                name: "is_finish",
-                type:  "radio",
-                options: [
-                    { label: "否", value: '' },
-                    { label: "是",  value: true }
-                ],
-                def: 0
-            },
-            {
-                label: "note:",
-                name: "note"
-            }
+                        dataSource: {
+                            transport: {
+                                read:  {
+                                url: "{{ url_for('genetron.sample_table') }}",
+                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                }
+                            },
+                            schema: {
 
-        ]
-    } );
-
- $('#example').on( 'click', 'tbody>tr>td:not(:first-child)', function (e) {
-
-        editor.bubble( this );
-
-    } );
+                            type: 'json',
+                            data: "data",
+                            total: function(data) {
+                                return data.data.length;
+                            },
+                            model: {
+                                 fields: {
+                                    
+                                     panel: { type: "string" },
+                                     gene: { type: "string" },
+                                     refseq: { type: "string" },
+                                     chrome: { type: "string" },
+                                     start: { type: "string" },
+                                     end: { type: "string" },
+                                     cDNA_change: { type: "string" },
+                                     aa_change: { type: "string" },
+                                     mut_type: { type: "string" },
+                                     t_freq: { type: "string" },
+                                    
+                                     
+                                    }
+                                }
+                            },
+                            sort: {
+                                field: "gene",
+                                dir: "desc"
+                            },
+                            pageSize: 5,
 
 
-  var table =   $('#example').DataTable( {
-        dom: "Bfrtip",
-        ajax: "{{ url_for('genetron.sample_table') }}",
-        "order": [[ 11, 'asc' ], [ 5, 'desc' ],[ 10, 'asc' ]],
-        "class": "center",
-        "pageLength": 20,
-        columns: [
-          {
-                "className": 'details-control',
-                "orderable":  false,
-                "data": null,
-                "defaultContent": ''
-            },
- 
 
-              { data: null,
-                class:'click',
-                "render":function(data,type, row){
+                        },
+     //                   height: 800,
+                        scrollable: true,
+                        filterable: {
+                            extra: false,
+                            operators: {
+                                string: {
+                                    startswith: "Starts with",
+                                    eq: "Is equal to",
+                                    neq: "Is not equal to"
+                                }
+                            }
+                        },
+                        filterable:true,
+                        sortable:true,
+                        pageable: true,
+                        columns: [
+                        
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 80,
+                                filterable: true,
 
-                    return '<a href="' + "{{url_for('genetron.sample_info')}}" + '?id=' +  data.sample_id +   '">' + data.sample_id + "</a>";
-              }
-            },
-            { data: "name" },
-            { data: "hospital_alias" },
-            { data: "panel" },
-            {
-                "class": "center",
-                "data": "bioinfo",
-                "render": function (val, type, row) {
-                    return val == true ? "是" : "否";
+                            },
+                            {
+                                field:"gene_name",
+                                title: "基因名称",
+                                width: 120,
+                                filterable: true,
+                                
+
+                            },
+                            {
+                                field:"refseq_id",
+                                title: "转录本",
+                                width: 160,
+                                filterable: true,
+
+                            },
+                            {
+                                field:"chrome",
+                                title: "染色体",
+                                width: 100,
+                                filterable: true,
+
+                            },
+                            {
+                                field:"start",
+                                title: "起始位置",
+                                width: 200,
+                                filterable: true,
+
+                            },
+                            {
+                                field:"end",
+                                title: "终止位置",
+                                width: 100,
+                                filterable: true,
+
+                            },
+                            {
+                                field:"cDNA_change",
+                                title: "核苷酸变化",
+                                width: 100,
+                                filterable: true,
+                               
+                            },
+                            {
+                                field:"aa_change",
+                                title: "氨基酸变化",
+                                width: 160,
+                                filterable: true,
+                               
+
+                            },
+                            {
+                                field:"t_freq",
+                                title: "突变频率",
+                                width: 160,
+                                filterable: true,
+
+                            },
+                            
+                           
+                       ],
+                    });
+
+                function titleFilter(element) {
+                    element.kendoAutoComplete({
+                        dataSource: titles
+                    });
                 }
-            },
-            {
-            "data": "ask_histology",
-            "class": "center",
-             "render": function (val, type, row) {
-                    return val == true ? "是" : "否";
-               }
 
-            },
-            { data: "indication" },
-            { data: "tissue" },
-            { data: "tumor" },
-            { data: null,
-                "render":function(data,type, row){
-                    today = new Date()
-                    end_time = new Date(data.end_time)
-                    return Math.round((end_time-today)/(24*60*60*1000))
+                function cityFilter(element) {
+                    element.kendoDropDownList({
+                        dataSource: cities,
+                        optionLabel: "--Select Value--"
+                    });
+                    
                 }
-            },
-            {
-                "class": "center",
-                "data": "is_finish",
-                "render": function (val, type, row) {
-                    return val == true ? "是" : "否";
-                }
-            },
-            { data: "note" }
 
-        ],
-        select: true,
-        buttons: [
-           {% if current_user.is_administrator() %}
-            { extend: "edit",   editor: editor },
-            { extend: "remove", editor: editor }
-            {% endif %}
-        ]
-    } );
-
-
-} );
 
 </script>
-
 
 {% endblock %}
 

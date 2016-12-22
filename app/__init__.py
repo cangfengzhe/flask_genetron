@@ -7,7 +7,7 @@ from flask_login import LoginManager
 from flask_pagedown import PageDown
 from config import config
 from flask_admin import Admin
-
+from flask_restful import Api
 
 
 bootstrap = Bootstrap()
@@ -15,10 +15,11 @@ mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
 pagedown = PageDown()
-
+# api = Api()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
+
 from admin.app import MyModelView, ProjectView
 from genetron.models import *
 import sqlalchemy
@@ -51,11 +52,12 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     pagedown.init_app(app)
-    from flask.ext import restful
-    api = restful.Api(app)
-    admin = Admin(app)
+    # from flask.ext import restful
+    
+    # api.init_app(app)
     from .models import User,Role
     # from genetron.models import *
+    admin=Admin()
     admin.add_view(MyModelView(User, db.session))
     admin.add_view(MyModelView(Role, db.session))
     admin.add_view(MyModelView(Biomarker, db.session))
@@ -76,6 +78,6 @@ def create_app(config_name):
     from .api_1_0 import api as api_1_0_blueprint
     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
     
-    from .restful import restful
-    app.register_blueprint(restful, url_prefix='/restful')
+    from .api import restful_api as api_blueprint
+    app.register_blueprint(api_blueprint, url_prefix='/api')
     return app

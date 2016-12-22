@@ -61,7 +61,7 @@ class Sample_info(db.Model):
     #flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
     sample_flowcell = db.relationship('Sample_flowcell', backref='sample', lazy="dynamic")
     note = db.Column(db.String(200))
-    
+    snp_indel_info = db.relationship('Sample_snp_indel_info', backref='sample', lazy="dynamic")
     
 
 
@@ -205,10 +205,11 @@ class Sample_time_info(db.Model):
     item_time = db.Column(db.DateTime, default=datetime.now())
     item_note = db.Column(db.String(200))
 
-class Sample_mut_info(db.Model):
-    __tablename__='sample_mut_info'
+class Sample_snp_indel_info(db.Model):
+    __tablename__='sample_snp_indel_info'
     id = db.Column(db.Integer, primary_key=True)
     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    panel = db.Column(db.String(100))
     gene_name = db.Column(db.String(100))
     refseq_id = db.Column(db.String(50))
     chrome = db.Column(db.String(10))
@@ -216,6 +217,7 @@ class Sample_mut_info(db.Model):
     end = db.Column(db.BigInteger)
     cDNA_change = db.Column(db.String(100))
     aa_change = db.Column(db.String(100))
+    mut_type = db.Column(db.String(100))
     t_depth = db.Column(db.Integer)
     t_freq = db.Column(db.Numeric(4,4))
     n_depth = db.Column(db.Integer)

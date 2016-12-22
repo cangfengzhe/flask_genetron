@@ -27,12 +27,30 @@
 
             <script>
                 $(document).ready(function() {
+                    var crudServiceBaseUrl = "//demos.telerik.com/kendo-ui/service"
                     $("#grid").kendoGrid({
                         dataSource: {
                             transport: {
                                 read:  {
                                 url: "{{ url_for('genetron.sample_table') }}",
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                },
+                                update: {
+                                    url: crudServiceBaseUrl + "/Products/Update",
+                                    dataType: "jsonp"
+                                },
+                                destroy: {
+                                    url: crudServiceBaseUrl + "/Products/Destroy",
+                                    dataType: "jsonp"
+                                },
+                                create: {
+                                    url: crudServiceBaseUrl + "/Products/Create",
+                                    dataType: "jsonp"
+                                },
+                                parameterMap: function(options, operation) {
+                                    if (operation !== "read" && options.models) {
+                                        return {models: kendo.stringify(options.models)};
+                                    }
                                 }
                             },
                             schema: {
@@ -44,9 +62,9 @@
                             },
                             model: {
                                  fields: {
-                                     City: { type: "string" },
-                                     Title: { type: "string" },
-                                     BirthDate: { type: "date" }
+                                     City: { type: "string",editable: true },
+                                     Title: { type: "string", editable: true },
+                                     BirthDate: { type: "date", editable: true }
                                     }
                                 }
                             },
@@ -60,6 +78,8 @@
 
                         },
                         height: 550,
+                        toolbar: ["create"],
+                        editable: "popup",
                         scrollable: true,
                         filterable: {
                             extra: false,
