@@ -222,6 +222,21 @@ class Sample_snp_indel_info(db.Model):
     t_freq = db.Column(db.Numeric(4,4))
     n_depth = db.Column(db.Integer)
     n_freq = db.Column(db.Numeric(4,4))
+    
+    @property
+    def json(self):
+        return {'sample_id': self.sample.sample_id,
+               'panel': self.panel,
+               'gene_name': self.gene_name,
+               'refseq_id': self.refseq_id,
+               'chrome': self.chrome,
+               'start': self.start,
+               'end': self.end,
+               'cDNA_change': self.cDNA_change,
+               'aa_change': self.aa_change,
+               'mut_type': self.mut_type,
+               't_freq': self.t_freq,
+               'mut_type': self.mut_type}
     # mk_user = db.relationship('users', backref='sample_mut_info', lazy="dynamic")
     # mk_time = db.Column(db.DateTime)
     # checked = db.Column(db.Boolean, default=False)
