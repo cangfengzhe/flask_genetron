@@ -6,21 +6,7 @@
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.bootstrap.min.css')}}" rel="stylesheet">
-<style>
-    table#check_table .short{
-        width:`60%;
-    }
-   
-     table#check_table .long{
-        width:150px;
-    }
-    table#check_table .daterange{
-        width:150px;
-    }
-    table#check_table {
-   text-align: center;   
-}
-    </style>
+
 
 <div class="container-fluid">
     <div class="row">
@@ -148,45 +134,18 @@
             </div>
             <!-- /.panel -->
         </div>
-    </div>
-
-    <!-- check -->
-    <script>
-   
+    </div>    
     
     
-    
-  
-        
-        
-    </script>
-    
-    
-
-
-    <div class="row">
+           <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    实验验证
+                    基因点突变、缺失、插入分析结果
                 </div>
                 
                 <div class="panel-body">
-                     <button class='btn btn-success' id='check_add'>Add</button>
-                    <table class="table table-condensed" id='check_table' align="center">
-                        <tr>
-                            <th class="text-center short" >Flowcell</th>
-                            <th class="text-center short">Panel</th>
-                            <th class="text-center short">验证项目</th>
-                            <th class="text-center short">验证基因</th>
-                            <th class="text-center">申请时间</th>
-                            <th class="text-center">反馈时间</th>
-                            <th class="text-center">结果</th>
-                            <th class="text-center">备注</th>
-
-                        </tr>                       
-
-                    </table>
+                    <div id='snp_indel'> </div>
                 </div>
 
 
@@ -195,6 +154,41 @@
         </div>
     </div>
     
+    
+          <div class="row">
+        <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    基因重排分析结果
+                </div>
+                
+                <div class="panel-body">
+                    <div id='sv'> </div>
+                </div>
+
+
+            </div>
+            <!-- /.panel --> 
+        </div>
+    </div>
+    
+    
+          <div class="row">
+        <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    拷贝数分析结果
+                </div>
+                
+                <div class="panel-body">
+                    <div id='cnv'> </div>
+                </div>
+
+
+            </div>
+            <!-- /.panel --> 
+        </div>
+    </div>
     
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
@@ -238,75 +232,10 @@
     </div>
 
     
-       <div class="row">
-        <div class="col-lg-10 col-lg-offset-1">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    基因点突变、缺失、插入分析结果
-                </div>
-                
-                <div class="panel-body">
-                    <div id='snp_indel'> </div>
-                </div>
-
-
-            </div>
-            <!-- /.panel --> 
-        </div>
-    </div>
+ 
     
     
-    
-    <div class="row">
-        <div class="col-lg-10 col-lg-offset-1">
-
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    医学信息解读
-                </div>
-                <div class="panel-body">
-                    <table class="table table-condensed">
-                        <tr>
-                            <th >报告初稿</th>
-                            <th>报告完成时间</th>
-                            <th>报告审核</th>
-                            <th>报告审核时间</th>
-                            <th>报告最终完成时间</th>
-
-                        </tr>
-
-                        <tr>
-                            <td>
-
-
-                            </td>
-                            <td>
-
-
-                            </td>
-                            <td></td>
-
-                            <td></td>
-
-                            <td></td>
-
-                        </tr>
-<tr>
-      <td>
-
-                            </td>
-    <td></td>
-</tr>
-                    </table>
-                </div>
-
-
-            </div>
-            <!-- /.panel -->
-
-
-        </div>
-    </div>
+  
 
 
 </div>
@@ -318,16 +247,14 @@
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/people.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='genetron/js/sample_info.js') }}"></script>
+<!-- <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/people.js')}}"></script> -->
 
 <script>
  $("#snp_indel").kendoGrid({
-
                         dataSource: {
                             transport: {
                                 read:  {
-                                url: "{{ url_for('genetron.sample_table') }}",
+                                url: '/api/snpindel/{{sample.sample_id}}',
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
                                 }
                             },
@@ -366,34 +293,32 @@
 
                         },
      //                   height: 800,
-                        scrollable: true,
-                        filterable: {
-                            extra: false,
-                            operators: {
-                                string: {
-                                    startswith: "Starts with",
-                                    eq: "Is equal to",
-                                    neq: "Is not equal to"
-                                }
-                            }
-                        },
-                        filterable:true,
+                        scrollable: false,
+                     
+                        // filterable:true,
                         sortable:true,
                         pageable: true,
+                        serverFiltering: false,
+                        dataBound: function() {
+                            console.log(this.dataSource.totalPages())
+                            if (this.dataSource.totalPages() <= 1) {
+                              this.pager.element.hide();
+                             }
+                         },
                         columns: [
                         
                             {
                                 field:"panel",
                                 title: "panel",
                                 width: 80,
-                                filterable: true,
 
                             },
                             {
                                 field:"gene_name",
                                 title: "基因名称",
-                                width: 120,
-                                filterable: true,
+                                width: 100,
+                                
+                                
                                 
 
                             },
@@ -401,50 +326,50 @@
                                 field:"refseq_id",
                                 title: "转录本",
                                 width: 160,
-                                filterable: true,
 
                             },
                             {
                                 field:"chrome",
                                 title: "染色体",
-                                width: 100,
-                                filterable: true,
+                                width: 50,
 
                             },
                             {
                                 field:"start",
                                 title: "起始位置",
-                                width: 200,
-                                filterable: true,
+                                width: 100,
 
                             },
                             {
                                 field:"end",
                                 title: "终止位置",
                                 width: 100,
-                                filterable: true,
 
                             },
                             {
                                 field:"cDNA_change",
                                 title: "核苷酸变化",
                                 width: 100,
-                                filterable: true,
                                
                             },
                             {
                                 field:"aa_change",
                                 title: "氨基酸变化",
-                                width: 160,
-                                filterable: true,
+                                width: 120,
                                
+
+                            },
+                             {
+                                field:"mut_type",
+                                title: "突变类型",
+                                width: 120,
 
                             },
                             {
                                 field:"t_freq",
                                 title: "突变频率",
-                                width: 160,
-                                filterable: true,
+                                width: 100,
+                                template: '#=t_freq#%'
 
                             },
                             
@@ -452,19 +377,120 @@
                        ],
                     });
 
-                function titleFilter(element) {
-                    element.kendoAutoComplete({
-                        dataSource: titles
-                    });
-                }
 
-                function cityFilter(element) {
-                    element.kendoDropDownList({
-                        dataSource: cities,
-                        optionLabel: "--Select Value--"
+    /// cnv
+     $("#cnv").kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read:  {
+                                url: '/api/cnv/{{sample.sample_id}}',
+                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                }
+                            },
+                            schema: {
+
+                            type: 'json',
+                            data: "data",
+                            total: function(data) {
+                                return data.data.length;
+                            },
+                            model: {
+                                 fields: {
+                                    
+                                     panel: { type: "string" },
+                                     gene: { type: "string" },
+                                     refseq: { type: "string" },
+                                     chrome: { type: "string" },
+                                     start: { type: "string" },
+                                     end: { type: "string" },
+                                     fold: { type: "string" },
+                                     cnv_type: { type: "string" },
+                                     
+                                    
+                                     
+                                    }
+                                }
+                            },
+                            sort: {
+                                field: "gene",
+                                dir: "desc"
+                            },
+                            pageSize: 5,
+
+
+
+                        },
+     //                   height: 800,
+                        scrollable: false,
+                     
+                        // filterable:true,
+                        sortable:true,
+                        pageable: true,
+                        dataBound: function() {
+                            console.log(this.dataSource.totalPages())
+                            if (this.dataSource.totalPages() <= 1) {
+                              this.pager.element.hide();
+                             }
+                         },
+                        columns: [
+                        
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 80,
+
+                            },
+                            {
+                                field:"gene_name",
+                                title: "基因名称",
+                                width: 100,
+                                
+                                
+                                
+
+                            },
+                            {
+                                field:"refseq_id",
+                                title: "转录本",
+                                width: 160,
+
+                            },
+                            {
+                                field:"chrome",
+                                title: "染色体",
+                                width: 50,
+
+                            },
+                            {
+                                field:"start",
+                                title: "起始位置",
+                                width: 100,
+
+                            },
+                            {
+                                field:"end",
+                                title: "终止位置",
+                                width: 100,
+
+                            },
+                            {
+                                field:"fold",
+                                title: "变异倍数",
+                                width: 100,
+                               
+                            },
+                            
+                             {
+                                field:"cnv_type",
+                                title: "变异类型",
+                                width: 120,
+
+                            },
+                           
+                            
+                           
+                       ],
                     });
-                    
-                }
 
 
 </script>

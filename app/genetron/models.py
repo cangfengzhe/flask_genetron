@@ -62,7 +62,7 @@ class Sample_info(db.Model):
     sample_flowcell = db.relationship('Sample_flowcell', backref='sample', lazy="dynamic")
     note = db.Column(db.String(200))
     snp_indel_info = db.relationship('Sample_snp_indel_info', backref='sample', lazy="dynamic")
-    
+    cnv_info = db.relationship('Sample_cnv_info', backref='sample', lazy="dynamic")
 
 
     def __init__(self, **kwargs):
@@ -219,9 +219,9 @@ class Sample_snp_indel_info(db.Model):
     aa_change = db.Column(db.String(100))
     mut_type = db.Column(db.String(100))
     t_depth = db.Column(db.Integer)
-    t_freq = db.Column(db.Numeric(4,4))
+    t_freq = db.Column(db.Numeric(5,2))
     n_depth = db.Column(db.Integer)
-    n_freq = db.Column(db.Numeric(4,4))
+    n_freq = db.Column(db.Numeric(5,2))
     
     @property
     def json(self):
@@ -234,8 +234,7 @@ class Sample_snp_indel_info(db.Model):
                'end': self.end,
                'cDNA_change': self.cDNA_change,
                'aa_change': self.aa_change,
-               'mut_type': self.mut_type,
-               't_freq': self.t_freq,
+               't_freq': str(self.t_freq),
                'mut_type': self.mut_type}
     # mk_user = db.relationship('users', backref='sample_mut_info', lazy="dynamic")
     # mk_time = db.Column(db.DateTime)
@@ -243,6 +242,37 @@ class Sample_snp_indel_info(db.Model):
     # check_user = db.relationship('users', backref='sample_mut_info', lazy='dynamic')
     # check_time = db.Column(db.DateTime)
     
+    
+class Sample_cnv_info(db.Model):
+    
+    __tablename__='sample_cnv_info'
+    id = db.Column(db.Integer, primary_key=True)
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    panel = db.Column(db.String(100))
+    gene_name = db.Column(db.String(100))
+    refseq_id = db.Column(db.String(50))
+    chrome = db.Column(db.String(10))
+    start = db.Column(db.BigInteger)
+    end = db.Column(db.BigInteger)
+    fold = db.Column(db.Numeric(6,2))
+    cnv_type = db.Column(db.String(50))
+    
+    @property
+    def json(self):
+        return {'sample_id': self.sample.sample_id,
+               'panel': self.panel,
+               'gene_name': self.gene_name,
+               'refseq_id': self.refseq_id,
+               'chrome': self.chrome,
+               'start': self.start,
+               'end': self.end,
+               'cDNA_change': self.fold,
+               'mut_type': self.cnv_type,
+               'fold': str(self.fold)
+               }   
+  
+
+
 class Biomarker(db.Model):
     """
     基因	Tissue	Tissue (中文)	基因描述	临床意义	Glossary (Gene review)	Summary	Incidence in disease	Effect on drug sensitivity	Effect on drug resistance

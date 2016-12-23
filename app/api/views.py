@@ -1,25 +1,34 @@
+#coding=utf-8
+import json
 
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, jsonify
 from flask_restful import Api, Resource, url_for
 from . import api
+from ..genetron.models import *
 
 
 
-class TodoItem(Resource):
-    def get(self, id):
-        return {'task': 'Say "Hello, World!"'}
-
-api.add_resource(TodoItem, '/todos/<int:id>')
-
-
-# class HelloWorld(restful.Resource):
-#     def get(self):
-#         return {'hello': 'world'}
-
-# api.add_resource(HelloWorld, '/')
-
-# api.init_app(app)
 
 class SnpIndel(Resource):
     def get(self,id):
-        pass
+        sample = Sample_info.query.filter_by(sample_id=id).first()
+        if sample:
+            snp_indel_info = sample.snp_indel_info
+            return jsonify(data=[xx.json for xx in snp_indel_info])
+        else:
+            return jsonify(data='error')
+    
+api.add_resource(SnpIndel, '/snpindel/<string:id>')
+        
+    
+class Cnv(Resource):
+    def get(self,id):
+        sample = Sample_info.query.filter_by(sample_id=id).first()
+        if sample:
+            cnv_info = sample.cnv_info
+            return jsonify(data=[xx.json for xx in cnv_info])
+        else:
+            return jsonify(data='error')
+        
+api.add_resource(Cnv, '/cnv/<string:id>')       
+        

@@ -12,7 +12,6 @@
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/people.js')}}"></script>
 
 {% endblock %}
 
@@ -127,6 +126,10 @@ var gridElement = $("#grid");
                                 title: "ID",
                                 width: 100,
                                 filterable: true,
+                                //{{url_for('genetron.sample_info')}}" + '?id='
+                                template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'>#=sample_id#</a>'
+                                
+                                
 
                             },
                             {
