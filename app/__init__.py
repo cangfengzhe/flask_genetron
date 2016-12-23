@@ -25,7 +25,10 @@ from genetron.models import *
 import sqlalchemy
 
 def datetimeformat(value, format="%Y-%m"):
-      return value.strftime(format)
+    if value:
+        return value.strftime(format)
+    else:
+        return ''
 
 def get_item_time(flowcell, item_type):
     flag = flowcell.sample_time.filter_by(item_type=item_type).first()
