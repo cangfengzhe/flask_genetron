@@ -1,41 +1,10 @@
-{% extends "genetron/base.html" %}
-
-{% block head %}
-{{ super() }}
-
-<link href="../content/shared/styles/examples-offline.css" rel="stylesheet">
-<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.common.min.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.rtl.min.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.bootstrap.min.css')}}" rel="stylesheet">
-<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='genetron/js/grid2.js')}}"></script>
-
-{% endblock %}
-
-{% block content %}
-
-     <a class="offline-button" href="../index.html">Back</a>
-
-
-        <div id="example">
-            <div id="grid"></div>
-
-            <script>
-
-
-                $(document).ready(function() {
-                gridaa("{{ url_for('genetron.sample_table') }}");
-                    var crudServiceBaseUrl = "//demos.telerik.com/kendo-ui/service"
-                    $("#gridaa").kendoGrid({
+gridaa = function(url){
+    var crudServiceBaseUrl = "//demos.telerik.com/kendo-ui/service"
+                    $("#gridd").kendoGrid({
                         dataSource: {
                             transport: {
                                 read:  {
-                                url: "{{ url_for('genetron.sample_table') }}",
+                                url: url,
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
                                 },
                                 update: {
@@ -126,25 +95,6 @@
                             { command: ["edit", "destroy"], title: "&nbsp;", width: "200px" }
                        ],
                     });
-                });
 
-                function titleFilter(element) {
-                    element.kendoAutoComplete({
-                        dataSource: titles
-                    });
-                }
+                    }
 
-                function cityFilter(element) {
-                    element.kendoDropDownList({
-                        dataSource: cities,
-                        optionLabel: "--Select Value--"
-                    });
-                }
-
-            </script>
-        </div>
-
-    {% endblock %}
-
-    {% block scripts %}
-    {% endblock %}
