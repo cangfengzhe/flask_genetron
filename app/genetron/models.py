@@ -6,6 +6,11 @@ sys.setdefaultencoding('utf-8')
 from datetime import datetime
 import  sqlalchemy
 
+def proc_time(time_var, time_fmt = "%Y-%m-%d %H:%M:%S"):
+    if time_var:
+        return time_var.strftime(time_fmt)
+    else:
+        return ''
 
 class Patient_info(db.Model):
     __tablenane__ = 'patient_info'
@@ -63,7 +68,7 @@ class Sample_info(db.Model):
     note = db.Column(db.String(200))
     snp_indel_info = db.relationship('Sample_snp_indel_info', backref='sample', lazy="dynamic")
     cnv_info = db.relationship('Sample_cnv_info', backref='sample', lazy="dynamic")
-
+    check_info =  db.relationship('Sample_check_info', backref='sample', lazy="dynamic")
 
     def __init__(self, **kwargs):
         super(Sample_info, self).__init__(**kwargs)
@@ -193,7 +198,6 @@ class Sample_flowcell(db.Model):
     flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
     panel=db.Column(db.String(200))
     sample_time =  db.relationship('Sample_time_info', backref='sample_flowcell_id', lazy="dynamic")
-    check_info = db.relationship('Check_info', backref='sample', lazy="dynamic")
 #Cannot drop index 'flowcell_id': needed in a foreign key constraint
     
 class Sample_time_info(db.Model):
@@ -259,7 +263,9 @@ class Sample_cnv_info(db.Model):
     
     @property
     def json(self):
-        return {'sample_id': self.sample.sample_id,
+        return {
+            'id': self.id,
+            'sample_id': self.sample.sample_id,
                'panel': self.panel,
                'gene_name': self.gene_name,
                'refseq_id': self.refseq_id,
@@ -330,21 +336,35 @@ class Med_report(db.Model):
     note=db.Column(db.String(500))
 
     
-class Check_info(db.Model):
+class Sample_check_info(db.Model):
     """
     样本验证时间
     """
-    __tablename__ = 'check_info'
+    __tablename__ = 'sample_check_info'
     id = db.Column(db.Integer, primary_key=True)
+    flowcell_id = db.Column(db.String(40))
+    panel = db.Column(db.String(40))
     check_type = db.Column(db.String(200))
-    gene_info = db.Column(db.String(200))
+    gene_name = db.Column(db.String(200))
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     result = db.Column(db.String(100))
-    note=db.Column(db.String(500))
-    sample_flowcell_id = db.Column(db.Integer, db.ForeignKey('sample_flowcell.id'))
+    note = db.Column(db.String(500))
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-
+    @property
+    def json(self):
+        return {'id':self.id,
+            'sample_id': self.sample.sample_id,
+                'flowcell_id': self.flowcell_id,
+               'panel': self.panel,
+               'gene_name': self.gene_name,
+               'start_time': proc_time(self.start_time),
+               'end_time': proc_time(self.end_time),
+               'result': self.result,
+               'note': self.note,
+               }   
 
 # class Target_drug(db.Model):
 #     """

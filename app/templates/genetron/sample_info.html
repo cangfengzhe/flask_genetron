@@ -120,7 +120,6 @@
                             <td>
                                 {{flowcell_index|get_item_time('bioinfo_report')}}
                             </td>
-                            <!--                                      <td>{{ flowcell_index.sample_time.filter_by(item_type='bioinfo_report').first().item_time|datetimeformat("%Y-%m-%d %H:%M:%S") if flowcell_index.sample_time.filter_by(item_type='bioinfo_report').first() != None}} </td> -->
 
                         </tr>
                          {% if flowcell_list.append( (flowcell_index.flowcell.flowcell_id, flowcell_index.panel) )  %} {% endif %}
@@ -136,6 +135,22 @@
         </div>
     </div>    
     
+     <div class="row">
+        <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    验证信息
+                </div>
+                
+                <div class="panel-body">
+                    <div id='check_info'> </div>
+                </div>
+
+
+            </div>
+            <!-- /.panel --> 
+        </div>
+    </div>
     
            <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
@@ -259,7 +274,6 @@
                                 }
                             },
                             schema: {
-
                             type: 'json',
                             data: "data",
                             total: function(data) {
@@ -278,8 +292,6 @@
                                      aa_change: { type: "string" },
                                      mut_type: { type: "string" },
                                      t_freq: { type: "string" },
-                                    
-                                     
                                     }
                                 }
                             },
@@ -288,17 +300,13 @@
                                 dir: "desc"
                             },
                             pageSize: 5,
-
-
-
                         },
-     //                   height: 800,
                         scrollable: false,
-                     
-                        // filterable:true,
                         sortable:true,
                         pageable: true,
                         serverFiltering: false,
+                        serverPaging: false,
+                        serverSorting: false,
                         dataBound: function() {
                             console.log(this.dataSource.totalPages())
                             if (this.dataSource.totalPages() <= 1) {
@@ -404,10 +412,7 @@
                                      start: { type: "string" },
                                      end: { type: "string" },
                                      fold: { type: "string" },
-                                     cnv_type: { type: "string" },
-                                     
-                                    
-                                     
+                                     cnv_type: { type: "string" }, 
                                     }
                                 }
                             },
@@ -416,70 +421,46 @@
                                 dir: "desc"
                             },
                             pageSize: 5,
-
-
-
                         },
-     //                   height: 800,
                         scrollable: false,
-                     
-                        // filterable:true,
                         sortable:true,
                         pageable: true,
-                        dataBound: function() {
-                            console.log(this.dataSource.totalPages())
-                            if (this.dataSource.totalPages() <= 1) {
-                              this.pager.element.hide();
-                             }
-                         },
-                        columns: [
-                        
+                        columns: [                    
                             {
                                 field:"panel",
                                 title: "panel",
                                 width: 80,
-
                             },
                             {
                                 field:"gene_name",
                                 title: "基因名称",
                                 width: 100,
-                                
-                                
-                                
-
                             },
                             {
                                 field:"refseq_id",
                                 title: "转录本",
                                 width: 160,
-
                             },
                             {
                                 field:"chrome",
                                 title: "染色体",
                                 width: 50,
-
                             },
                             {
                                 field:"start",
                                 title: "起始位置",
                                 width: 100,
-
                             },
                             {
                                 field:"end",
                                 title: "终止位置",
                                 width: 100,
-
                             },
                             {
                                 field:"fold",
                                 title: "变异倍数",
-                                width: 100,
-                               
+                                width: 100,                        
                             },
-                            
                              {
                                 field:"cnv_type",
                                 title: "变异类型",
@@ -492,6 +473,111 @@
                        ],
                     });
 
+         $("#check_info").kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read:  {
+                                url: '/api/check/{{sample.sample_id}}',
+                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                },
+                                update: {
+                                    url: '/api/check/{{sample.sample_id}}',
+                                    dataType: "jsonp"
+                                },
+                                destroy: {
+                                    url: '/api/check/{{sample.sample_id}}',
+                                    dataType: "jsonp"
+                                },
+                                create: {
+                                    type: 'put',
+                                    url: '/api/check/{{sample.sample_id}}',
+                                    dataType: "jsonp"
+                                },
+                                 parameterMap: function(data, operation) {
+                                if (operation === "update" || operation === "create") {
+                                    data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
+                                    console.log(data.start_time )
+                                }
+                                return data;
+                            }
+                            },
+                            schema: {
+                            type: 'json',
+                            data: "data",
+                            
+                            total: function(data) {
+                                return data.data.length;
+                            },
+                            
+                            model: {
+                                id: "id",
+                                fields: {
+                                     id: {type: "numeric", nullable: true},
+                                     flowcell_id: { type: "string", validation: { required: true } },
+                                     panel: { type: "string", validation: { required: true } },
+                                     gene: { type: "string", nullable: true },
+                                     check_type: { type: "string" , nullable: true},
+                                     start_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", },
+                                     end_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },
+                                     result: { type: "string", nullable: true },
+                                     note: { type: "string", nullable: true },
+                                     
+                                    }
+                                }
+                            },
+                            pageSize: 5,
+                        },
+                        toolbar: ["create"],
+                        scrollable: false,
+                        sortable:true,
+                        pageable: true,
+                        editable: "popup",
+                        columns: [
+                            {
+                                field:"flowcell_id",
+                                title: "Flowcell",
+                                width: 80,
+                            },
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 80,
+                            },
+                            {
+                                field:"gene_name",
+                                title: "基因名称",
+                                width: 100,
+                            },
+                            {
+                                field:"check_type",
+                                title: "验证类型",
+                                width: 160,
+                            },
+                            {
+                                field:"start_time",
+                                title: "开始时间",
+                                width: 50,
+                                format: "{0: yyyy-MM-dd HH:mm:ss}"
+                            },
+                            {
+                                field:"end_time",
+                                title: "反馈时间",
+                                width: 100,
+                                format: "{0: yyyy-MM-dd HH:mm:ss}"
+                            },
+                            {
+                                field:"result",
+                                title: "结果",
+                                width: 100,
+                            },
+                            {
+                                field:"note",
+                                title: "备注",
+                                width: 100,                        
+                            },
+                            { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
+                       ],
+                    });
 
 </script>
 

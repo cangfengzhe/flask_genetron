@@ -126,9 +126,9 @@ class User(UserMixin, db.Model):
                                      backref='receive_user',
                                      foreign_keys=[Send_info.receive_user_id],
                                      lazy="dynamic")
-    check_info_user = db.relationship('Check_info',
-                         backref='receive_user',
-                         foreign_keys=[Check_info.user_id],
+    check_info_user = db.relationship('Sample_check_info',
+                         backref='check_user',
+                         foreign_keys=[Sample_check_info.user_id],
                          lazy="dynamic")
     @staticmethod
     def generate_fake(count=100):

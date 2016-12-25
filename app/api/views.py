@@ -2,7 +2,7 @@
 import json
 
 from flask import Flask, Blueprint, jsonify
-from flask_restful import Api, Resource, url_for
+from flask_restful import Api, Resource, url_for, reqparse
 from . import api
 from ..genetron.models import *
 
@@ -18,7 +18,7 @@ class SnpIndel(Resource):
         else:
             return jsonify(data='error')
     
-api.add_resource(SnpIndel, '/snpindel/<string:id>')
+
         
     
 class Cnv(Resource):
@@ -30,5 +30,50 @@ class Cnv(Resource):
         else:
             return jsonify(data='error')
         
-api.add_resource(Cnv, '/cnv/<string:id>')       
+ 
+
+class Check_info(Resource):
+    def get(self,sample_id):
+        sample = Sample_info.query.filter_by(sample_id=sample_id).first()
+        if sample:
+            check_info = sample.check_info
+            return jsonify(data=[xx.json for xx in check_info])
+        else:
+            return jsonify(data='error')
+    def put(self, sample_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('flowcell_id', type=str, help='flowcell_id')
+        parser.add_argument('panel', type=str, help='panel')
+        parser.add_argument('check_type', type=str, help='check_type')
+        parser.add_argument('gene_name', type=str, help='gene_name')
+        parser.add_argument('start_time', type=str, help='start_time')
+        parser.add_argument('end_time', type=str, help='end_time')
+        parser.add_argument('result', type=str, help='result')
+        parser.add_argument('note', type=str, help='note')
+        args = parser.parse_args()
+        flowcell_id = args.flowcell_id
+        panel = args.panel
+        check_type = args.check_type
+        gene_name = args.gene_name
+        start_time = args.start_time
+        end_time = args.end_time
+        result = args.result
+        note = args.note
+        sample = Sample_info.query.filter_by(sample_id=sample_id).first()
+        if sample:
+            check_info = Sample_check_info(sample_id=sample.id, flowcell_id=flowcell_id, panel=panel, check_type=check_type, gene_name=gene_name,
+                                          start_time=start_time, end_time=end_time, result=result, note=note)
+            db.session.add(check_info)
+            db.session.commit()
+            return jsonify(data=check_info.json())
+        else:
+            return jsonify(data='sample is null')
+    
+    def delete(self, sample_id):
+        parser.add_argument('id', type=int, help='id')
         
+        
+    
+api.add_resource(SnpIndel, '/snpindel/<string:id>')
+api.add_resource(Cnv, '/cnv/<string:id>')
+api.add_resource(Check_info, '/check/<string:sample_id>')     
