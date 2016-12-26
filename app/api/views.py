@@ -40,8 +40,9 @@ class Check_info(Resource):
             return jsonify(data=[xx.json for xx in check_info])
         else:
             return jsonify(data='error')
-    def put(self, sample_id):
+    def post(self, sample_id):
         parser = reqparse.RequestParser()
+        parser.add_argument('id', type=str, help='id')
         parser.add_argument('flowcell_id', type=str, help='flowcell_id')
         parser.add_argument('panel', type=str, help='panel')
         parser.add_argument('check_type', type=str, help='check_type')
@@ -51,6 +52,7 @@ class Check_info(Resource):
         parser.add_argument('result', type=str, help='result')
         parser.add_argument('note', type=str, help='note')
         args = parser.parse_args()
+        id=args.id
         flowcell_id = args.flowcell_id
         panel = args.panel
         check_type = args.check_type
@@ -60,17 +62,39 @@ class Check_info(Resource):
         result = args.result
         note = args.note
         sample = Sample_info.query.filter_by(sample_id=sample_id).first()
-        if sample:
+        
+        if id !='':
+            check_info = Sample_check_info.query.get(id)
+            check_info.sample_id=sample.id
+            check_info.flowcell_id = flowcell_id
+            check_info.panel = panel
+            check_info.check_type = check_type
+            check_info.gene_name = gene_name
+            check_info.start_time = start_time
+            check_info.end_time = end_time
+            check_info.result = result
+            check_info.note = note
+            db.session.commit()
+            return jsonify(data=[check_info.json])
+        else:
             check_info = Sample_check_info(sample_id=sample.id, flowcell_id=flowcell_id, panel=panel, check_type=check_type, gene_name=gene_name,
                                           start_time=start_time, end_time=end_time, result=result, note=note)
             db.session.add(check_info)
             db.session.commit()
-            return jsonify(data=check_info.json())
-        else:
-            return jsonify(data='sample is null')
+            print(type(check_info))
+            return jsonify(data=[check_info.json])
     
     def delete(self, sample_id):
-        parser.add_argument('id', type=int, help='id')
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', type=str, help='id')
+        args = parser.parse_args()
+        id = args.id
+        print('del', id)
+        check_info = Sample_check_info.query.get(id)
+        db.session.delete(check_info)
+        db.session.commit()
+        return jsonify(data=[{'id':id}])
+        
         
         
     

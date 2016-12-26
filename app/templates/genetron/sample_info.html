@@ -486,10 +486,11 @@
                                 },
                                 destroy: {
                                     url: '/api/check/{{sample.sample_id}}',
-                                    dataType: "jsonp"
+                                    dataType: "jsonp",
+                                    type: 'delete'
                                 },
                                 create: {
-                                    type: 'put',
+                                    type: 'post',
                                     url: '/api/check/{{sample.sample_id}}',
                                     dataType: "jsonp"
                                 },
