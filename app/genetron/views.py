@@ -227,7 +227,6 @@ def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
     if not flowcell_id:
         flowcell_id='S00' # 如果该样本没有对应的flowcell id 那么定义为 S00
     flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
-    print(flowcell_id)
     if not flowcell_index:
         flowcell_id='S00'
         flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
@@ -274,6 +273,10 @@ def api():
     dt = datetime.datetime.strptime(dt, '%Y-%m-%d_%H%M%S')
     item_note = request.args.get('note')
     panel = request.args.get('panel')
+    if panel=='panel500_203':
+        panel='panel203'
+    if panel == 'panel203_51':
+        panel='panel51'
     # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02
     if api_type == 'sj_time':
         if not flowcell_id:
