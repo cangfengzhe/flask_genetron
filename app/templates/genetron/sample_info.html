@@ -212,30 +212,7 @@
                     医学信息解读
                 </div>
                 <div class="panel-body">
-                    <table class="table table-condensed">
-                        <tr>
-                            <th>报告初稿</th>
-                            <th>报告完成时间</th>
-                            <th>报告审核</th>
-                            <th>报告审核时间</th>
-                            <th>报告最终完成时间</th>
-
-                        </tr>
-                        {% for flowcell_index in sample.sample_flowcell.all() %}
-
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
-                            <td></td>
-
-                            <td></td>
-
-                        </tr>
-                        {% endfor %}
-
-                    </table>
+                     <div id='report'> </div>
                 </div>
 
 
@@ -425,6 +402,12 @@
                         scrollable: false,
                         sortable:true,
                         pageable: true,
+                        dataBound: function() {
+                            console.log(this.dataSource.totalPages())
+                            if (this.dataSource.totalPages() <= 1) {
+                              this.pager.element.hide();
+                             }
+                         },
                         columns: [                    
                             {
                                 field:"panel",
@@ -475,40 +458,49 @@
 
          $("#check_info").kendoGrid({
                         dataSource: {
+                             error: function (e) {
+                                alert("Status: " + e.status + "; Error message: " + e.errorThrown );
+                                console.log(e)
+                            },
+                            autoSync: false,
                             transport: {
                                 read:  {
-                                url: '/api/check/{{sample.sample_id}}',
-                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                    url: '/api/check/{{sample.sample_id}}',
+                                    dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
                                 },
                                 update: {
                                     url: '/api/check/{{sample.sample_id}}',
-                                    dataType: "jsonp"
+                                    type: 'post',
+                                    dataType: "json",
                                 },
                                 destroy: {
                                     url: '/api/check/{{sample.sample_id}}',
-                                    dataType: "jsonp",
+                                    dataType: "json",
                                     type: 'delete'
                                 },
                                 create: {
                                     type: 'post',
                                     url: '/api/check/{{sample.sample_id}}',
-                                    dataType: "jsonp"
+                                    dataType: "json"
                                 },
                                  parameterMap: function(data, operation) {
                                 if (operation === "update" || operation === "create") {
                                     data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
-                                    console.log(data.start_time )
+                                    if (data.end_time != ''){
+                                        data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
+                                    }
+                                    
                                 }
                                 return data;
                             }
                             },
+                            batch: false,
                             schema: {
-                            type: 'json',
-                            data: "data",
-                            
-                            total: function(data) {
-                                return data.data.length;
-                            },
+                                type: 'json',
+                                data: "data",
+                                total: function(data) {
+                                    return data.data.length;
+                                },
                             
                             model: {
                                 id: "id",
@@ -522,7 +514,6 @@
                                      end_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },
                                      result: { type: "string", nullable: true },
                                      note: { type: "string", nullable: true },
-                                     
                                     }
                                 }
                             },
@@ -533,37 +524,42 @@
                         sortable:true,
                         pageable: true,
                         editable: "popup",
+                        dataBound: function() {
+                            if (this.dataSource.totalPages() <= 1) {
+                              this.pager.element.hide();
+                             }
+                         },
                         columns: [
                             {
                                 field:"flowcell_id",
                                 title: "Flowcell",
-                                width: 80,
+                                width: 50,
                             },
                             {
                                 field:"panel",
                                 title: "panel",
-                                width: 80,
+                                width: 50,
                             },
                             {
                                 field:"gene_name",
                                 title: "基因名称",
-                                width: 100,
+                                width: 80,
                             },
                             {
                                 field:"check_type",
                                 title: "验证类型",
-                                width: 160,
+                                width: 100,
                             },
                             {
                                 field:"start_time",
                                 title: "开始时间",
-                                width: 50,
+                                width: 150,
                                 format: "{0: yyyy-MM-dd HH:mm:ss}"
                             },
                             {
                                 field:"end_time",
                                 title: "反馈时间",
-                                width: 100,
+                                width: 150,
                                 format: "{0: yyyy-MM-dd HH:mm:ss}"
                             },
                             {
@@ -574,11 +570,162 @@
                             {
                                 field:"note",
                                 title: "备注",
-                                width: 100,                        
+                                width: 130,                        
                             },
                             { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
                        ],
                     });
+    
+usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
+       function UserDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            dataTextField: "user_name",
+                            dataValueField: "user_id",
+                            dataSource: {
+                                 data: usersaaa   
+                                // type: "json",
+                                // transport: {
+                                //     read:  usersaaa //"/api/user/Reporter"
+                                // },
+                            },
+                         schema: {
+                                data: "data"
+                         }
+                        
+                        });
+                }
+    
+    $("#report").kendoGrid({
+                        dataSource: {
+                            error: function (e) {
+                                alert("Status: " + e.status + "; Error message: " + e.errorThrown );
+                                console.log(e)
+                                },
+                            autoSync: false,
+                            transport: {
+                                read:  {
+                                    url: '/api/report/{{sample.sample_id}}',
+                                    dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                },
+                                update: {
+                                    url: '/api/report/{{sample.sample_id}}',
+                                    type: 'post',
+                                    dataType: "json",
+                                },
+                                destroy: {
+                                    url: '/api/report/{{sample.sample_id}}',
+                                    dataType: "json",
+                                    type: 'delete'
+                                },
+                                create: {
+                                    type: 'post',
+                                    url: '/api/report/{{sample.sample_id}}',
+                                    dataType: "json"
+                                },
+                                parameterMap: function(data, operation) {
+                                    if (operation === "update" || operation === "create") {
+                                        data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
+                                        if (data.end_time != ''){
+                                            data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
+                                        }
+                                    
+                                    }
+                                    return data;
+                                }
+                            },
+                            batch: false,
+                            schema: {
+                                type: 'json',
+                                data: "data",
+                                total: function(data) {
+                                    return data.data.length;
+                                },
+                            
+                            model: {
+                                id: "id",
+                                fields: {
+                                     id: {type: "numeric", nullable: true},
+                                     panel: { type: "string", validation: { required: true } },
+                                     start_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", },
+                                     writer: {  defaultValue: { user_name: "Confections", user_id: 3 }, nullable: false, },
+                                     report_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}"},
+                                     checker: { type: "string" },
+                                     check_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },
+                                     finish_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },
+                                     note: { type: "string", nullable: true },
+                                    }
+                                }
+                            },
+                            pageSize: 5,
+                        },
+                        toolbar: ["create"],
+                        scrollable: false,
+                        sortable:true,
+                        pageable: true,
+                        editable: "popup",
+                        dataBound: function() {
+                            console.log(this.dataSource.totalPages())
+                            if (this.dataSource.totalPages() <= 1) {
+                              this.pager.element.hide();
+                             }
+                         },
+                        columns: [
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 50,
+                            },
+                            {
+                                field:"start_time",
+                                title: "开始时间",
+                                width: 50,
+                            },
+                            {
+                                field:"writer",
+                                title: "初稿人",
+                                width: 80,
+                                editor: UserDropDownEditor,
+                                template: "#=writer.user_name#" 
+                            },
+                            {
+                                field:"report_time",
+                                title: "初稿时间",
+                                width: 150,
+                            },
+                            {
+                                field:"checker",
+                                title: "审核人",
+                                width: 80,
+                                editor: UserDropDownEditor,
+                                template: "#=checker.user_name#" 
+                            },
+                            {
+                                field:"check_time",
+                                title: "审核时间",
+                                width: 150,
+                                format: "{0: yyyy-MM-dd HH:mm:ss}"
+                            },
+                            {
+                                field:"finish_time",
+                                title: "完成时间",
+                                width: 150,
+                                format: "{0: yyyy-MM-dd HH:mm:ss}"
+                            },
+                       
+                            {
+                                field:"note",
+                                title: "备注",
+                                width: 130,                        
+                            },
+                            { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
+                       ],
+                    });
+    
+    
+ 
 
 </script>
 

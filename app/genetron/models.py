@@ -69,7 +69,7 @@ class Sample_info(db.Model):
     snp_indel_info = db.relationship('Sample_snp_indel_info', backref='sample', lazy="dynamic")
     cnv_info = db.relationship('Sample_cnv_info', backref='sample', lazy="dynamic")
     check_info =  db.relationship('Sample_check_info', backref='sample', lazy="dynamic")
-
+    report_info =  db.relationship('Sample_report_info', backref='sample', lazy="dynamic")
     def __init__(self, **kwargs):
         super(Sample_info, self).__init__(**kwargs)
         if kwargs:
@@ -323,18 +323,35 @@ class Molecular_function(db.Model):
     check_time = db.Column(db.DateTime)
 
     
-class Med_report(db.Model):
+class Sample_report_info(db.Model):
     """
     样本报告、报告完成
     """
-    __tablename__='med_report'
+    __tablename__='sample_report_info'
     id = db.Column(db.Integer, primary_key=True)
-    reporter_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    panel = db.Column(db.String(100))
+    start_time = db.Column(db.DateTime)
+    report_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     report_time = db.Column(db.DateTime)
     check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     check_time = db.Column(db.DateTime)
+    finish_time = db.Column(db.DateTime)
     note=db.Column(db.String(500))
-
+    
+    def json():
+        return {
+            'id': self.id,
+            'sample_id': self.sample.sample_id,
+            'pane': self.panel,
+            'start_time': self.start_time,
+            'writer':self.reporter.username,
+            'report_time': proc_time(self.report_time),
+            'checker': self.checker.username,
+            'check_time': proc_time(self.check_time),
+            'finish_time': proc_time(self.finish_time),
+            'note': self.note
+            }
     
 class Sample_check_info(db.Model):
     """
@@ -362,16 +379,12 @@ class Sample_check_info(db.Model):
                'gene_name': self.gene_name,
                'start_time': proc_time(self.start_time),
                'end_time': proc_time(self.end_time),
+                'check_type':self.check_type,
                'result': self.result,
                'note': self.note,
                }   
 
-# class Target_drug(db.Model):
-#     """
-#     基因	突变类型	相关通路	Tissue	Tissue (中文)	药品通用名	商品名	靶点/原理	审批状态/临床试验状态	临床试验地点	Drug	Trade Name	Target/Rationale	Current Status	Locations	更新记录
-#
-#     """
-#     pass
+
     
 class Send_info(db.Model):
     __tablename__ = 'infomation'

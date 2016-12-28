@@ -130,6 +130,14 @@ class User(UserMixin, db.Model):
                          backref='check_user',
                          foreign_keys=[Sample_check_info.user_id],
                          lazy="dynamic")
+    report_user = db.relationship('Sample_report_info',
+                         backref='reporter',
+                         foreign_keys=[Sample_report_info.report_user_id],
+                         lazy="dynamic")
+    report_check_user = db.relationship('Sample_report_info',
+                         backref='checker',
+                         foreign_keys=[Sample_report_info.check_user_id],
+                         lazy="dynamic")
     @staticmethod
     def generate_fake(count=100):
         from sqlalchemy.exc import IntegrityError
@@ -171,7 +179,14 @@ class User(UserMixin, db.Model):
             self.avatar_hash = hashlib.md5(
                 self.email.encode('utf-8')).hexdigest()
         self.followed.append(Follow(followed=self))
-
+    
+    @property
+    def json(self):
+        return {
+            'user_id':self.id,
+            'user_name':self.username
+        }
+    
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
