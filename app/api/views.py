@@ -27,7 +27,16 @@ class Cnv(Resource):
             return jsonify(data=[xx.json for xx in cnv_info])
         else:
             return jsonify(data='error')
+
         
+class Sv(Resource):
+    def get(self,id):
+        sample = Sample_info.query.filter_by(sample_id=id).first()
+        if sample:
+            sv_info = sample.sv_info
+            return jsonify(data=[xx.json for xx in sv_info])
+        else:
+            return jsonify(data='error')
  
 
 class Check_info(Resource):
@@ -100,7 +109,8 @@ class Check_info(Resource):
         db.session.delete(check_info)
         db.session.commit()
         return jsonify(data=[{'id':id}])
-        
+ 
+
 class Report_info(Resource):
     def get(self,sample_id):
         sample = Sample_info.query.filter_by(sample_id=sample_id).first()
@@ -186,6 +196,7 @@ class User(Resource):
     
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
+api.add_resource(Sv, '/sv/<string:id>')
 api.add_resource(Check_info, '/check/<string:sample_id>')  
 api.add_resource(Report_info, '/report/<string:sample_id>')
 api.add_resource(User, '/user/<string:role_name>')

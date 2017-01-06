@@ -68,6 +68,7 @@ class Sample_info(db.Model):
     note = db.Column(db.String(200))
     snp_indel_info = db.relationship('Sample_snp_indel_info', backref='sample', lazy="dynamic")
     cnv_info = db.relationship('Sample_cnv_info', backref='sample', lazy="dynamic")
+    sv_info = db.relationship('Sample_sv_info', backref='sample', lazy="dynamic")
     check_info =  db.relationship('Sample_check_info', backref='sample', lazy="dynamic")
     report_info =  db.relationship('Sample_report_info', backref='sample', lazy="dynamic")
     def __init__(self, **kwargs):
@@ -254,7 +255,6 @@ class Sample_cnv_info(db.Model):
     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
     panel = db.Column(db.String(100))
     gene_name = db.Column(db.String(100))
-    refseq_id = db.Column(db.String(50))
     chrome = db.Column(db.String(10))
     start = db.Column(db.BigInteger)
     end = db.Column(db.BigInteger)
@@ -266,17 +266,38 @@ class Sample_cnv_info(db.Model):
         return {
             'id': self.id,
             'sample_id': self.sample.sample_id,
-               'panel': self.panel,
-               'gene_name': self.gene_name,
-               'refseq_id': self.refseq_id,
-               'chrome': self.chrome,
-               'start': self.start,
-               'end': self.end,
-               'cDNA_change': self.fold,
-               'mut_type': self.cnv_type,
-               'fold': str(self.fold)
+            'panel': self.panel,
+           'gene_name': self.gene_name,
+           'chrome': self.chrome,
+           'start': self.start,
+           'end': self.end,
+           'cnv_type': self.cnv_type,
+           'fold': str(self.fold)
                }   
-  
+
+    
+class Sample_sv_info(db.Model):
+    
+    __tablename__='sample_sv_info'
+    id = db.Column(db.Integer, primary_key=True)
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    panel = db.Column(db.String(100))
+    gene_name = db.Column(db.String(100))
+    break_pos = db.Column(db.String(250))
+    extron_pos = db.Column(db.String(10))
+    freq = db.Column(db.Numeric(5,2))
+    
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'sample_id': self.sample.sample_id,
+           'panel': self.panel,
+           'gene_name': self.gene_name,
+           'break_pos': self.break_pos,
+           'extron_pos': self.extron_pos,
+           'freq': str(self.freq)
+               }
 
 
 class Biomarker(db.Model):
