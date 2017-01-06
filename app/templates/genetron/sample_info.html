@@ -651,6 +651,7 @@
     
     
 usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
+    
        function UserDropDownEditor(container, options) {
                     $('<input required name="' + options.field + '"/>')
                         .appendTo(container)
@@ -659,15 +660,15 @@ usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
                             dataTextField: "user_name",
                             dataValueField: "user_id",
                             dataSource: {
-                                 data: usersaaa   
-                                // type: "json",
-                                // transport: {
-                                //     read:  usersaaa //"/api/user/Reporter"
-                                // },
+                                 // data: usersaaa   
+                                type: "json",
+                                transport: {
+                                    read: "/api/user/Reporter"
+                                },
                             },
-                         schema: {
-                                data: "data"
-                         }
+                         // schema: {
+                         //        data: "data"
+                         // }
                         
                         });
                 }
@@ -724,7 +725,7 @@ usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
                                      id: {type: "numeric", nullable: true},
                                      panel: { type: "string", validation: { required: true } },
                                      start_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", },
-                                     writer: {  defaultValue: { user_name: "Confections", user_id: 3 }, nullable: false, },
+                                     writer: { type: "string", nullable: false, },
                                      report_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}"},
                                      checker: { type: "string" },
                                      check_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },

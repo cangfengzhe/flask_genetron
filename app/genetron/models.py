@@ -71,6 +71,7 @@ class Sample_info(db.Model):
     sv_info = db.relationship('Sample_sv_info', backref='sample', lazy="dynamic")
     check_info =  db.relationship('Sample_check_info', backref='sample', lazy="dynamic")
     report_info =  db.relationship('Sample_report_info', backref='sample', lazy="dynamic")
+    
     def __init__(self, **kwargs):
         super(Sample_info, self).__init__(**kwargs)
         if kwargs:
@@ -360,15 +361,16 @@ class Sample_report_info(db.Model):
     finish_time = db.Column(db.DateTime)
     note=db.Column(db.String(500))
     
-    def json():
+    @property
+    def json(self):
         return {
             'id': self.id,
             'sample_id': self.sample.sample_id,
-            'pane': self.panel,
+            'panel': self.panel,
             'start_time': self.start_time,
-            'writer':self.reporter.username,
+            'writer':self.reporter.username if self.reporter else '',
             'report_time': proc_time(self.report_time),
-            'checker': self.checker.username,
+            'checker': self.checker.username if self.checker else '',
             'check_time': proc_time(self.check_time),
             'finish_time': proc_time(self.finish_time),
             'note': self.note

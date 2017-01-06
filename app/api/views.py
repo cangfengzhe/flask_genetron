@@ -1,12 +1,12 @@
 #coding=utf-8
 import json
 
-from flask import Flask, Blueprint, jsonify
+from flask import Flask, Blueprint, jsonify, make_response
 from flask_restful import Api, Resource, url_for, reqparse
 from . import api
 from ..genetron.models import *
 from ..models import *
-
+from json import dumps
 
 
 class SnpIndel(Resource):
@@ -119,12 +119,13 @@ class Report_info(Resource):
             return jsonify(data=[xx.json for xx in report_info])
         else:
             return jsonify(data='error')
+        
     def post(self, sample_id):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str, help='id')
         parser.add_argument('panel', type=str, help='panel')
         parser.add_argument('start_time', type=str, help='check_type')
-        parser.add_argument('wirter', type=str, help='gene_name')
+        parser.add_argument('writer', type=str, help='gene_name')
         parser.add_argument('report_time', type=str, help='start_time')
         parser.add_argument('checker', type=str, help='end_time')
         parser.add_argument('check_time', type=str, help='result')
@@ -150,18 +151,18 @@ class Report_info(Resource):
             report_info.sample_id=sample.id
             report_info.panel = panel
             report_info.start_time = start_time
-            report_info.report_user_id = User.query.filter_by(username=writer).first().id
+            report_info.report_user_id = writer #User.query.filter_by(username=writer).first().id
             report_info.report_time = report_time
-            report_info.check_user_id = User.query.filter_by(username=checker).first().id
+            report_info.check_user_id = checker #User.query.filter_by(username=checker).first().id
             report_info.check_time = check_time
             report_info.finish_time = finish_time
             report_info.note = note
             db.session.commit()
-            return jsonify(data=[check_info.json])
+            return jsonify(data=[report_info.json])
             # return jsonify(data={})
             # return '{}'
         else:
-            # creat
+            # create
             report_info = Sample_report_info()
             report_info.sample_id=sample.id
             report_info.panel = panel
@@ -172,10 +173,10 @@ class Report_info(Resource):
             report_info.check_time = check_time
             report_info.finish_time = finish_time
             report_info.note = note
-            db.session.add(check_info)
+            db.session.add(report_info)
             db.session.commit()
-            print(type(check_info))
-            return jsonify(data=[check_info.json])
+            print(type(report_info))
+            return jsonify(data=[report_info.json])
     
     def delete(self, sample_id):
         parser = reqparse.RequestParser()
@@ -188,15 +189,19 @@ class Report_info(Resource):
         db.session.commit()
         return jsonify(data=[{'id':id}])       
         
-class User(Resource):
+
+class Report_User(Resource):
     def get(self, role_name):
         role = Role.query.filter_by(name=role_name).first()
         users =  role.users
-        return jsonify(data=[xx.json for xx in users])
+        response = make_response(dumps([xx.json for xx in users]))                                      
+        response.headers['Content-Type'] = 'application/json'            
+        return response
+
     
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
 api.add_resource(Sv, '/sv/<string:id>')
 api.add_resource(Check_info, '/check/<string:sample_id>')  
 api.add_resource(Report_info, '/report/<string:sample_id>')
-api.add_resource(User, '/user/<string:role_name>')
+api.add_resource(Report_User, '/user/<string:role_name>')
