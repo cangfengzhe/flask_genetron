@@ -128,8 +128,7 @@ var gridElement = $("#grid");
                                 filterable: true,
                                 //{{url_for('genetron.sample_info')}}" + '?id='
                                 template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'>#=sample_id#</a>'
-                                
-                                
+   
 
                             },
                             {
@@ -266,20 +265,10 @@ var gridElement = $("#grid");
                        ],
                     });
 
-                function titleFilter(element) {
-                    element.kendoAutoComplete({
-                        dataSource: titles
-                    });
-                }
 
-                function cityFilter(element) {
-                    element.kendoDropDownList({
-                        dataSource: cities,
-                        optionLabel: "--Select Value--"
-                    });
-		}
+		
             </script>
-        </div>
+      
 
     {% endblock %}
 
