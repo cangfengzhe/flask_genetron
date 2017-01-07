@@ -6,6 +6,11 @@ sys.setdefaultencoding('utf-8')
 from datetime import datetime
 import  sqlalchemy
 
+def proc_time(time_var, time_fmt = "%Y-%m-%d %H:%M:%S"):
+    if time_var:
+        return time_var.strftime(time_fmt)
+    else:
+        return ''
 
 class Patient_info(db.Model):
     __tablenane__ = 'patient_info'
@@ -63,8 +68,10 @@ class Sample_info(db.Model):
     note = db.Column(db.String(200))
     snp_indel_info = db.relationship('Sample_snp_indel_info', backref='sample', lazy="dynamic")
     cnv_info = db.relationship('Sample_cnv_info', backref='sample', lazy="dynamic")
-
-
+    sv_info = db.relationship('Sample_sv_info', backref='sample', lazy="dynamic")
+    check_info =  db.relationship('Sample_check_info', backref='sample', lazy="dynamic")
+    report_info =  db.relationship('Sample_report_info', backref='sample', lazy="dynamic")
+    
     def __init__(self, **kwargs):
         super(Sample_info, self).__init__(**kwargs)
         if kwargs:
@@ -193,7 +200,6 @@ class Sample_flowcell(db.Model):
     flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
     panel=db.Column(db.String(200))
     sample_time =  db.relationship('Sample_time_info', backref='sample_flowcell_id', lazy="dynamic")
-    check_info = db.relationship('Check_info', backref='sample', lazy="dynamic")
 #Cannot drop index 'flowcell_id': needed in a foreign key constraint
     
 class Sample_time_info(db.Model):
@@ -250,7 +256,6 @@ class Sample_cnv_info(db.Model):
     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
     panel = db.Column(db.String(100))
     gene_name = db.Column(db.String(100))
-    refseq_id = db.Column(db.String(50))
     chrome = db.Column(db.String(10))
     start = db.Column(db.BigInteger)
     end = db.Column(db.BigInteger)
@@ -259,18 +264,41 @@ class Sample_cnv_info(db.Model):
     
     @property
     def json(self):
-        return {'sample_id': self.sample.sample_id,
-               'panel': self.panel,
-               'gene_name': self.gene_name,
-               'refseq_id': self.refseq_id,
-               'chrome': self.chrome,
-               'start': self.start,
-               'end': self.end,
-               'cDNA_change': self.fold,
-               'mut_type': self.cnv_type,
-               'fold': str(self.fold)
+        return {
+            'id': self.id,
+            'sample_id': self.sample.sample_id,
+            'panel': self.panel,
+           'gene_name': self.gene_name,
+           'chrome': self.chrome,
+           'start': self.start,
+           'end': self.end,
+           'cnv_type': self.cnv_type,
+           'fold': str(self.fold)
                }   
-  
+
+    
+class Sample_sv_info(db.Model):
+    
+    __tablename__='sample_sv_info'
+    id = db.Column(db.Integer, primary_key=True)
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    panel = db.Column(db.String(100))
+    gene_name = db.Column(db.String(100))
+    break_pos = db.Column(db.String(250))
+    extron_pos = db.Column(db.String(10))
+    freq = db.Column(db.Numeric(5,2))
+    
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'sample_id': self.sample.sample_id,
+           'panel': self.panel,
+           'gene_name': self.gene_name,
+           'break_pos': self.break_pos,
+           'extron_pos': self.extron_pos,
+           'freq': str(self.freq)
+               }
 
 
 class Biomarker(db.Model):
@@ -317,41 +345,69 @@ class Molecular_function(db.Model):
     check_time = db.Column(db.DateTime)
 
     
-class Med_report(db.Model):
+class Sample_report_info(db.Model):
     """
     样本报告、报告完成
     """
-    __tablename__='med_report'
+    __tablename__='sample_report_info'
     id = db.Column(db.Integer, primary_key=True)
-    reporter_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    panel = db.Column(db.String(100))
+    start_time = db.Column(db.DateTime)
+    report_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     report_time = db.Column(db.DateTime)
     check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     check_time = db.Column(db.DateTime)
+    finish_time = db.Column(db.DateTime)
     note=db.Column(db.String(500))
-
     
-class Check_info(db.Model):
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'sample_id': self.sample.sample_id,
+            'panel': self.panel,
+            'start_time': self.start_time,
+            'writer':self.reporter.username if self.reporter else '',
+            'report_time': proc_time(self.report_time),
+            'checker': self.checker.username if self.checker else '',
+            'check_time': proc_time(self.check_time),
+            'finish_time': proc_time(self.finish_time),
+            'note': self.note
+            }
+    
+class Sample_check_info(db.Model):
     """
     样本验证时间
     """
-    __tablename__ = 'check_info'
+    __tablename__ = 'sample_check_info'
     id = db.Column(db.Integer, primary_key=True)
+    flowcell_id = db.Column(db.String(40))
+    panel = db.Column(db.String(40))
     check_type = db.Column(db.String(200))
-    gene_info = db.Column(db.String(200))
+    gene_name = db.Column(db.String(200))
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     result = db.Column(db.String(100))
-    note=db.Column(db.String(500))
-    sample_flowcell_id = db.Column(db.Integer, db.ForeignKey('sample_flowcell.id'))
+    note = db.Column(db.String(500))
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    @property
+    def json(self):
+        return {'id':self.id,
+            'sample_id': self.sample.sample_id,
+                'flowcell_id': self.flowcell_id,
+               'panel': self.panel,
+               'gene_name': self.gene_name,
+               'start_time': proc_time(self.start_time),
+               'end_time': proc_time(self.end_time),
+                'check_type':self.check_type,
+               'result': self.result,
+               'note': self.note,
+               }   
 
 
-# class Target_drug(db.Model):
-#     """
-#     基因	突变类型	相关通路	Tissue	Tissue (中文)	药品通用名	商品名	靶点/原理	审批状态/临床试验状态	临床试验地点	Drug	Trade Name	Target/Rationale	Current Status	Locations	更新记录
-#
-#     """
-#     pass
     
 class Send_info(db.Model):
     __tablename__ = 'infomation'

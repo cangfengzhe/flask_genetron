@@ -126,9 +126,17 @@ class User(UserMixin, db.Model):
                                      backref='receive_user',
                                      foreign_keys=[Send_info.receive_user_id],
                                      lazy="dynamic")
-    check_info_user = db.relationship('Check_info',
-                         backref='receive_user',
-                         foreign_keys=[Check_info.user_id],
+    check_info_user = db.relationship('Sample_check_info',
+                         backref='check_user',
+                         foreign_keys=[Sample_check_info.user_id],
+                         lazy="dynamic")
+    report_user = db.relationship('Sample_report_info',
+                         backref='reporter',
+                         foreign_keys=[Sample_report_info.report_user_id],
+                         lazy="dynamic")
+    report_check_user = db.relationship('Sample_report_info',
+                         backref='checker',
+                         foreign_keys=[Sample_report_info.check_user_id],
                          lazy="dynamic")
     @staticmethod
     def generate_fake(count=100):
@@ -171,7 +179,14 @@ class User(UserMixin, db.Model):
             self.avatar_hash = hashlib.md5(
                 self.email.encode('utf-8')).hexdigest()
         self.followed.append(Follow(followed=self))
-
+    
+    @property
+    def json(self):
+        return {
+            'user_id':self.id,
+            'user_name':self.username
+        }
+    
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
