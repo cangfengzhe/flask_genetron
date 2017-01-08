@@ -49,11 +49,24 @@ var gridElement = $("#grid");
         gridElement.data("kendoGrid").resize();
       }
 
+    function toolbar_click() {
+        var samples =  $("#grid").data("kendoGrid");
+        grid.dataItems()
+        
+          console.log("Toolbar command is clicked!");
+          return false;
+}
+    
+    
  $(window).resize(function(){
         resizeGrid();
       });
                     $("#grid").kendoGrid({
-                        toolbar: ["excel"],
+                        toolbar: ["excel",
+                                 {
+                              template: '<a class="k-button" href="\\#" onclick="return toolbar_click()">Mutation Info</a>'
+                                    }
+                                 ],
                         excel: {
                             allPages: true
                             },

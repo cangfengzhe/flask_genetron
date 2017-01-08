@@ -1,16 +1,15 @@
 #coding=utf-8
+
+
+from flask import Flask, Blueprint, jsonify, make_response
+from flask_restful import Api, Resource, url_for, reqparse
+from json import dumps
 import json
 
-<<<<<<< HEAD
-from flask import Flask, Blueprint, jsonify
-=======
-from flask import Flask, Blueprint, jsonify, make_response
->>>>>>> 798a3ef282cf8e63c7934303926a7cd71497259b
-from flask_restful import Api, Resource, url_for, reqparse
 from . import api
 from ..genetron.models import *
 from ..models import *
-from json import dumps
+from ..tips import *
 
 
 class SnpIndel(Resource):
@@ -21,13 +20,7 @@ class SnpIndel(Resource):
             return jsonify(data=[xx.json for xx in snp_indel_info])
         else:
             return jsonify(data='error')
-<<<<<<< HEAD
-    
-api.add_resource(SnpIndel, '/snpindel/<string:id>', endpoint='snpindel')
-        
-=======
 
->>>>>>> 798a3ef282cf8e63c7934303926a7cd71497259b
     
 class Cnv(Resource):
     def get(self,id):
@@ -37,7 +30,7 @@ class Cnv(Resource):
             return jsonify(data=[xx.json for xx in cnv_info])
         else:
             return jsonify(data='error')
-<<<<<<< HEAD
+
     def put(self, id):
         return {'aa':'bb'}
 
@@ -48,11 +41,6 @@ class Cnv(Resource):
         args = parser.parse_args()
         return {'type':[args.age, args.panel]}
         
-api.add_resource(Cnv, '/cnv/<string:id>', endpoint='cnv')
-
-
-        
-=======
 
         
 class Sv(Resource):
@@ -162,9 +150,9 @@ class Report_info(Resource):
         id=args.id
         panel = args.panel
         start_time = args.start_time
-        writer = args.writer
+        writer = args['writer']
         report_time = args.report_time
-        checker = args.checker
+        checker = args['checker']
         check_time = args.check_time
         finish_time = args.finish_time
         note = args.note
@@ -173,15 +161,15 @@ class Report_info(Resource):
         
         if id !='':
             # // update
-            report_info = Sample_check_info.query.get(id)
+            report_info = Sample_report_info.query.get(id)
             report_info.sample_id=sample.id
             report_info.panel = panel
-            report_info.start_time = start_time
+            report_info.start_time = strptime(start_time)
             report_info.report_user_id = writer #User.query.filter_by(username=writer).first().id
-            report_info.report_time = report_time
+            report_info.report_time = strptime(report_time)
             report_info.check_user_id = checker #User.query.filter_by(username=checker).first().id
-            report_info.check_time = check_time
-            report_info.finish_time = finish_time
+            report_info.check_time = strptime(check_time)
+            report_info.finish_time = strptime(finish_time)
             report_info.note = note
             db.session.commit()
             return jsonify(data=[report_info.json])
@@ -192,12 +180,12 @@ class Report_info(Resource):
             report_info = Sample_report_info()
             report_info.sample_id=sample.id
             report_info.panel = panel
-            report_info.start_time = start_time
-            report_info.report_user_id = User.query.filter_by(username=writer).first().id
-            report_info.report_time = report_time
-            report_info.check_user_id = User.query.filter_by(username=checker).first().id
-            report_info.check_time = check_time
-            report_info.finish_time = finish_time
+            report_info.start_time = strptime(start_time)
+            report_info.report_user_id = writer #User.query.filter_by(username=writer).first().id
+            report_info.report_time = strptime(report_time)
+            report_info.check_user_id = checker # User.query.filter_by(username=checker).first().id
+            report_info.check_time = strptime(check_time)
+            report_info.finish_time = strptime(finish_time)
             report_info.note = note
             db.session.add(report_info)
             db.session.commit()
@@ -224,6 +212,10 @@ class Report_User(Resource):
         response.headers['Content-Type'] = 'application/json'            
         return response
 
+class Sample_Panel(Resource):
+    
+    def get(self):
+        pass
     
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
@@ -231,4 +223,3 @@ api.add_resource(Sv, '/sv/<string:id>')
 api.add_resource(Check_info, '/check/<string:sample_id>')  
 api.add_resource(Report_info, '/report/<string:sample_id>')
 api.add_resource(Report_User, '/user/<string:role_name>')
->>>>>>> 798a3ef282cf8e63c7934303926a7cd71497259b

@@ -367,7 +367,7 @@ class Sample_report_info(db.Model):
             'id': self.id,
             'sample_id': self.sample.sample_id,
             'panel': self.panel,
-            'start_time': self.start_time,
+            'start_time': proc_time(self.start_time),
             'writer':self.reporter.username if self.reporter else '',
             'report_time': proc_time(self.report_time),
             'checker': self.checker.username if self.checker else '',

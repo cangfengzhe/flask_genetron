@@ -648,10 +648,7 @@
                            
                        ],
                     });
-    
-    
-usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
-    
+        
        function UserDropDownEditor(container, options) {
                     $('<input required name="' + options.field + '"/>')
                         .appendTo(container)
@@ -660,16 +657,11 @@ usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
                             dataTextField: "user_name",
                             dataValueField: "user_id",
                             dataSource: {
-                                 // data: usersaaa   
                                 type: "json",
                                 transport: {
                                     read: "/api/user/Reporter"
                                 },
                             },
-                         // schema: {
-                         //        data: "data"
-                         // }
-                        
                         });
                 }
     
@@ -702,9 +694,15 @@ usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
                                 },
                                 parameterMap: function(data, operation) {
                                     if (operation === "update" || operation === "create") {
-                                        data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
-                                        if (data.end_time != ''){
-                                            data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
+                                        data.start_time = kendo.toString(kendo.parseDate(data.start_time), "yyyy-MM-dd HH:mm:ss");
+                                        if (data.report_time != ''){
+                                            data.report_time = kendo.toString(kendo.parseDate(data.report_time), "yyyy-MM-dd HH:mm:ss");
+                                        }
+                                        if (data.check_time != ''){
+                                            data.check_time = kendo.toString(kendo.parseDate(data.check_time), "yyyy-MM-dd HH:mm:ss");
+                                        }
+                                        if (data.finish_time != ''){
+                                            data.finish_time = kendo.toString(kendo.parseDate(data.finish_time), "yyyy-MM-dd HH:mm:ss");
                                         }
                                     
                                     }
@@ -725,9 +723,9 @@ usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
                                      id: {type: "numeric", nullable: true},
                                      panel: { type: "string", validation: { required: true } },
                                      start_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", },
-                                     writer: { type: "string", nullable: false, },
+                                     writer: {  nullable: false, },
                                      report_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}"},
-                                     checker: { type: "string" },
+                                     checker: {},
                                      check_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },
                                      finish_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },
                                      note: { type: "string", nullable: true },
@@ -756,26 +754,28 @@ usersaaa={'data':[{"user_id": 4, "user_name": "test"}]};
                             {
                                 field:"start_time",
                                 title: "开始时间",
-                                width: 50,
+                                width: 150,
+                                format: "{0: yyyy-MM-dd HH:mm:ss}"
                             },
                             {
                                 field:"writer",
                                 title: "初稿人",
                                 width: 80,
                                 editor: UserDropDownEditor,
-                                template: "#=writer.user_name#" 
+                                // template: "#=writer.user_name#"
                             },
                             {
                                 field:"report_time",
                                 title: "初稿时间",
                                 width: 150,
+                                format: "{0: yyyy-MM-dd HH:mm:ss}"
                             },
                             {
                                 field:"checker",
                                 title: "审核人",
                                 width: 80,
                                 editor: UserDropDownEditor,
-                                template: "#=checker.user_name#" 
+                                // template: "#=checker.user_name#" 
                             },
                             {
                                 field:"check_time",
