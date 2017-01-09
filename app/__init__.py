@@ -15,7 +15,6 @@ mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
 pagedown = PageDown()
-# api = Api()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
@@ -60,7 +59,7 @@ def create_app(config_name):
     # api.init_app(app)
     from .models import User,Role
     # from genetron.models import *
-    admin=Admin()
+    admin=Admin(app,  template_mode='bootstrap3')
     admin.add_view(MyModelView(User, db.session))
     admin.add_view(MyModelView(Role, db.session))
     admin.add_view(MyModelView(Biomarker, db.session))
@@ -83,6 +82,9 @@ def create_app(config_name):
     
     from .api import restful_api as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='/api')
+    
+#     from .admin import admin as api_admin
+#     app.register_blueprint(api_admin, url_prefix='/admin')
     
     
     return app

@@ -734,11 +734,14 @@
                             },
                             pageSize: 5,
                         },
-                        toolbar: ["create"],
+                        {% if current_user.is_reporter() %}
+                            toolbar: ["create"],
+                           editable: "popup",
+                         {% endif %}
                         scrollable: false,
                         sortable:true,
                         pageable: true,
-                        editable: "popup",
+                        
                         dataBound: function() {
                             console.log(this.dataSource.totalPages())
                             if (this.dataSource.totalPages() <= 1) {

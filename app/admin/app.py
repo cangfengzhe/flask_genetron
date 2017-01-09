@@ -14,16 +14,6 @@ class MyModelView(sqla.ModelView):
 
     # inline_models = ['Role']
     column_hide_backrefs = False
-    # form_extra_fields = {
-    #     'role': sqla.fields.QuerySelectField(
-    #         label='name',
-    #         query_factory=lambda: Role.query.all,
-    #         widget=Select2Widget()
-    #     )
-    # }
-    # column_list = ('email', 'username', 'role')
-    # def is_accessible(self):
-    #     return login.current_user.is_authenticated
     def is_accessible(self):
         return True
 

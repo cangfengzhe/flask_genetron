@@ -326,13 +326,18 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
-
+    
+    def is_reporter(self):
+        return self.can(Permission.CREATE_DB)
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
         return False
 
     def is_administrator(self):
+        return False
+    
+    def is_reporter(self):
         return False
 
 login_manager.anonymous_user = AnonymousUser

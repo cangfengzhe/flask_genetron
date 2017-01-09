@@ -161,7 +161,7 @@ $(document).ready(function() {
                 ],
                 def: 0
             },
-            {% if current_user.is_administrator() %}
+            {% if current_user.is_reporter() %}
             {
                 label: "病理提示:",
                 name: "indication"
