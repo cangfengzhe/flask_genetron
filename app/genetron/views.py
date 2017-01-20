@@ -78,7 +78,7 @@ def sample_info():
 
 @genetron.route('/sample_table')
 def sample_table():
-    data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') |  Sample_info.panel.like('%ctDNA%'))
+    data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') |  Sample_info.panel.like('%ctDNA%') | Sample_info.panel.like('%63%'))
     return jsonify(
         data=[i.json for i in data if i.patient]
     )

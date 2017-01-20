@@ -135,7 +135,23 @@ class Sample_info(db.Model):
         else:
             return ''
         
-
+    
+    def stat_json(self):
+        
+        return {
+            'id': self.id,
+            'sample':self.sample_id,
+            'panel': self.panel,
+            'finish_time': proc_time(self.finish_time),
+            'patient_name': self.sample.patient.name,
+            'sex': self.sample.patient.sex,
+            'age': self.sample.patient.age,
+            'blts': self.sample.indication,
+            'tissue': self.sample.tissue,
+            'tumor': self.sample.tumor,
+            ''
+        }
+    
     @property
     def json(self):
         if self.patient:
@@ -375,6 +391,8 @@ class Sample_report_info(db.Model):
             'finish_time': proc_time(self.finish_time),
             'note': self.note
             }
+    
+
     
 class Sample_check_info(db.Model):
     """
