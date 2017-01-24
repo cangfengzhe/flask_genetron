@@ -40,3 +40,4 @@ logs
 # Virtual environment
 venv
 env
+.idea/

@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0fd3dc4d-c1bc-47d0-83f4-2a9c1ade8bc9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/genetron/js/grid.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/static/genetron/js/gridaa.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/api/views.py" afterPath="$PROJECT_DIR$/app/api/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/genetron/grid2.html" afterPath="$PROJECT_DIR$/app/templates/genetron/grid2.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config.py" afterPath="$PROJECT_DIR$/config.py" />
     </list>
     <ignored path="flasky.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,20 +29,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/genetron/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-645">
-              <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="grid.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/templates/genetron/grid.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
+            <state relative-caret-position="570">
               <caret line="38" column="66" selection-start-line="36" selection-start-column="40" selection-end-line="38" selection-end-column="66" />
               <folding />
             </state>
@@ -57,7 +42,7 @@
       <file leaf-file-name="grid2.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/templates/genetron/grid2.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="256">
+            <state relative-caret-position="510">
               <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
               <folding />
             </state>
@@ -87,7 +72,7 @@
       <file leaf-file-name="gridaa.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/static/genetron/js/gridaa.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
+            <state relative-caret-position="1215">
               <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
               <folding />
             </state>
@@ -97,9 +82,63 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/genetron/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="233" column="4" selection-start-line="233" selection-start-column="4" selection-end-line="233" selection-end-column="4" />
-              <folding />
+            <state relative-caret-position="3375">
+              <caret line="234" column="4" selection-start-line="234" selection-start-column="4" selection-end-line="234" selection-end-column="4" />
+              <folding>
+                <marker date="1485228060000" expanded="false" signature="15:262" ph="import ..." />
+                <marker date="1485228060000" expanded="true" signature="298:348" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="377:1239" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="382:563" ph="&quot;&quot;&quot;return dict list with data from request.form...&quot;&quot;&quot;" />
+                <marker date="1485228060000" expanded="true" signature="569:673" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="740:1195" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="772:869" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="1284:1336" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="1392:1449" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="1505:1563" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="1620:1718" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="1761:1812" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="1865:2032" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="2086:2302" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="2380:2615" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="2648:2845" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="2668:2825" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="2695:2825" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="2877:3075" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="2897:3055" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="2924:3055" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="3106:3255" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="3126:3235" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="3341:4870" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="3520:3675" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="3885:4338" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="4229:4338" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="4376:4738" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="4911:4961" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="4993:5625" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="5209:5601" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="5244:5391" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="5659:5878" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="5921:6926" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="5926:5968" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+                <marker date="1485228060000" expanded="true" signature="6605:6851" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="7001:9132" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="7481:7646" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="7841:8056" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="8352:8702" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="8726:8990" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="9198:11915" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="9203:9325" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+                <marker date="1485228060000" expanded="true" signature="10061:10573" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="10287:10351" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="10365:10506" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="10605:11186" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="10833:10962" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="10888:10962" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="10976:11119" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="11218:11738" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="11445:11514" ph="..." />
+                <marker date="1485228060000" expanded="true" signature="11528:11671" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -116,13 +155,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/api/views.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="340">
-              <caret line="39" column="46" selection-start-line="39" selection-start-column="46" selection-end-line="39" selection-end-column="46" />
+              <caret line="39" column="36" selection-start-line="39" selection-start-column="36" selection-end-line="39" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/main/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-165">
+              <caret line="99" column="19" selection-start-line="99" selection-start-column="19" selection-end-line="99" selection-end-column="19" />
               <folding>
-                <element signature="e#14#25#0" expanded="true" />
+                <element signature="e#0#108#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -201,10 +250,8 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="22" />
-    <option name="y" value="12" />
-    <option name="width" value="1235" />
-    <option name="height" value="777" />
+    <option name="width" value="1280" />
+    <option name="height" value="800" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -231,6 +278,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -277,131 +326,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="static" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="static" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="kendo_ui" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="static" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="flask_genetron" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="auth" />
+              <option name="myItemId" value="main" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -425,8 +350,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -435,7 +358,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../flask-admin" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../flaskbb" />
     <property name="FullScreen" value="true" />
   </component>
   <component name="RecentsManager">
@@ -728,16 +651,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="22" y="12" width="1235" height="777" extended-state="0" />
+    <frame x="0" y="0" width="1280" height="800" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26523888" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26449564" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3286119" sideWeight="0.51130855" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32954547" sideWeight="0.4914712" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3274596" sideWeight="0.48869145" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3252841" sideWeight="0.48869145" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -930,13 +853,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/main/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" column="11" selection-start-line="8" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="675">
@@ -1056,43 +972,79 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/genetron/views2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/genetron/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-645">
-          <caret line="5" column="22" selection-start-line="5" selection-start-column="22" selection-end-line="5" selection-end-column="22" />
+        <state relative-caret-position="60">
+          <caret line="21" column="22" selection-start-line="21" selection-start-column="22" selection-end-line="21" selection-end-column="22" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/api/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#27#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/genetron/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="233" column="4" selection-start-line="233" selection-start-column="4" selection-end-line="233" selection-end-column="4" />
-          <folding />
+        <state relative-caret-position="3375">
+          <caret line="234" column="4" selection-start-line="234" selection-start-column="4" selection-end-line="234" selection-end-column="4" />
+          <folding>
+            <marker date="1485228060000" expanded="false" signature="15:262" ph="import ..." />
+            <marker date="1485228060000" expanded="true" signature="298:348" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="377:1239" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="382:563" ph="&quot;&quot;&quot;return dict list with data from request.form...&quot;&quot;&quot;" />
+            <marker date="1485228060000" expanded="true" signature="569:673" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="740:1195" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="772:869" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="1284:1336" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="1392:1449" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="1505:1563" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="1620:1718" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="1761:1812" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="1865:2032" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="2086:2302" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="2380:2615" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="2648:2845" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="2668:2825" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="2695:2825" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="2877:3075" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="2897:3055" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="2924:3055" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="3106:3255" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="3126:3235" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="3341:4870" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="3520:3675" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="3885:4338" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="4229:4338" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="4376:4738" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="4911:4961" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="4993:5625" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="5209:5601" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="5244:5391" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="5659:5878" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="5921:6926" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="5926:5968" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1485228060000" expanded="true" signature="6605:6851" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="7001:9132" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="7481:7646" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="7841:8056" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="8352:8702" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="8726:8990" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="9198:11915" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="9203:9325" ph="&quot;&quot;&quot;...&quot;&quot;&quot;" />
+            <marker date="1485228060000" expanded="true" signature="10061:10573" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="10287:10351" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="10365:10506" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="10605:11186" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="10833:10962" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="10888:10962" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="10976:11119" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="11218:11738" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="11445:11514" ph="..." />
+            <marker date="1485228060000" expanded="true" signature="11528:11671" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/static/genetron/js/gridaa.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
+        <state relative-caret-position="1215">
           <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
           <folding />
         </state>
@@ -1116,7 +1068,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/templates/genetron/grid.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
+        <state relative-caret-position="570">
           <caret line="38" column="66" selection-start-line="36" selection-start-column="40" selection-end-line="38" selection-end-column="66" />
           <folding />
         </state>
@@ -1124,18 +1076,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/templates/genetron/grid2.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
+        <state relative-caret-position="510">
           <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/api/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/api/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
-          <caret line="39" column="46" selection-start-line="39" selection-start-column="46" selection-end-line="39" selection-end-column="46" />
+          <caret line="39" column="36" selection-start-line="39" selection-start-column="36" selection-end-line="39" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/genetron/views2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="26" column="29" selection-start-line="26" selection-start-column="29" selection-end-line="26" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/main/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-165">
+          <caret line="99" column="19" selection-start-line="99" selection-start-column="19" selection-end-line="99" selection-end-column="19" />
           <folding>
-            <element signature="e#14#25#0" expanded="true" />
+            <element signature="e#0#108#0" expanded="true" />
           </folding>
         </state>
       </provider>
