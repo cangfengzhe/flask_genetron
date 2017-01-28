@@ -217,6 +217,19 @@ class Sample_Panel(Resource):
     def get(self):
         pass
     
+class Sample_Sate(Resource):
+    sample = Sample_info.query.all()
+    
+    
+    
+    def json(self, ):
+        return {
+            
+        }
+    
+    def get(self):
+        pass
+    
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
 api.add_resource(Sv, '/sv/<string:id>')
