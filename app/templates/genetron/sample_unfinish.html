@@ -1,0 +1,256 @@
+{% extends "genetron/base.html" %}
+
+{% block head %}
+{{ super() }}
+
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.common.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.rtl.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.bootstrap.min.css')}}" rel="stylesheet">
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<style>
+      html,
+      body,
+      #parent,
+      #grid
+      {
+        margin: 0;
+        padding: 0;
+        border-width: 0;
+        height: 100%; /* DO NOT USE !important for setting the Grid height! */
+      }
+
+      html
+      {
+        overflow: hidden;
+        font: 13px sans-serif;
+      }
+#grid{
+ height:90%;
+}
+    
+    .finish{
+     background-color: #BEDB39;
+        
+    }
+    
+ tr.finish:hover{
+     background-color: #BEDB39;
+        
+    }
+   
+    </style>
+
+ <div id='parent'>           <div id="grid"></div> </div>
+
+
+<script>
+
+var gridElement = $("#grid");
+
+
+      function resizeGrid() {
+        gridElement.data("kendoGrid").resize();
+      }
+
+    function toolbar_click() {
+        var samples =  $("#grid").data("kendoGrid");
+        grid.dataItems()
+        
+          console.log("Toolbar command is clicked!");
+          return false;
+}
+    
+    
+ $(window).resize(function(){
+        resizeGrid();
+      });
+    
+
+                    $("#grid").kendoGrid({
+                        toolbar: ["excel"
+                                 ],
+                        excel: {
+                            allPages: true
+                            },
+                        dataSource: {
+                            transport: {
+                                read:  {
+                                url: "/api/sample_flowcell",
+                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                },
+                           
+                            },
+                            schema: {
+
+                            type: 'json',
+                            data: "data",
+                            total: function(data) {
+                                return data.data.length;
+                                
+                            },
+                            model: {
+                                 fields: {
+                                     id: { type: "string" },
+                                     name: { type: "string" },
+                                     //hospital: { type: "string" },
+                                     panel: { type: "string" },
+                                     //blts: { type: "string" },
+                                     //tumor: { type: "string" },
+                                     //tissue: { type: "string" },
+                                     //collect_time: { type: "date" },
+                                     //accept_time: { type: "date" },
+                                     class_time: { type: "date" },
+                                     submit_time: { type: "date" },
+                                     bioinfo_finish_time: { type: "date" },
+                                     bioinfo_report_time: { type: "date" },
+                                     //ask_histology_time: { type: "date" },
+                                     //get_histology_time: { type: "date" },
+                                     is_finish_time: { type: "date" },
+                                     end_time: { type: "date" },
+                                     xj_time: { type: "date" },
+                                     note: { type: "string" },
+                                     
+                                    }
+                                }
+                            },
+                            sort: {
+                                field: "class_time",
+                                dir: "desc"
+                            },
+                            pageSize: 20,
+                        },
+     //                   height: 800,
+                        // rowTemplate: 'df<br>',
+                        dataBound: function () {
+                            dataView = this.dataSource.view();
+                            for(var i = 0; i < dataView.length; i++) {
+                                if(dataView[i].panel === "panel88") {
+                                   var uid = dataView[i].uid;
+                                   $("#grid tbody").find("tr[data-uid=" + uid + "]").addClass("finish");
+                                 }
+                            }
+                        },
+                        scrollable: true,
+                        filterable: {
+                            extra: false,
+                            operators: {
+                                string: {
+                                    startswith: "Starts with",
+                                    eq: "Is equal to",
+                                    neq: "Is not equal to"
+                                }
+                            }
+                        },
+                        filterable:true,
+                        sortable:true,
+                        pageable: true,
+                        columns: [
+                            {
+                                field:"sample_id",
+                                title: "ID",
+                                width: 100,
+                                filterable: true,
+                                //{{url_for('genetron.sample_info')}}" + '?id='
+                                template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'>#=sample_id#</a>'
+   
+
+                            },
+//                             {
+//                                 field:"name",
+//                                 title: "姓名",
+//                                 width: 80,
+//                                 filterable: true,
+
+//                             },
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 120,
+                                filterable: true,
+                                
+
+                            },
+               
+//                             {
+//                                 field:"tumor",
+//                                 title: "癌种",
+//                                 width: 100,
+//                                 filterable: true,
+
+//                             },
+//                             {
+//                                 field:"tissue",
+//                                 title: "组织",
+//                                 width: 200,
+//                                 filterable: true,
+
+//                             },
+
+                            {
+                                field:"xj_time",
+                                title: "下机时间",
+                                width: 160,
+                                filterable: true,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+
+                            },
+                            {
+                                field:"class_time",
+                                title: "分类时间",
+                                width: 160,
+                                filterable: true,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+
+                            },
+                            {
+                                field:"submit_time",
+                                title: "提交时间",
+                                width: 160,
+                                filterable: true,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+
+                            },
+                            {
+                                field: "bioinfo_finish_time",
+                                title: "生信完成时间",
+                                width: 160,
+                                filterable: true,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+
+                            },
+                            {
+                                field: "bioinfo_report_time",
+                                title: "生信报告时间",
+                                width: 160,
+                                filterable: true,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+
+                            },
+      
+ 
+                              {
+                                field: "note",
+                                title: "备注",
+                                width: 130,
+
+                            },
+                           
+                       ],
+                    }); 
+
+            </script>
+
+    {% endblock %}
+
+    {% block scripts %}
+    {% endblock %}

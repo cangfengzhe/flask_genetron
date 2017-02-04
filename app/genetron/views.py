@@ -3,17 +3,21 @@
 from flask import jsonify, request,flash
 from flask import render_template
 from collections import defaultdict
-from models import *
-from . import genetron
+
 from flask_login import login_required
 import sqlalchemy
 import datetime
+
 from forms import *
+from models import *
+from . import genetron
+from  configure import Configure as configure
 
 
 @genetron.route('/')
 def index():
     return render_template('genetron/index.html')
+
 
 def get_request_data(form):
     '''
@@ -22,7 +26,6 @@ def get_request_data(form):
     :param form: MultiDict from `request.form`
     :rtype: {id1: {field1:val1, ...}, ...} [fieldn and valn are strings]
     '''
-
     # request.form comes in multidict [('data[id][field]',value), ...]
 
     # fill in id field automatically
@@ -170,11 +173,6 @@ def check_sample(sample_id):
     sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
     print(sample_id)
     if not sample_index:
-        print('not link')
-        # patient = Patient_info(patient_id=sample_id)
-        # db.session.add(patient)
-        # db.session.flush()
-        # db.session.refresh(patient)
         sample = Sample_info(sample_id=sample_id)
         db.session.add(sample)
         db.session.flush()
@@ -183,6 +181,7 @@ def check_sample(sample_id):
         sample_index = sample
         db.session.commit()
     return sample_index
+
 
 def check_flowcell(flowcell_id):
     flowcell_index = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
@@ -212,8 +211,22 @@ def link(sample_id, flowcell_id, panel):
     else: 
         return jsonify(info={'status':'exists', 'type':'link'})
 
+    
+def set_sample_flowcell_time(sample_flowcell, item, value=None):
+    sf = Sample_flowcell_info.query.filter_by(sample_flowcell=sample_flowcell.id).first()
+    if  sf:
+        if item == 'bioinfo_report_time':
+            sf.bioinfo_finish = True
+        setattr(sf, item, value)  
+    else:
+        sf = Sample_flowcell_info(sample_flowcell=sample_flowcell.id)
+        setattr(sf, item, value)
+    db.session.add(sf)
+    db.session.commit()         
+
 
 def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
+    
     if not sample_id:
         return jsonify(info={'status':'error', 'msg':'sample is null', 'type':item_type})
     #sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
@@ -245,9 +258,17 @@ def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
                             flowcell_id=flowcell_index.id
                             ).order_by(sqlalchemy.desc(Sample_flowcell.id)).first()
     if sample_flowcell:
-        sample_class = Sample_time_info(sample_flowcell=sample_flowcell.id, item_type=item_type, item_time=dt,item_note=item_note)
+        sample_class = Sample_time_info(sample_flowcell=sample_flowcell.id, item_type=item_type, item_time=dt, item_note=item_note)
         db.session.add(sample_class)
         db.session.commit()
+        # sample_flowcell_info = Sample_flowcell_info(sample_flowcell=sample_flowcell, )
+        
+        # 写入 sample_flowcell_info 表
+        if item_type in ['class', 'submit', 'bioinfo_finish', 'bioinfo_report']:
+            print(item_type)
+            item_type_time = item_type + '_time'
+            set_sample_flowcell_time(sample_flowcell, item_type_time, dt)
+            
         return jsonify(info={'status':'success', 'type':item_type})
     else:
         return jsonify(info={'status':'error', 'msg': 'the relation between sample and flowcell does not exist', 'type':item_type})
@@ -269,14 +290,14 @@ def api():
     flowcell_id = request.args.get('flowcell')
     
     sample_id = request.args.get('sample')
-    dt = request.args.get('time', datetime.datetime.now().strftime('%Y-%m-%d_%H%M%S')) # 传入时间使用 %Y-%m-%d_%H:%M:%S
-    dt = datetime.datetime.strptime(dt, '%Y-%m-%d_%H%M%S')
+    import datetime
+    dt = request.args.get('time', datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')) # 传入时间使用 %Y-%m-%d_%H:%M:%S
+    dt = datetime.datetime.strptime(dt, '%Y-%m-%d_%H:%M:%S')
     item_note = request.args.get('note')
     panel = request.args.get('panel')
-    if panel=='panel500_203':
-        panel='panel203'
-    if panel == 'panel203_51':
-        panel='panel51'
+    if panel in configure.panel_trans:  # 转平台panel处理
+        panel = 'panel' + panel.split('_')[1]
+        
     # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02
     if api_type == 'sj_time':
         if not flowcell_id:
@@ -290,6 +311,7 @@ def api():
             db.session.add(flowcell)
             db.session.commit()
         return jsonify(info={'status':'success', 'type':api_type})
+    
     elif api_type == 'xj_time':  
         if not flowcell_id:
             return jsonify(info={'status':'error', 'msg':'flowcell is null', 'type':api_type})
@@ -303,6 +325,7 @@ def api():
             db.session.add(flowcell)
             db.session.commit()
         return jsonify(info={'status':'success', 'type':api_type})
+    
     elif api_type == 'cf_time': 
         if not flowcell_id:
             return jsonify(info={'status':'error', 'msg':'flowcell is null', 'type':api_type})
@@ -320,7 +343,8 @@ def api():
         return link(sample_id, flowcell_id, panel)
     else:
         return sample_time(sample_id, flowcell_id,panel, api_type, dt,item_note )
-        
+
+    
 @genetron.route('/check_info',  methods=['GET', 'POST'])    
 def check_info():
     flowcell = request.values.get('flowcell', '')
@@ -338,5 +362,6 @@ def check_info():
     
     return jsonify(info={'status':'success', 'type':'check'})
 
-            
-    
+@genetron.route('/todo',  methods=['GET', 'POST'])
+def todo():          
+    return render_template('genetron/sample_unfinish.html')
