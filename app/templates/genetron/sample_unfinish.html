@@ -34,30 +34,29 @@
         overflow: hidden;
         font: 13px sans-serif;
       }
-#grid{
- height:90%;
-}
+
+      #grid{
+       height:90%;
+      }
     
     .finish{
      background-color: #BEDB39;
-        
     }
     
  tr.finish:hover{
-     background-color: #BEDB39;
-        
+     background-color: #BEDB39;  
     }
    
-    </style>
 
- <div id='parent'>           <div id="grid"></div> </div>
 
+</style>
+
+<div id='parent'>
+    <div id="grid"></div>
+</div>
 
 <script>
-
 var gridElement = $("#grid");
-
-
       function resizeGrid() {
         gridElement.data("kendoGrid").resize();
       }
@@ -100,13 +99,14 @@ var gridElement = $("#grid");
                             },
                             model: {
                                  fields: {
-                                     id: { type: "string" },
+                                    id: { type: "string" },
+                                    flowcell: {type: "string"},
                                      name: { type: "string" },
                                      //hospital: { type: "string" },
                                      panel: { type: "string" },
                                      //blts: { type: "string" },
-                                     //tumor: { type: "string" },
-                                     //tissue: { type: "string" },
+                                     tumor: { type: "string" },
+                                     tissue: { type: "string" },
                                      //collect_time: { type: "date" },
                                      //accept_time: { type: "date" },
                                      class_time: { type: "date" },
@@ -130,7 +130,6 @@ var gridElement = $("#grid");
                             pageSize: 20,
                         },
      //                   height: 800,
-                        // rowTemplate: 'df<br>',
                         dataBound: function () {
                             dataView = this.dataSource.view();
                             for(var i = 0; i < dataView.length; i++) {
@@ -160,41 +159,34 @@ var gridElement = $("#grid");
                                 title: "ID",
                                 width: 100,
                                 filterable: true,
-                                //{{url_for('genetron.sample_info')}}" + '?id='
                                 template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'>#=sample_id#</a>'
-   
-
                             },
-//                             {
-//                                 field:"name",
-//                                 title: "姓名",
-//                                 width: 80,
-//                                 filterable: true,
-
-//                             },
+                             {
+                                 field:"flowcell",
+                                 title: "Flowcell",
+                                 width: 100,
+                                 filterable: true,
+                             },
                             {
                                 field:"panel",
                                 title: "panel",
                                 width: 120,
                                 filterable: true,
-                                
-
                             },
                
-//                             {
-//                                 field:"tumor",
-//                                 title: "癌种",
-//                                 width: 100,
-//                                 filterable: true,
+                             {
+                                 field:"tumor",
+                                 title: "癌种",
+                                 width: 200,
+                                 filterable: true,
 
-//                             },
-//                             {
-//                                 field:"tissue",
-//                                 title: "组织",
-//                                 width: 200,
-//                                 filterable: true,
-
-//                             },
+                             },
+                             {
+                                 field:"tissue",
+                                 title: "组织",
+                                 width: 200,
+                                 filterable: true,
+                             },
 
                             {
                                 field:"xj_time",
@@ -202,7 +194,6 @@ var gridElement = $("#grid");
                                 width: 160,
                                 filterable: true,
                                 format: "{0:yyyy-MM-dd HH:mm:ss}",
-
                             },
                             {
                                 field:"class_time",
@@ -248,9 +239,11 @@ var gridElement = $("#grid");
                        ],
                     }); 
 
-            </script>
 
-    {% endblock %}
 
-    {% block scripts %}
-    {% endblock %}
+</script>
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

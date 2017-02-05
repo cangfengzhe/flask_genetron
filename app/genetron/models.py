@@ -23,12 +23,10 @@ class Patient_info(db.Model):
     email = db.Column(db.String(40))
     tel = db.Column(db.String(30))
     hospital = db.Column(db.String(30))
-    
     diagnose_history = db.Column(db.String(500))
     therapy_history = db.Column(db.String(500))
     drug_history = db.Column(db.String(500))
     family_history = db.Column(db.String(500))
-    
     indication = db.Column(db.String(500)) # 病理提示
     tissue = db.Column(db.String(150))
     tumor = db.Column(db.String(150))
@@ -469,26 +467,17 @@ class Sample_flowcell_info(db.Model):
             'sample_id': self.sample_flowcell_id.sample.sample_id,
             'flowcell': self.sample_flowcell_id.flowcell.flowcell_id,
             'panel': self.sample_flowcell_id.panel,
+            'tissue': self.sample_flowcell_id.sample.tumor,
+            'tumor': self.sample_flowcell_id.sample.tissue,
             'sj_time': proc_time(self.sample_flowcell_id.flowcell.sj_time),
             'xj_time': proc_time(self.sample_flowcell_id.flowcell.xj_time),
             'cf_time': proc_time(self.sample_flowcell_id.flowcell.cf_time),
             'class_time': proc_time(self.class_time),
             'submit_time': proc_time(self.submit_time),
             'bioinfo_finish_time':  proc_time(self.bioinfo_finish_time),
-            'bioinfo_report_time':  proc_time(self.bioinfo_finish_time),
-            'finish_time':  proc_time(self.bioinfo_finish_time),
+            'bioinfo_report_time':  proc_time(self.bioinfo_report_time),
+            'finish_time':  proc_time(self.finish_time),
             'bioinfo_finish': self.bioinfo_finish,
             'finish': self.finish,
             'note': self.note
         }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

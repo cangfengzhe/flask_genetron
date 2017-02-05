@@ -1,26 +1,29 @@
-#coding=utf-8
+# coding=utf-8
 
-
-from flask import Flask, Blueprint, jsonify, make_response
-from flask_restful import Api, Resource, url_for, reqparse
 from json import dumps
-import json
+
+from flask import jsonify, make_response
+from flask_restful import Resource, reqparse
 
 from . import api
-from ..genetron.models import *
+from ..genetron.configure import Configure as configure
 from ..models import *
 from ..tips import *
 
 
-def get_sample(xx):
+def get_todo_sample(xx):
     sample_id = xx.sample_flowcell_id.sample.sample_id
-    if ('LAA' in sample_id and sample_id[-2] == 'T') or ('LAA' not in sample_id and  'T' in sample_id):
+    panel = xx.sample_flowcell_id.panel
+    if (('LAA' in sample_id and sample_id[-2] == 'T') or \
+                ('LAA' not in sample_id and 'T' in sample_id)) and \
+                    panel in configure.panel_clinical:
         return True
     else:
         return False
 
+
 class SnpIndel(Resource):
-    def get(self,id):
+    def get(self, id):
         sample = Sample_info.query.filter_by(sample_id=id).first()
         if sample:
             snp_indel_info = sample.snp_indel_info
@@ -28,9 +31,9 @@ class SnpIndel(Resource):
         else:
             return jsonify(data='error')
 
-    
+
 class Cnv(Resource):
-    def get(self,id):
+    def get(self, id):
         sample = Sample_info.query.filter_by(sample_id=id).first()
         if sample:
             cnv_info = sample.cnv_info
@@ -39,29 +42,28 @@ class Cnv(Resource):
             return jsonify(data='error')
 
     def put(self, id):
-        return {'aa':'bb'}
+        return {'aa': 'bb'}
 
     def delete(self, id):
         parser = reqparse.RequestParser()
         parser.add_argument('age', type=int, help='Rate cannot be converted')
         parser.add_argument('panel')
         args = parser.parse_args()
-        return {'type':[args.age, args.panel]}
-        
+        return {'type': [args.age, args.panel]}
 
-        
+
 class Sv(Resource):
-    def get(self,id):
+    def get(self, id):
         sample = Sample_info.query.filter_by(sample_id=id).first()
         if sample:
             sv_info = sample.sv_info
             return jsonify(data=[xx.json for xx in sv_info])
         else:
             return jsonify(data='error')
- 
+
 
 class Check_info(Resource):
-    def get(self,sample_id):
+    def get(self, sample_id):
         sample = Sample_info.query.filter_by(sample_id=sample_id).first()
         if sample:
             check_info = sample.check_info
@@ -82,7 +84,7 @@ class Check_info(Resource):
         parser.add_argument('note', type=str, help='note')
         # parser.add_argument('callback', type=str, help='note')
         args = parser.parse_args()
-        id=args.id
+        id = args.id
         flowcell_id = args.flowcell_id
         panel = args.panel
         check_type = args.check_type
@@ -93,11 +95,11 @@ class Check_info(Resource):
         note = args.note
         # callback=args.callback
         sample = Sample_info.query.filter_by(sample_id=sample_id).first()
-        
-        if id !='':
+
+        if id != '':
             # // update
             check_info = Sample_check_info.query.get(id)
-            check_info.sample_id=sample.id
+            check_info.sample_id = sample.id
             check_info.flowcell_id = flowcell_id
             check_info.panel = panel
             check_info.check_type = check_type
@@ -114,13 +116,14 @@ class Check_info(Resource):
             # return '{}'
         else:
             # creat
-            check_info = Sample_check_info(sample_id=sample.id, flowcell_id=flowcell_id, panel=panel, check_type=check_type, gene_name=gene_name,
-                                          start_time=start_time, end_time=end_time, result=result, note=note)
+            check_info = Sample_check_info(sample_id=sample.id, flowcell_id=flowcell_id, panel=panel,
+                                           check_type=check_type, gene_name=gene_name,
+                                           start_time=start_time, end_time=end_time, result=result, note=note)
             db.session.add(check_info)
             db.session.commit()
             print(type(check_info))
             return jsonify(data=[check_info.json])
-    
+
     def delete(self, sample_id):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str, help='id')
@@ -130,18 +133,18 @@ class Check_info(Resource):
         check_info = Sample_check_info.query.get(id)
         db.session.delete(check_info)
         db.session.commit()
-        return jsonify(data=[{'id':id}])
- 
+        return jsonify(data=[{'id': id}])
+
 
 class Report_info(Resource):
-    def get(self,sample_id):
+    def get(self, sample_id):
         sample = Sample_info.query.filter_by(sample_id=sample_id).first()
         if sample:
             report_info = sample.report_info
             return jsonify(data=[xx.json for xx in report_info])
         else:
             return jsonify(data='error')
-        
+
     def post(self, sample_id):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str, help='id')
@@ -155,7 +158,7 @@ class Report_info(Resource):
         parser.add_argument('note', type=str, help='note')
         # parser.add_argument('callback', type=str, help='note')
         args = parser.parse_args()
-        id=args.id
+        id = args.id
         panel = args.panel
         start_time = args.start_time
         writer = args['writer']
@@ -166,16 +169,16 @@ class Report_info(Resource):
         note = args.note
         # callback=args.callback
         sample = Sample_info.query.filter_by(sample_id=sample_id).first()
-        
-        if id !='':
+
+        if id != '':
             # // update
             report_info = Sample_report_info.query.get(id)
-            report_info.sample_id=sample.id
+            report_info.sample_id = sample.id
             report_info.panel = panel
             report_info.start_time = strptime(start_time)
-            report_info.report_user_id = writer #User.query.filter_by(username=writer).first().id
+            report_info.report_user_id = writer  # User.query.filter_by(username=writer).first().id
             report_info.report_time = strptime(report_time)
-            report_info.check_user_id = checker #User.query.filter_by(username=checker).first().id
+            report_info.check_user_id = checker  # User.query.filter_by(username=checker).first().id
             report_info.check_time = strptime(check_time)
             report_info.finish_time = strptime(finish_time)
             report_info.note = note
@@ -186,12 +189,12 @@ class Report_info(Resource):
         else:
             # create
             report_info = Sample_report_info()
-            report_info.sample_id=sample.id
+            report_info.sample_id = sample.id
             report_info.panel = panel
             report_info.start_time = strptime(start_time)
-            report_info.report_user_id = writer #User.query.filter_by(username=writer).first().id
+            report_info.report_user_id = writer  # User.query.filter_by(username=writer).first().id
             report_info.report_time = strptime(report_time)
-            report_info.check_user_id = checker # User.query.filter_by(username=checker).first().id
+            report_info.check_user_id = checker  # User.query.filter_by(username=checker).first().id
             report_info.check_time = strptime(check_time)
             report_info.finish_time = strptime(finish_time)
             report_info.note = note
@@ -199,7 +202,7 @@ class Report_info(Resource):
             db.session.commit()
             print(type(report_info))
             return jsonify(data=[report_info.json])
-    
+
     def delete(self, sample_id):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str, help='id')
@@ -209,42 +212,40 @@ class Report_info(Resource):
         report_info = Sample_report_info.query.get(id)
         db.session.delete(report_info)
         db.session.commit()
-        return jsonify(data=[{'id':id}])       
-        
+        return jsonify(data=[{'id': id}])
+
 
 class Report_User(Resource):
     def get(self, role_name):
         role = Role.query.filter_by(name=role_name).first()
-        users =  role.users
-        response = make_response(dumps([xx.json for xx in users]))                                      
-        response.headers['Content-Type'] = 'application/json'            
+        users = role.users
+        response = make_response(dumps([xx.json for xx in users]))
+        response.headers['Content-Type'] = 'application/json'
         return response
 
+
 class Sample_Panel(Resource):
-    
     def get(self):
         pass
-    
+
+
 class Sample_Sate(Resource):
     def json(self):
         pass
-    
+
     def get(self):
         pass
 
 
-    
-    
 class Sample_Flowcell_Info(Resource):
-    
     def get(self):
-        return jsonify(data=[xx.json for xx in Sample_flowcell_info.query.all() if get_sample(xx) ])
+        return jsonify(data=[xx.json for xx in Sample_flowcell_info.query.all() if get_todo_sample(xx)])
 
 
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
 api.add_resource(Sv, '/sv/<string:id>')
-api.add_resource(Check_info, '/check/<string:sample_id>')  
+api.add_resource(Check_info, '/check/<string:sample_id>')
 api.add_resource(Report_info, '/report/<string:sample_id>')
 api.add_resource(Report_User, '/user/<string:role_name>')
 api.add_resource(Sample_Flowcell_Info, '/sample_flowcell')
