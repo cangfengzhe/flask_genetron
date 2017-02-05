@@ -13,10 +13,12 @@ from ..tips import *
 
 def get_todo_sample(xx):
     sample_id = xx.sample_flowcell_id.sample.sample_id
+    is_finish = xx.finish
     panel = xx.sample_flowcell_id.panel
     if (('LAA' in sample_id and sample_id[-2] == 'T') or \
                 ('LAA' not in sample_id and 'T' in sample_id)) and \
-                    panel in configure.panel_clinical:
+                    panel in configure.panel_clinical and \
+            not is_finish:
         return True
     else:
         return False

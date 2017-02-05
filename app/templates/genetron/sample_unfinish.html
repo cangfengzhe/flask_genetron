@@ -57,22 +57,7 @@
 
 <script>
 var gridElement = $("#grid");
-      function resizeGrid() {
-        gridElement.data("kendoGrid").resize();
-      }
 
-    function toolbar_click() {
-        var samples =  $("#grid").data("kendoGrid");
-        grid.dataItems()
-        
-          console.log("Toolbar command is clicked!");
-          return false;
-}
-    
-    
- $(window).resize(function(){
-        resizeGrid();
-      });
     
 
                     $("#grid").kendoGrid({
@@ -129,7 +114,6 @@ var gridElement = $("#grid");
                             },
                             pageSize: 20,
                         },
-     //                   height: 800,
                         dataBound: function () {
                             dataView = this.dataSource.view();
                             for(var i = 0; i < dataView.length; i++) {
