@@ -39,7 +39,6 @@ class Patient_info(db.Model):
     sample = db.relationship('Sample_info', backref='patient', lazy="dynamic")
 
 
-
 class Sample_info(db.Model):
     __tablename__ = 'sample_info'
     id = db.Column(db.Integer, primary_key=True)
@@ -148,8 +147,7 @@ class Sample_info(db.Model):
             'age': self.sample.patient.age,
             'blts': self.sample.indication,
             'tissue': self.sample.tissue,
-            'tumor': self.sample.tumor,
-            ''
+            'tumor': self.sample.tumor
         }
     
     @property
@@ -209,6 +207,7 @@ class Flowcell_info(db.Model):
     cf_time = db.Column(db.DateTime)
     sample_flowcell = db.relationship('Sample_flowcell', backref='flowcell', lazy="dynamic")
     
+    
 class Sample_flowcell(db.Model):
     __tablename__='sample_flowcell'
     id = db.Column(db.Integer, primary_key=True)
@@ -216,6 +215,7 @@ class Sample_flowcell(db.Model):
     flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
     panel=db.Column(db.String(200))
     sample_time =  db.relationship('Sample_time_info', backref='sample_flowcell_id', lazy="dynamic")
+    sample_flowcell_info =  db.relationship('Sample_flowcell_info', backref='sample_flowcell_id', lazy="dynamic")
 #Cannot drop index 'flowcell_id': needed in a foreign key constraint
     
 class Sample_time_info(db.Model):
@@ -227,6 +227,7 @@ class Sample_time_info(db.Model):
     item_time = db.Column(db.DateTime, default=datetime.now())
     item_note = db.Column(db.String(200))
 
+    
 class Sample_snp_indel_info(db.Model):
     __tablename__='sample_snp_indel_info'
     id = db.Column(db.Integer, primary_key=True)
@@ -417,7 +418,7 @@ class Sample_check_info(db.Model):
             'sample_id': self.sample.sample_id,
                 'flowcell_id': self.flowcell_id,
                'panel': self.panel,
-               'gene_name': self.gene_name,
+                'gene_name': self.gene_name,
                'start_time': proc_time(self.start_time),
                'end_time': proc_time(self.end_time),
                 'check_type':self.check_type,
@@ -444,3 +445,50 @@ class Send_info(db.Model):
             'info_type':self.info_type,
             'msg': self.info_msg,
         }
+
+    
+class Sample_flowcell_info(db.Model):
+    __tablename__ = 'sample_flowcell_info'
+    id = db.Column(db.Integer, primary_key=True)
+    sample_flowcell = db.Column(db.Integer, db.ForeignKey('sample_flowcell.id')) 
+    # sj_time = db.Column(db.DateTime, default=False)
+    # xj_time = db.Column(db.DateTime, default=False)
+    # cf_time = db.Column(db.DateTime, default=False)
+    class_time = db.Column(db.DateTime)
+    submit_time = db.Column(db.DateTime)
+    bioinfo_finish_time = db.Column(db.DateTime)
+    bioinfo_finish = db.Column(db.Boolean)
+    bioinfo_report_time = db.Column(db.DateTime)
+    finish_time = db.Column(db.DateTime)
+    finish = db.Column(db.Boolean, default=False)
+    note = db.Column(db.String(1000))
+    
+    @property
+    def json(self):
+        return {
+            'sample_id': self.sample_flowcell_id.sample.sample_id,
+            'flowcell': self.sample_flowcell_id.flowcell.flowcell_id,
+            'panel': self.sample_flowcell_id.panel,
+            'sj_time': proc_time(self.sample_flowcell_id.flowcell.sj_time),
+            'xj_time': proc_time(self.sample_flowcell_id.flowcell.xj_time),
+            'cf_time': proc_time(self.sample_flowcell_id.flowcell.cf_time),
+            'class_time': proc_time(self.class_time),
+            'submit_time': proc_time(self.submit_time),
+            'bioinfo_finish_time':  proc_time(self.bioinfo_finish_time),
+            'bioinfo_report_time':  proc_time(self.bioinfo_finish_time),
+            'finish_time':  proc_time(self.bioinfo_finish_time),
+            'bioinfo_finish': self.bioinfo_finish,
+            'finish': self.finish,
+            'note': self.note
+        }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

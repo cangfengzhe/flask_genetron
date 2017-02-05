@@ -12,6 +12,13 @@ from ..models import *
 from ..tips import *
 
 
+def get_sample(xx):
+    sample_id = xx.sample_flowcell_id.sample.sample_id
+    if ('LAA' in sample_id and sample_id[-2] == 'T') or ('LAA' not in sample_id and  'T' in sample_id):
+        return True
+    else:
+        return False
+
 class SnpIndel(Resource):
     def get(self,id):
         sample = Sample_info.query.filter_by(sample_id=id).first()
@@ -61,6 +68,7 @@ class Check_info(Resource):
             return jsonify(data=[xx.json for xx in check_info])
         else:
             return jsonify(data='error')
+
     def post(self, sample_id):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=str, help='id')
@@ -218,21 +226,25 @@ class Sample_Panel(Resource):
         pass
     
 class Sample_Sate(Resource):
-    sample = Sample_info.query.all()
-    
-    
-    
-    def json(self, ):
-        return {
-            
-        }
+    def json(self):
+        pass
     
     def get(self):
         pass
+
+
     
+    
+class Sample_Flowcell_Info(Resource):
+    
+    def get(self):
+        return jsonify(data=[xx.json for xx in Sample_flowcell_info.query.all() if get_sample(xx) ])
+
+
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
 api.add_resource(Sv, '/sv/<string:id>')
 api.add_resource(Check_info, '/check/<string:sample_id>')  
 api.add_resource(Report_info, '/report/<string:sample_id>')
 api.add_resource(Report_User, '/user/<string:role_name>')
+api.add_resource(Sample_Flowcell_Info, '/sample_flowcell')
