@@ -1,10 +1,14 @@
 #coding=utf-8
-from .. import db
+
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 from datetime import datetime
+
 import  sqlalchemy
+
+from .. import db
+
 
 def proc_time(time_var, time_fmt = "%Y-%m-%d %H:%M:%S"):
     if time_var:
@@ -68,6 +72,7 @@ class Sample_info(db.Model):
     sv_info = db.relationship('Sample_sv_info', backref='sample', lazy="dynamic")
     check_info =  db.relationship('Sample_check_info', backref='sample', lazy="dynamic")
     report_info =  db.relationship('Sample_report_info', backref='sample', lazy="dynamic")
+    send_info = db.relationship('Send_info', backref='sample', lazy="dynamic")
     
     def __init__(self, **kwargs):
         super(Sample_info, self).__init__(**kwargs)
@@ -368,11 +373,9 @@ class Sample_report_info(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
     panel = db.Column(db.String(100))
-    start_time = db.Column(db.DateTime)
+    report_type = db.Column(db.String(30))
     report_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    report_time = db.Column(db.DateTime)
-    check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    check_time = db.Column(db.DateTime)
+    start_time = db.Column(db.DateTime)
     finish_time = db.Column(db.DateTime)
     note=db.Column(db.String(500))
     
@@ -382,11 +385,9 @@ class Sample_report_info(db.Model):
             'id': self.id,
             'sample_id': self.sample.sample_id,
             'panel': self.panel,
+            'report_type': self.report_type,
+            'reporter': self.reporter.username if self.reporter else '',
             'start_time': proc_time(self.start_time),
-            'writer':self.reporter.username if self.reporter else '',
-            'report_time': proc_time(self.report_time),
-            'checker': self.checker.username if self.checker else '',
-            'check_time': proc_time(self.check_time),
             'finish_time': proc_time(self.finish_time),
             'note': self.note
             }
@@ -427,8 +428,12 @@ class Sample_check_info(db.Model):
 
     
 class Send_info(db.Model):
-    __tablename__ = 'infomation'
+    """
+    信息沟通
+    """
+    __tablename__ = 'message'
     id = db.Column(db.Integer, primary_key=True)
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
     send_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     receive_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     info_type = db.Column(db.String(100))
@@ -443,6 +448,7 @@ class Send_info(db.Model):
             'info_type':self.info_type,
             'msg': self.info_msg,
         }
+
 
     
 class Sample_flowcell_info(db.Model):

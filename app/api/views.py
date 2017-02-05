@@ -150,10 +150,10 @@ class Report_info(Resource):
         parser.add_argument('id', type=str, help='id')
         parser.add_argument('panel', type=str, help='panel')
         parser.add_argument('start_time', type=str, help='check_type')
-        parser.add_argument('writer', type=str, help='gene_name')
-        parser.add_argument('report_time', type=str, help='start_time')
-        parser.add_argument('checker', type=str, help='end_time')
-        parser.add_argument('check_time', type=str, help='result')
+        parser.add_argument('reporter', type=str, help='gene_name')
+        parser.add_argument('report_type', type=str)
+        # parser.add_argument('checker', type=str, help='end_time')
+        # parser.add_argument('check_time', type=str, help='result')
         parser.add_argument('finish_time', type=str, help='result')
         parser.add_argument('note', type=str, help='note')
         # parser.add_argument('callback', type=str, help='note')
@@ -161,10 +161,10 @@ class Report_info(Resource):
         id = args.id
         panel = args.panel
         start_time = args.start_time
-        writer = args['writer']
-        report_time = args.report_time
-        checker = args['checker']
-        check_time = args.check_time
+        reporter = args['reporter']
+        report_type = args.report_type
+        # checker = args['checker']
+        # check_time = args.check_time
         finish_time = args.finish_time
         note = args.note
         # callback=args.callback
@@ -176,10 +176,10 @@ class Report_info(Resource):
             report_info.sample_id = sample.id
             report_info.panel = panel
             report_info.start_time = strptime(start_time)
-            report_info.report_user_id = writer  # User.query.filter_by(username=writer).first().id
-            report_info.report_time = strptime(report_time)
-            report_info.check_user_id = checker  # User.query.filter_by(username=checker).first().id
-            report_info.check_time = strptime(check_time)
+            report_info.report_user_id = reporter  # User.query.filter_by(username=writer).first().id
+            report_info.report_type = report_type
+            # report_info.check_user_id = checker  # User.query.filter_by(username=checker).first().id
+            # report_info.check_time = strptime(check_time)
             report_info.finish_time = strptime(finish_time)
             report_info.note = note
             db.session.commit()
@@ -192,15 +192,14 @@ class Report_info(Resource):
             report_info.sample_id = sample.id
             report_info.panel = panel
             report_info.start_time = strptime(start_time)
-            report_info.report_user_id = writer  # User.query.filter_by(username=writer).first().id
-            report_info.report_time = strptime(report_time)
-            report_info.check_user_id = checker  # User.query.filter_by(username=checker).first().id
-            report_info.check_time = strptime(check_time)
+            report_info.report_user_id = reporter  # User.query.filter_by(username=writer).first().id
+            report_info.report_type = report_type
+            # report_info.check_user_id = checker  # User.query.filter_by(username=checker).first().id
+            # report_info.check_time = strptime(check_time)
             report_info.finish_time = strptime(finish_time)
             report_info.note = note
             db.session.add(report_info)
             db.session.commit()
-            print(type(report_info))
             return jsonify(data=[report_info.json])
 
     def delete(self, sample_id):
@@ -208,7 +207,7 @@ class Report_info(Resource):
         parser.add_argument('id', type=str, help='id')
         args = parser.parse_args()
         id = args.id
-        print('del', id)
+
         report_info = Sample_report_info.query.get(id)
         db.session.delete(report_info)
         db.session.commit()

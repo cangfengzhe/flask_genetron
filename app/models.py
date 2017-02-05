@@ -134,10 +134,7 @@ class User(UserMixin, db.Model):
                          backref='reporter',
                          foreign_keys=[Sample_report_info.report_user_id],
                          lazy="dynamic")
-    report_check_user = db.relationship('Sample_report_info',
-                         backref='checker',
-                         foreign_keys=[Sample_report_info.check_user_id],
-                         lazy="dynamic")
+
     @staticmethod
     def generate_fake(count=100):
         from sqlalchemy.exc import IntegrityError

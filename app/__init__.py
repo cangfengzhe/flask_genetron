@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
@@ -18,6 +20,7 @@ pagedown = PageDown()
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
+app_dir = os.path.abspath(os.path.dirname(__file__))
 
 from admin.app import MyModelView, ProjectView
 from genetron.models import *

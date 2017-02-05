@@ -4,6 +4,7 @@ genetron = Blueprint('genetron', __name__)
 
 from . import views
 from . import views2
+from . import upload
 
 from ..models import Permission
 

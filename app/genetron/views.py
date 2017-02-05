@@ -1,6 +1,6 @@
 #coding=utf-8
 
-from flask import jsonify, request,flash
+from flask import jsonify, request, flash
 from flask import render_template
 from collections import defaultdict
 
@@ -229,7 +229,6 @@ def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
     
     if not sample_id:
         return jsonify(info={'status':'error', 'msg':'sample is null', 'type':item_type})
-    #sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
     sample_index = check_sample(sample_id)
     if not sample_index:
         return jsonify(info={'status':'error', 'msg':'sample is not in LIMS', 'type':item_type})

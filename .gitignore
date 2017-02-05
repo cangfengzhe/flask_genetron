@@ -41,4 +41,4 @@ logs
 venv
 env
 .idea/*
-
+app/static/upload/*
