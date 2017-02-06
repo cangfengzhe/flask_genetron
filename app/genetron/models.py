@@ -3,7 +3,7 @@
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
-from datetime import datetime
+import datetime
 
 import  sqlalchemy
 
@@ -227,7 +227,7 @@ class Sample_time_info(db.Model):
     sample_flowcell = db.Column(db.Integer, db.ForeignKey('sample_flowcell.id'))
     user = db.Column(db.Integer, db.ForeignKey('users.id') )
     item_type = db.Column(db.String(100))
-    item_time = db.Column(db.DateTime, default=datetime.now())
+    item_time = db.Column(db.DateTime, default=datetime.datetime.now())
     item_note = db.Column(db.String(200))
 
     
@@ -438,7 +438,7 @@ class Send_info(db.Model):
     receive_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     info_type = db.Column(db.String(100))
     info_msg = db.Column(db.Text)
-    time = db.Column(db.DateTime, default=datetime.now())
+    time = db.Column(db.DateTime, default=datetime.datetime.now())
     read = db.Column(db.DateTime, default = False)
 
 
