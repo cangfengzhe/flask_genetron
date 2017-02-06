@@ -61,11 +61,8 @@ var gridElement = $("#grid");
     
 
                     $("#grid").kendoGrid({
-                        toolbar: ["excel"
-                                 ],
-                        excel: {
-                            allPages: true
-                            },
+                        toolbar: ["excel"],
+                       
                         dataSource: {
                             transport: {
                                 read:  {
@@ -117,7 +114,7 @@ var gridElement = $("#grid");
                         dataBound: function () {
                             dataView = this.dataSource.view();
                             for(var i = 0; i < dataView.length; i++) {
-                                if(dataView[i].panel === "panel88") {
+                                if(dataView[i].bioinfo_finish === true) {
                                    var uid = dataView[i].uid;
                                    $("#grid tbody").find("tr[data-uid=" + uid + "]").addClass("finish");
                                  }

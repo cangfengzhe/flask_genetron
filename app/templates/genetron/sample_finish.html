@@ -73,7 +73,7 @@ var gridElement = $("#grid");
                         dataSource: {
                             transport: {
                                 read:  {
-                                url: "{{ url_for('genetron.sample_table') }}",
+                                url: "/api/sample_stat",
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
                                 }
                             },

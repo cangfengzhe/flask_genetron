@@ -4,6 +4,7 @@ from json import dumps
 
 from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
+from sqlalchemy import text
 
 from . import api
 from ..genetron.configure import Configure as configure
@@ -242,6 +243,62 @@ class Sample_Flowcell_Info(Resource):
     def get(self):
         return jsonify(data=[xx.json for xx in Sample_flowcell_info.query.all() if get_todo_sample(xx)])
 
+    
+class Sample_Stat(Resource):
+    
+    def get(self):
+        sql=text("""
+        SELECT sample_info.sample_id, patient_info.name, patient_info.hospital, sample_flowcell.panel,
+  sample_info.indication, sample_info.tissue, sample_info.tumor, sample_info.collect_time, sample_info.accept_time,
+  flowcell_info.xj_time, flowcell_info.cf_time,
+sample_flowcell_info.class_time, sample_flowcell_info.submit_time, sample_flowcell_info.bioinfo_finish_time,
+sample_flowcell_info.bioinfo_report_time,
+   sample_info.ask_histology_time, sample_info.get_histology_time,
+   sample_flowcell_info.finish_time,
+   sample_flowcell_info.finish
+FROM sample_flowcell
+inner join (select max(id) as id from sample_flowcell group by sample_flowcell.sample_id, sample_flowcell.panel) as max_flowcell
+  on sample_flowcell.id = max_flowcell.id
+left join sample_flowcell_info on sample_flowcell_info.sample_flowcell = sample_flowcell.id
+left join sample_info on sample_info.id = sample_flowcell.sample_id
+left join flowcell_info on flowcell_info.id = sample_flowcell.flowcell_id
+left join patient_info on patient_info.id = sample_info.patient_id
+having  sample_flowcell.panel in ('panel203', 'panel509', 'panel51', 'panel88', 'WES', 'CT_DNA', 'CT_SEQ') and
+             ((sample_info.sample_id like '%T%' and  sample_info.sample_id not like 'LAA%') or
+             ( substring(sample_info.sample_id,7,1) = 'T'  and  sample_info.sample_id like 'LAA%')) AND
+sample_info.tissue is not null;""")
+
+        result = db.engine.execute(sql).fetchall()
+        sample_list = []
+
+        for row in result:
+            sample_dict = {
+               'sample_id' : row[0],
+               'name' : row[1],
+               'hospital' : row[2],
+               'panel': row[3],
+               'indication': row[4],
+               'tissue' : row[5],
+               'tumor' : row[6], 
+               'collect_time': date2str(row[7]),
+               'accept_time': datetime2str(row[8]),
+                'end_time': '',
+                'xj_time': datetime2str(row[9]),
+                'class_time': datetime2str(row[10]),
+                'submit_time': datetime2str(row[11]),
+               'bioinfo_time': datetime2str(row[12]),
+                'bioinfo_report_time': datetime2str(row[13]),
+                'ask_histology': datetime2str(row[14]),
+                'ask_histology_time': datetime2str(row[15]),
+                'get_histology_time': datetime2str(row[16]),
+                'is_finish_time': datetime2str(row[17]),
+                'is_finish': datetime2str(row[18]),
+            }
+
+            sample_list.append(sample_dict)
+        return jsonify(data=[xx for xx in sample_list])
+    
+    
 
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
@@ -250,3 +307,4 @@ api.add_resource(Check_info, '/check/<string:sample_id>')
 api.add_resource(Report_info, '/report/<string:sample_id>')
 api.add_resource(Report_User, '/user/<string:role_name>')
 api.add_resource(Sample_Flowcell_Info, '/sample_flowcell')
+api.add_resource(Sample_Stat, '/sample_stat')
