@@ -361,6 +361,7 @@ def check_info():
     
     return jsonify(info={'status':'success', 'type':'check'})
 
+@genetron.route('/unfinish',  methods=['GET', 'POST'])
 @genetron.route('/todo',  methods=['GET', 'POST'])
-def todo():          
+def unfinish():          
     return render_template('genetron/sample_unfinish.html')

@@ -255,7 +255,8 @@ sample_flowcell_info.class_time, sample_flowcell_info.submit_time, sample_flowce
 sample_flowcell_info.bioinfo_report_time,
    sample_info.ask_histology_time, sample_info.get_histology_time,
    sample_flowcell_info.finish_time,
-   sample_flowcell_info.finish
+   sample_flowcell_info.finish,
+   sample_report_info_bak.finish_time
 FROM sample_flowcell
 inner join (select max(id) as id from sample_flowcell group by sample_flowcell.sample_id, sample_flowcell.panel) as max_flowcell
   on sample_flowcell.id = max_flowcell.id
@@ -263,6 +264,7 @@ left join sample_flowcell_info on sample_flowcell_info.sample_flowcell = sample_
 left join sample_info on sample_info.id = sample_flowcell.sample_id
 left join flowcell_info on flowcell_info.id = sample_flowcell.flowcell_id
 left join patient_info on patient_info.id = sample_info.patient_id
+left join sample_report_info_bak on sample_report_info_bak.sample_id = sample_info.id
 having  sample_flowcell.panel in ('panel203', 'panel509', 'panel51', 'panel88', 'WES', 'CT_DNA', 'CT_SEQ') and
              ((sample_info.sample_id like '%T%' and  sample_info.sample_id not like 'LAA%') or
              ( substring(sample_info.sample_id,7,1) = 'T'  and  sample_info.sample_id like 'LAA%')) AND
@@ -280,30 +282,85 @@ sample_info.tissue is not null;""")
                'indication': row[4],
                'tissue' : row[5],
                'tumor' : row[6], 
-               'collect_time': date2str(row[7]),
-               'accept_time': datetime2str(row[8]),
+               'collect_time': date2str(row[7]), #sample_info.collect_time, 
+               'accept_time': datetime2str(row[8]),  #sample_info.accept_time,
                 'end_time': '',
                 'xj_time': datetime2str(row[9]),
-                'class_time': datetime2str(row[10]),
-                'submit_time': datetime2str(row[11]),
-               'bioinfo_time': datetime2str(row[12]),
-                'bioinfo_report_time': datetime2str(row[13]),
-                'ask_histology': datetime2str(row[14]),
+                'class_time': datetime2str(row[11]),
+                'submit_time': datetime2str(row[12]),
+               'bioinfo_time': datetime2str(row[13]),
+                'bioinfo_report_time': datetime2str(row[14]),
+                # 'ask_histology': datetime2str(row[15]),
                 'ask_histology_time': datetime2str(row[15]),
                 'get_histology_time': datetime2str(row[16]),
-                'is_finish_time': datetime2str(row[17]),
-                'is_finish': datetime2str(row[18]),
+                'is_finish_time': datetime2str(row[19]),
+                'is_finish': date2str(row[18]),
             }
 
             sample_list.append(sample_dict)
         return jsonify(data=[xx for xx in sample_list])
     
+class Note_info(Resource):
+    def get(self, sample_id):
+        sample = Sample_info.query.filter_by(sample_id=sample_id).first()
+        if sample:
+            note_info = sample.note_info
+            return jsonify(data=[xx.json for xx in note_info])
+        else:
+            return jsonify(data='error')
+
+    def post(self, sample_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', type=str, help='id')
+        parser.add_argument('flowcell_id', type=str, help='flowcell_id')
+        parser.add_argument('panel', type=str, help='panel')
+        parser.add_argument('note', type=str, help='note')
+        # parser.add_argument('callback', type=str, help='note')
+        args = parser.parse_args()
+        id = args.id
+        flowcell_id = args.flowcell_id
+        panel = args.panel
+        note = args.note
+        # callback=args.callback
+        sample = Sample_info.query.filter_by(sample_id=sample_id).first()
+
+        if id != '':
+            # // update
+            note_info = Sample_note_info.query.get(id)
+            note_info.sample_id = sample.id
+            note_info.flowcell_id = flowcell_id
+            note_info.panel = panel
+            note_info.note = note
+            db.session.commit()
+            return jsonify(data=[note_info.json])
+            # return jsonify(data={})
+            # return '{}'
+        else:
+            # creat
+            note_info = Sample_note_info(sample_id=sample.id, flowcell_id=flowcell_id, panel=panel,
+                                           note=note)
+            db.session.add(note_info)
+            db.session.commit()
+            print(type(note_info))
+            return jsonify(data=[note_info.json])
+
+    def delete(self, sample_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', type=str, help='id')
+        args = parser.parse_args()
+        id = args.id
+        print('del', id)
+        note_info = Sample_note_info.query.get(id)
+        db.session.delete(note_info)
+        db.session.commit()
+        return jsonify(data=[{'id': id}])
     
 
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
 api.add_resource(Sv, '/sv/<string:id>')
 api.add_resource(Check_info, '/check/<string:sample_id>')
+api.add_resource(Note_info, '/note/<string:sample_id>')
 api.add_resource(Report_info, '/report/<string:sample_id>')
 api.add_resource(Report_User, '/user/<string:role_name>')
 api.add_resource(Sample_Flowcell_Info, '/sample_flowcell')

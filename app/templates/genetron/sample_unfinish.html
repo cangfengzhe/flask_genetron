@@ -109,7 +109,7 @@ var gridElement = $("#grid");
                                 field: "class_time",
                                 dir: "desc"
                             },
-                            pageSize: 20,
+                            // pageSize: 20,
                         },
                         dataBound: function () {
                             dataView = this.dataSource.view();
@@ -119,6 +119,10 @@ var gridElement = $("#grid");
                                    $("#grid tbody").find("tr[data-uid=" + uid + "]").addClass("finish");
                                  }
                             }
+                            
+                             if (this.dataSource.totalPages() <= 1) {
+                              this.pager.element.hide();
+                             }
                         },
                         scrollable: true,
                         filterable: {

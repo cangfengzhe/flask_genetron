@@ -60,6 +60,10 @@
                 {% if sample.patient != None %}
                 <div class="panel-body">
                     <table class="table table-condensed">
+                         <tr>
+                            <td>肿瘤样本ID: {{sample.sample_id}}</td>
+                            <td>医院: {{sample.patient.hospital}}</td>
+                        </tr>
                         <tr>
                             <td>肿瘤样本类型: {{sample.tumor_type}}</td>
                             <td>肿瘤样本采集部位: {{sample.tumor_pos}}</td>
@@ -155,15 +159,52 @@
         </div>
     </div>
     
+        <div class="row">
+        <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    样本备注
+                </div>
+                
+                <div class="panel-body">
+                    <div id='note_info'> </div>
+                </div>
+
+
+            </div>
+            <!-- /.panel --> 
+        </div>
+    </div>
+    
            <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    基因点突变、缺失、插入分析结果
+                 
+                    基因变异信息
                 </div>
                 
                 <div class="panel-body">
-                    <div id='snp_indel'> </div>
+                     <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#snv_tab" aria-controls="snv" role="tab" data-toggle="tab">基因点突变、缺失、插入分析结果</a></li>
+                    <li role="presentation"><a href="#cnv_tab" aria-controls="cnv_tab" role="tab" data-toggle="tab">拷贝数分析结果</a></li>
+                     <li role="presentation"><a href="#sv_tab" aria-controls="sv_tab" role="tab" data-toggle="tab">基因重排分析结果</a></li>
+                 </ul>
+                  <!-- Tab panes -->
+                  <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="snv_tab">
+                        <ul   class="list-group">
+                             <div id='snp_indel'> </div>
+                        </ul>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="cnv_tab">
+                        <div id='cnv'> </div>
+                    </div>
+                      <div role="tabpanel" class="tab-pane" id="sv_tab">
+                        <div id='sv'> </div>
+                    </div>
+                  </div>
+                   
                 </div>
 
 
@@ -171,40 +212,7 @@
             <!-- /.panel --> 
         </div>
     </div>
-    
-            <div class="row">
-            <div class="col-lg-10 col-lg-offset-1">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    拷贝数分析结果
-                </div>
-                
-                <div class="panel-body">
-                    <div id='cnv'> </div>
-                </div>
 
-
-            </div>
-            <!-- /.panel --> 
-        </div>
-    </div>
-    
-          <div class="row">
-        <div class="col-lg-10 col-lg-offset-1">
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                    基因重排分析结果
-                </div>
-                
-                <div class="panel-body">
-                    <div id='sv'> </div>
-                </div>
-
-
-            </div>
-            <!-- /.panel --> 
-        </div>
-    </div>
     
     
   
@@ -252,7 +260,6 @@
                     </div>
                   </div>
                 </div>
-            <!--</form>-->
                 </div>
 
             </div>
@@ -606,6 +613,100 @@
                             { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
                        ],
                     });
+    
+    
+     $("#note_info").kendoGrid({
+                        dataSource: {
+                             error: function (e) {
+                                alert("Status: " + e.status + "; Error message: " + e.errorThrown );
+                                console.log(e)
+                            },
+                            autoSync: false,
+                            transport: {
+                                read:  {
+                                    url: '/api/note/{{sample.sample_id}}',
+                                    dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                },
+                                update: {
+                                    url: '/api/note/{{sample.sample_id}}',
+                                    type: 'post',
+                                    dataType: "json",
+                                },
+                                destroy: {
+                                    url: '/api/note/{{sample.sample_id}}',
+                                    dataType: "json",
+                                    type: 'delete'
+                                },
+                                create: {
+                                    type: 'post',
+                                    url: '/api/note/{{sample.sample_id}}',
+                                    dataType: "json"
+                                },
+                                 parameterMap: function(data, operation) {
+                                if (operation === "update" || operation === "create") {
+                                    data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
+                                    if (data.end_time != ''){
+                                        data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
+                                    }
+                                    
+                                }
+                                return data;
+                            }
+                            },
+                            batch: false,
+                            schema: {
+                                type: 'json',
+                                data: "data",
+                                total: function(data) {
+                                    return data.data.length;
+                                },
+                            
+                            model: {
+                                id: "id",
+                                fields: {
+                                     id: {type: "numeric", nullable: true},
+                                     flowcell_id: { type: "string", validation: { required: true } },
+                                     panel: { type: "string", validation: { required: true } },
+                                  
+                                     note: { type: "string", nullable: true },
+                                    }
+                                }
+                            },
+                            pageSize: 5,
+                        },
+                        toolbar: ["create"],
+                        scrollable: false,
+                        sortable:true,
+                        pageable: true,
+                        editable: "popup",
+                        dataBound: function() {
+                            if (this.dataSource.totalPages() <= 1) {
+                              this.pager.element.hide();
+                             }
+                         },
+                        columns: [
+                            {
+                                field:"flowcell_id",
+                                title: "Flowcell",
+                                width: 50,
+                            },
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 50,
+                            },
+                          
+                            {
+                                field:"note",
+                                title: "备注",
+                                width: 300,                        
+                            },
+                            { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
+                       ],
+                    });
+    
+    
+    
     
     $("#sv").kendoGrid({
                         dataSource: {

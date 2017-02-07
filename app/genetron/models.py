@@ -71,6 +71,7 @@ class Sample_info(db.Model):
     cnv_info = db.relationship('Sample_cnv_info', backref='sample', lazy="dynamic")
     sv_info = db.relationship('Sample_sv_info', backref='sample', lazy="dynamic")
     check_info =  db.relationship('Sample_check_info', backref='sample', lazy="dynamic")
+    note_info =  db.relationship('Sample_note_info', backref='sample', lazy="dynamic")
     report_info =  db.relationship('Sample_report_info', backref='sample', lazy="dynamic")
     send_info = db.relationship('Send_info', backref='sample', lazy="dynamic")
     
@@ -168,7 +169,7 @@ class Sample_info(db.Model):
                'name' : self.patient.name,
                'age' : self.patient.age,
                'sex' : self.patient.sex,
-               'hospital' : self.patient.hospital,
+               # 'hospital' : self.patient.hospital,
                'hospital_alias': self.proc_hospital(self.patient.hospital), 
                'panel': self.proc_panel(self.panel),
                'indication':self.indication,
@@ -176,20 +177,20 @@ class Sample_info(db.Model):
                'tumor' : self.tumor,
                'tumor_pos':self.tumor_pos,
                'tumor_type': self.tumor_type,
-               'collect_time':self.proc_time(self.collect_time,"%Y-%m-%d %H:%M:%S"),
-               'accept_time': self.proc_time(self.accept_time,"%Y-%m-%d %H:%M:%S"),
-                'end_time':self.proc_time(self.end_time,"%Y-%m-%d"),
-                'xj_time': self.get_flowcell_time('xj_time'),
-                'class_time': self.get_item_time('class'),
-                'submit_time':self.get_item_time('submit'),
+               # 'collect_time':self.proc_time(self.collect_time,"%Y-%m-%d %H:%M:%S"),
+               # 'accept_time': self.proc_time(self.accept_time,"%Y-%m-%d %H:%M:%S"),
+               #  'end_time':self.proc_time(self.end_time,"%Y-%m-%d"),
+               #  'xj_time': self.get_flowcell_time('xj_time'),
+               #  'class_time': self.get_item_time('class'),
+               #  'submit_time':self.get_item_time('submit'),
                'bioinfo': self.bioinfo,
-               'bioinfo_time': self.get_item_time('bioinfo_finish'),
-                'bioinfo_report_time':self.get_item_time('bioinfo_report'),
+               # 'bioinfo_time': self.get_item_time('bioinfo_finish'),
+               #  'bioinfo_report_time':self.get_item_time('bioinfo_report'),
                 'ask_histology': self.ask_histology,
-                'ask_histology_time': self.proc_time(self.ask_histology_time, "%Y-%m-%d %H:%M:%S"),
-                'get_histology_time': self.proc_time(self.get_histology_time, "%Y-%m-%d %H:%M:%S"),
+                # 'ask_histology_time': self.proc_time(self.ask_histology_time, "%Y-%m-%d %H:%M:%S"),
+                # 'get_histology_time': self.proc_time(self.get_histology_time, "%Y-%m-%d %H:%M:%S"),
                 'is_finish': self.is_finish,
-                'is_finish_time': self.proc_time(self.is_finish_time, "%Y-%m-%d %H:%M:%S"),
+                # 'is_finish_time': self.proc_time(self.is_finish_time, "%Y-%m-%d %H:%M:%S"),
                 'note' : self.note
                }
 
@@ -487,3 +488,30 @@ class Sample_flowcell_info(db.Model):
             'finish': self.finish,
             'note': self.note
         }
+
+    
+# class Sample_Note_Info():
+#     __tablename__ = 'sample_note_info'
+#     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+class Sample_note_info(db.Model):
+    """
+    样本验证时间
+    """
+    __tablename__ = 'sample_note_info'
+    id = db.Column(db.Integer, primary_key=True)
+    flowcell_id = db.Column(db.String(40))
+    panel = db.Column(db.String(40))
+    note = db.Column(db.String(500))
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    @property
+    def json(self):
+        return {
+            'id':self.id,
+            'sample_id': self.sample.sample_id,
+            'flowcell_id': self.flowcell_id,
+           'panel': self.panel,
+           'note': self.note
+             } 
+    
