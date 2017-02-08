@@ -14,6 +14,8 @@ from ..tips import *
 
 def get_todo_sample(xx):
     sample_id = xx.sample_flowcell_id.sample.sample_id
+    if not xx.sample_flowcell_id.sample.patient:
+        return False
     is_finish = xx.finish
     panel = xx.sample_flowcell_id.panel
     if (('LAA' in sample_id and sample_id[-2] == 'T') or \

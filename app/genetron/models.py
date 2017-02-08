@@ -471,6 +471,7 @@ class Sample_flowcell_info(db.Model):
     
     @property
     def json(self):
+        print(self.sample_flowcell_id.sample.sample_id)
         return {
             'sample_id': self.sample_flowcell_id.sample.sample_id,
             'flowcell': self.sample_flowcell_id.flowcell.flowcell_id,
