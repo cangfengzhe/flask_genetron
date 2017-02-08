@@ -522,13 +522,13 @@
                                     dataType: "json"
                                 },
                                  parameterMap: function(data, operation) {
-                                if (operation === "update" || operation === "create") {
-                                    data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
-                                    if (data.end_time != ''){
-                                        data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
+                                    if (operation === "update" || operation === "create") {
+                                        data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
+                                        if (data.end_time != ''){
+                                            data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
+                                        }
+
                                     }
-                                    
-                                }
                                 return data;
                             }
                             },
@@ -668,7 +668,7 @@
                                      flowcell_id: { type: "string", validation: { required: true } },
                                      panel: { type: "string", validation: { required: true } },
                                   
-                                     note: { type: "string", nullable: true },
+                                     note: { type: "textarea", nullable: true },
                                     }
                                 }
                             },
@@ -801,6 +801,30 @@
                         });
                 }
     
+      function PanelDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            dataSource: {
+                                type: "json",
+                                data: ['panel203','panel51',"panel509",'panel63', "panel88", 'WES'],
+                            },
+                        });
+                }
+    
+    function ReportTypeDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            dataSource: {
+                                type: "json",
+                                data: ["初稿", "审核", "复核"],
+                            },
+                        });
+                }
+    
     $("#report").kendoGrid({
                         dataSource: {
                             error: function (e) {
@@ -852,10 +876,10 @@
                                 id: "id",
                                 fields: {
                                      id: {type: "numeric", nullable: true},
-                                     panel: { type: "string", validation: { required: true } },
-                                     report_type: { type: "string", validation: { required: true } },
+                                     panel: { type: "string", validation: { required: true }, defaultValue: 'panel509' },
+                                     report_type: { type: "string", validation: { required: true }, defaultValue: '初稿' },
                                      start_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", },
-                                     reporter: {  nullable: false, },
+                                     reporter: { nullable: false,},
                                      finish_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },
                                      note: { type: "string", nullable: true },
                                     }
@@ -882,18 +906,20 @@
                                 field:"panel",
                                 title: "panel",
                                 width: 50,
+                                editor:PanelDropDownEditor
                             },
                             {
                                 field:"report_type",
                                 title: "报告类型",
                                 width: 50,
+                                editor:ReportTypeDropDownEditor,
                             },
                             {
                                 field:"reporter",
                                 title: "人员",
                                 width: 80,
                                 editor: UserDropDownEditor,
-                                // template: "#=writer.user_name#"
+                                // template: "#=reporter#"
                             },
                             {
                                 field:"start_time",

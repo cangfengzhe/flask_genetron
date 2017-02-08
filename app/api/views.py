@@ -138,6 +138,12 @@ class Check_info(Resource):
         db.session.commit()
         return jsonify(data=[{'id': id}])
 
+def proc_finish_time(sample, panel, finish_time):
+    sf = Sample_flowcell.query.filter_by(sample_id=sample.id, panel=panel).order_by(
+    sqlalchemy.desc(Sample_flowcell.id)).first()
+    sf.sample_flowcell_info.first().finish = True
+    sf.sample_flowcell_info.first().finish_time = finish_time
+    db.session.commit()
 
 class Report_info(Resource):
     def get(self, sample_id):
@@ -185,6 +191,10 @@ class Report_info(Resource):
             # report_info.check_time = strptime(check_time)
             report_info.finish_time = strptime(finish_time)
             report_info.note = note
+            if report_type == '复核' and report_info.finish_time:
+                proc_finish_time(sample, panel, report_info.finish_time)
+                print('proc_time finish')
+                
             db.session.commit()
             return jsonify(data=[report_info.json])
             # return jsonify(data={})
@@ -202,6 +212,10 @@ class Report_info(Resource):
             report_info.finish_time = strptime(finish_time)
             report_info.note = note
             db.session.add(report_info)
+            if report_type == '复核' and report_info.finish_time:
+                proc_finish_time(sample, panel, report_info.finish_time)
+                print('proc_time finish')
+            
             db.session.commit()
             return jsonify(data=[report_info.json])
 
@@ -256,7 +270,7 @@ sample_flowcell_info.bioinfo_report_time,
    sample_info.ask_histology_time, sample_info.get_histology_time,
    sample_flowcell_info.finish_time,
    sample_flowcell_info.finish,
-   sample_report_info_bak.finish_time
+   sample_flowcell_info.finish_time
 FROM sample_flowcell
 inner join (select max(id) as id from sample_flowcell group by sample_flowcell.sample_id, sample_flowcell.panel) as max_flowcell
   on sample_flowcell.id = max_flowcell.id
@@ -264,7 +278,6 @@ left join sample_flowcell_info on sample_flowcell_info.sample_flowcell = sample_
 left join sample_info on sample_info.id = sample_flowcell.sample_id
 left join flowcell_info on flowcell_info.id = sample_flowcell.flowcell_id
 left join patient_info on patient_info.id = sample_info.patient_id
-left join sample_report_info_bak on sample_report_info_bak.sample_id = sample_info.id
 having  sample_flowcell.panel in ('panel203', 'panel509', 'panel51', 'panel88', 'WES', 'CT_DNA', 'CT_SEQ') and
              ((sample_info.sample_id like '%T%' and  sample_info.sample_id not like 'LAA%') or
              ( substring(sample_info.sample_id,7,1) = 'T'  and  sample_info.sample_id like 'LAA%')) AND

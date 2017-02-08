@@ -69,6 +69,16 @@ var gridElement = $("#grid");
                                 url: "/api/sample_flowcell",
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
                                 },
+                                update: {
+                                    url: '/api/sample_flowcell',
+                                    type: 'post',
+                                    dataType: "json",
+                                },
+                                destroy: {
+                                    url: '/api/sample_flowcell',
+                                    dataType: "json",
+                                    type: 'delete'
+                                },
                            
                             },
                             schema: {
@@ -84,7 +94,7 @@ var gridElement = $("#grid");
                                     id: { type: "string" },
                                     flowcell: {type: "string"},
                                      name: { type: "string" },
-                                     //hospital: { type: "string" },
+                                     hospital: { type: "string" },
                                      panel: { type: "string" },
                                      //blts: { type: "string" },
                                      tumor: { type: "string" },
@@ -96,7 +106,7 @@ var gridElement = $("#grid");
                                      bioinfo_finish_time: { type: "date" },
                                      bioinfo_report_time: { type: "date" },
                                      //ask_histology_time: { type: "date" },
-                                     //get_histology_time: { type: "date" },
+                                     is_problem: { type: "boolean" },
                                      is_finish_time: { type: "date" },
                                      end_time: { type: "date" },
                                      xj_time: { type: "date" },
@@ -125,20 +135,11 @@ var gridElement = $("#grid");
                              }
                         },
                         scrollable: true,
-                        filterable: {
-                            extra: false,
-                            operators: {
-                                string: {
-                                    startswith: "Starts with",
-                                    eq: "Is equal to",
-                                    neq: "Is not equal to"
-                                }
-                            }
-                        },
-                        filterable:true,
+                        editable: "inline",
                         sortable:true,
                         pageable: true,
                         columns: [
+                        { command: ["edit"], title: "&nbsp;", width: "120px" },
                             {
                                 field:"sample_id",
                                 title: "ID",
@@ -150,41 +151,46 @@ var gridElement = $("#grid");
                                  field:"flowcell",
                                  title: "Flowcell",
                                  width: 100,
-                                 filterable: true,
+                                 
                              },
                             {
                                 field:"panel",
                                 title: "panel",
                                 width: 120,
-                                filterable: true,
                             },
-               
+                            {
+                                field:"hospital",
+                                title: "医院",
+                                width: 120,
+                            },
+                            {
+                                field:"is_problem",
+                                title: "问题样本",
+                                width: 120,
+                                
+                            },
                              {
                                  field:"tumor",
                                  title: "癌种",
                                  width: 200,
-                                 filterable: true,
 
                              },
                              {
                                  field:"tissue",
                                  title: "组织",
                                  width: 200,
-                                 filterable: true,
                              },
 
                             {
                                 field:"xj_time",
                                 title: "下机时间",
                                 width: 160,
-                                filterable: true,
                                 format: "{0:yyyy-MM-dd HH:mm:ss}",
                             },
                             {
                                 field:"class_time",
                                 title: "分类时间",
                                 width: 160,
-                                filterable: true,
                                 format: "{0:yyyy-MM-dd HH:mm:ss}",
 
                             },
@@ -192,7 +198,6 @@ var gridElement = $("#grid");
                                 field:"submit_time",
                                 title: "提交时间",
                                 width: 160,
-                                filterable: true,
                                 format: "{0:yyyy-MM-dd HH:mm:ss}",
 
                             },
@@ -200,7 +205,6 @@ var gridElement = $("#grid");
                                 field: "bioinfo_finish_time",
                                 title: "生信完成时间",
                                 width: 160,
-                                filterable: true,
                                 format: "{0:yyyy-MM-dd HH:mm:ss}",
 
                             },
@@ -208,7 +212,6 @@ var gridElement = $("#grid");
                                 field: "bioinfo_report_time",
                                 title: "生信报告时间",
                                 width: 160,
-                                filterable: true,
                                 format: "{0:yyyy-MM-dd HH:mm:ss}",
 
                             },

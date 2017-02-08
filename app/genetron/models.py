@@ -8,7 +8,7 @@ import datetime
 import  sqlalchemy
 
 from .. import db
-
+from ..tips import *
 
 def proc_time(time_var, time_fmt = "%Y-%m-%d %H:%M:%S"):
     if time_var:
@@ -467,6 +467,7 @@ class Sample_flowcell_info(db.Model):
     finish_time = db.Column(db.DateTime)
     finish = db.Column(db.Boolean, default=False)
     note = db.Column(db.String(1000))
+    is_problem = db.Column(db.Boolean, default=False)
     
     @property
     def json(self):
@@ -474,6 +475,7 @@ class Sample_flowcell_info(db.Model):
             'sample_id': self.sample_flowcell_id.sample.sample_id,
             'flowcell': self.sample_flowcell_id.flowcell.flowcell_id,
             'panel': self.sample_flowcell_id.panel,
+            'hospital': proc_hospital(self.sample_flowcell_id.sample.patient.hospital),
             'tissue': self.sample_flowcell_id.sample.tumor,
             'tumor': self.sample_flowcell_id.sample.tissue,
             'sj_time': proc_time(self.sample_flowcell_id.flowcell.sj_time),
@@ -486,7 +488,8 @@ class Sample_flowcell_info(db.Model):
             'finish_time':  proc_time(self.finish_time),
             'bioinfo_finish': self.bioinfo_finish,
             'finish': self.finish,
-            'note': self.note
+            'note': self.note,
+            'is_problem':self.is_problem
         }
 
     
