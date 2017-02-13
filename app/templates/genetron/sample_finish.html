@@ -104,7 +104,15 @@ var gridElement = $("#grid");
                                      is_finish_time: { type: "date" },
                                      end_time: { type: "date" },
                                      xj_time: { type: "date" },
-                                     note: { type: "string" },
+                                     
+                                     xj_count: { type: "integer" },
+                                     xj_flowcell: { type: "string" },
+                                     first_flowcell:{ type: "string" },
+                                     first_xj_time:{type:'date'},
+                                     frist_bioinfo_finish_time: {type:'date'},
+                                     // note: { type: "string" },
+                                     check_info: {type:'string'},
+                                     note_info: { type: "string" }
                                      
                                     }
                                 }
@@ -268,12 +276,66 @@ var gridElement = $("#grid");
                                 format: "{0:yyyy-MM-dd}",
 
                             }, 
-                              {
-                                field: "note",
-                                title: "备注",
-                                width: 130,
+                            
+                            
+                            {
+                                field: "xj_count",
+                                title: "下机次数",
+                                width: 100,
+                                filterable: true,
+                            
 
                             },
+                            {
+                                field: "xj_flowcell",
+                                title: "下机Flowcell",
+                                width: 200,
+                                filterable: true,
+
+                            },
+                            {
+                                field: "first_flowcell",
+                                title: "首次Flowcell",
+                                width: 100,
+                                filterable: true,
+
+                            },
+                            {
+                                field: "first_xj_time",
+                                title: "首次下机时间",
+                                width: 180,
+                                filterable: true,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+
+                            },
+                            {
+                                field: "frist_bioinfo_finish_time",
+                                title: "首次分析完成时间",
+                                width: 180,
+                                filterable: true,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+
+                            },
+                            {
+                                field: "check_info",
+                                title: "验证信息",
+                                width: 200,
+
+                            },
+                            {
+                                field: "note_info",
+                                title: "备注",
+                                width: 200,
+
+                            },
+                            
+                            
+//                               {
+//                                 field: "note",
+//                                 title: "备注",
+//                                 width: 130,
+
+//                             },
                            
                        ],
                     });

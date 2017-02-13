@@ -264,26 +264,93 @@ class Sample_Stat(Resource):
     
     def get(self):
         sql=text("""
-        SELECT sample_info.sample_id, patient_info.name, patient_info.hospital, sample_flowcell.panel,
-  sample_info.indication, sample_info.tissue, sample_info.tumor, sample_info.collect_time, sample_info.accept_time,
-  flowcell_info.xj_time, flowcell_info.cf_time,
-sample_flowcell_info.class_time, sample_flowcell_info.submit_time, sample_flowcell_info.bioinfo_finish_time,
-sample_flowcell_info.bioinfo_report_time,
-   sample_info.ask_histology_time, sample_info.get_histology_time,
-   sample_flowcell_info.finish_time,
-   sample_flowcell_info.finish,
-   sample_flowcell_info.finish_time
+SELECT
+  sample_info.sample_id, #0
+  patient_info.name,
+  patient_info.hospital,
+  sample_flowcell.panel,
+  sample_info.indication,
+  sample_info.tissue, # 5
+  sample_info.tumor, 
+  sample_info.collect_time,
+  sample_info.accept_time,
+  flowcell_info.xj_time,
+  flowcell_info.cf_time, #10
+  sample_flowcell_info.class_time,
+  sample_flowcell_info.submit_time,
+  sample_flowcell_info.bioinfo_finish_time,
+  sample_flowcell_info.bioinfo_report_time,
+  sample_info.ask_histology_time, # 15
+  sample_info.get_histology_time,
+  sample_flowcell_info.finish_time,
+  sample_flowcell_info.finish,
+  sample_flowcell_info.finish_time,
+  max_flowcell.count, #20
+  max_flowcell.flowcell_concat,
+  first_xj.flowcell_id,
+  first_xj.xj_time,
+  first_xj.bioinfo_finish_time,
+  check_info.check_info, #25
+  note_info.note_info
 FROM sample_flowcell
-inner join (select max(id) as id from sample_flowcell group by sample_flowcell.sample_id, sample_flowcell.panel) as max_flowcell
-  on sample_flowcell.id = max_flowcell.id
-left join sample_flowcell_info on sample_flowcell_info.sample_flowcell = sample_flowcell.id
-left join sample_info on sample_info.id = sample_flowcell.sample_id
-left join flowcell_info on flowcell_info.id = sample_flowcell.flowcell_id
-left join patient_info on patient_info.id = sample_info.patient_id
-having  sample_flowcell.panel in ('panel203', 'panel509', 'panel51', 'panel88', 'WES', 'CT_DNA', 'CT_SEQ') and
-             ((sample_info.sample_id like '%T%' and  sample_info.sample_id not like 'LAA%') or
-             ( substring(sample_info.sample_id,7,1) = 'T'  and  sample_info.sample_id like 'LAA%')) AND
-sample_info.tissue is not null;""")
+  # 选择最近一次的下机信息
+  INNER JOIN (SELECT
+                max(sample_flowcell.id)                 AS id,
+                count(sample_flowcell.id)               AS count,
+                group_concat(flowcell_info.flowcell_id) AS flowcell_concat
+              FROM sample_flowcell
+                INNER JOIN flowcell_info ON sample_flowcell.flowcell_id = flowcell_info.id
+              GROUP BY sample_flowcell.sample_id, sample_flowcell.panel) AS max_flowcell
+    ON sample_flowcell.id = max_flowcell.id
+
+  # 获取第一次下机信息
+  LEFT JOIN
+  (SELECT
+     min_sample_flowcell.sample_id,
+     min_sample_flowcell.panel,
+     flowcell_info.flowcell_id,
+     flowcell_info.xj_time,
+     sample_flowcell_info.bioinfo_finish_time
+   FROM
+     (SELECT
+        min(id) AS min_sample_flowcell_id,
+        flowcell_id,
+        sample_id,
+        panel
+      FROM sample_flowcell
+      GROUP BY sample_id, panel) AS min_sample_flowcell
+     LEFT JOIN flowcell_info ON flowcell_info.id = min_sample_flowcell.flowcell_id
+     LEFT JOIN sample_flowcell_info
+       ON sample_flowcell_info.sample_flowcell = min_sample_flowcell.min_sample_flowcell_id) AS first_xj
+    ON first_xj.sample_id = sample_flowcell.sample_id AND first_xj.panel = sample_flowcell.panel
+  LEFT JOIN sample_flowcell_info ON sample_flowcell_info.sample_flowcell = sample_flowcell.id
+  LEFT JOIN sample_info ON sample_info.id = sample_flowcell.sample_id
+  LEFT JOIN flowcell_info ON flowcell_info.id = sample_flowcell.flowcell_id
+  LEFT JOIN patient_info ON patient_info.id = sample_info.patient_id
+  LEFT JOIN
+  (SELECT
+     sample_id,
+     panel,
+     group_concat(
+         concat(flowcell_id, '下机样本于 ', start_time, ' 申请进行', gene_name, ' ', check_type, '验证, ', end_time, ' 反馈结果：',
+                result) SEPARATOR ';') AS check_info
+   FROM sample_check_info
+   GROUP BY sample_id, panel) AS check_info
+    ON check_info.sample_id = sample_flowcell.sample_id AND check_info.panel = sample_flowcell.panel
+  LEFT JOIN
+  (SELECT
+     sample_id,
+     panel,
+     group_concat(concat(flowcell_id, '下机样本', note) SEPARATOR ';') AS note_info
+   FROM sample_note_info
+   GROUP BY sample_id, panel) AS note_info
+    ON note_info.sample_id = sample_flowcell.sample_id AND note_info.panel = sample_flowcell.panel
+HAVING sample_flowcell.panel IN ('panel203', 'panel509', 'panel51', 'panel88', 'WES', 'CT_DNA', 'CT_SEQ') AND
+       ((sample_info.sample_id LIKE '%T%' AND sample_info.sample_id NOT LIKE 'LAA%') OR
+        (substring(sample_info.sample_id, 7, 1) = 'T' AND sample_info.sample_id LIKE 'LAA%')) AND
+       sample_info.tissue IS NOT NULL;
+
+""")
 
         result = db.engine.execute(sql).fetchall()
         sample_list = []
@@ -310,6 +377,14 @@ sample_info.tissue is not null;""")
                 'get_histology_time': datetime2str(row[16]),
                 'is_finish_time': datetime2str(row[19]),
                 'is_finish': date2str(row[18]),
+                
+                'xj_count': row[20], # 下机count
+                'xj_flowcell':row[21],
+                'first_flowcell': row[22],
+                'first_xj_time': datetime2str(row[23]),
+                'frist_bioinfo_finish_time': datetime2str(row[24]),
+                'check_info': row[25],
+                'note_info': row[26]
             }
 
             sample_list.append(sample_dict)
