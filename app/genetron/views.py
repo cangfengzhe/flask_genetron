@@ -294,7 +294,9 @@ def api():
     dt = datetime.datetime.strptime(dt, '%Y-%m-%d_%H:%M:%S')
     item_note = request.args.get('note')
     panel = request.args.get('panel')
-    if panel in configure.panel_trans:  # 转平台panel处理
+    if panel == 'exome' or panel == 'WES+88' or panel == 'WES+panel88':
+        panel = 'WES'
+    if ('_' in panel) and ('CT' not in panel) and 'germline' not in panel:  # 转平台panel处理
         panel = 'panel' + panel.split('_')[1]
         
     # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02

@@ -19,7 +19,8 @@ def get_todo_sample(xx):
     is_finish = xx.finish
     panel = xx.sample_flowcell_id.panel
     if (('LAA' in sample_id and sample_id[-2] == 'T') or \
-                ('LAA' not in sample_id and 'T' in sample_id)) and \
+                ('LAA' not in sample_id and 'T' in sample_id) or \
+                panel == 'CT_DNA') and \
                     panel in configure.panel_clinical and \
             not is_finish:
         return True
@@ -171,6 +172,8 @@ class Report_info(Resource):
         args = parser.parse_args()
         id = args.id
         panel = args.panel
+        if panel == 'panel63':
+            panel = 'CT_DNA'
         start_time = args.start_time
         reporter = args['reporter']
         report_type = args.report_type
