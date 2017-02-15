@@ -368,3 +368,13 @@ def check_info():
 @genetron.route('/todo',  methods=['GET', 'POST'])
 def unfinish():          
     return render_template('genetron/sample_unfinish.html')
+
+
+@genetron.route('/mut_stat',  methods=['GET', 'POST'])
+def mut_stat():          
+    return render_template('genetron/mut_stat.html')
+
+
+@genetron.route('/help',  methods=['GET', 'POST'])
+def help():          
+    return render_template('genetron/help.html')

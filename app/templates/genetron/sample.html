@@ -46,13 +46,13 @@ tr.shown td.details-control {
             <!--<th>Sex</th>-->
             <th>医院</th>
             <th>Panel</th>
-            <th>生信完成</th>
+
             <th>索要病理</th>
             <th>病理提示</th>
             <th>癌种</th>
             <th>组织</th>
             <th>剩余</th>
-            <th>报告完成</th>
+<!--             <th>报告完成</th> -->
             <th>备注</th>
         </tr>
         </thead>
@@ -62,9 +62,9 @@ tr.shown td.details-control {
      </div>
 
 </div>
-{% endblock %}
 
-{% block scripts %}
+
+
 <script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.bootstrap.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.dataTables.min.js') }}"></script>
@@ -73,12 +73,11 @@ tr.shown td.details-control {
         src="{{ url_for('static', filename='datatable/js/dataTables.buttons.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='datatable/js/dataTables.select.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='editor/js/dataTables.editor.min.js') }}"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script> -->
 <!--<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/custom.js') }}"></script>-->
 
 
 <script>
-
 function format(d) {
     // `d` is the original data object for the row
     return '<table class="test" cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
@@ -140,17 +139,6 @@ $(document).ready(function() {
         table: "#example",
         fields: [
     
-     
-             {
-                label: "生信完成:",
-                name: "bioinfo",
-                type:  "radio",
-                options: [
-                    { label: "否", value: '' },
-                    { label: "是",  value: true }
-                ],
-                def: 0
-            },
              {
                 label: "索要病理:",
                 name: "ask_histology",
@@ -176,16 +164,16 @@ $(document).ready(function() {
             },
             {% endif %}
       
-            {
-                label: "报告完成:",
-                name: "is_finish",
-                type:  "radio",
-                options: [
-                    { label: "否", value: '' },
-                    { label: "是",  value: true }
-                ],
-                def: 0
-            },
+            // {
+            //     label: "报告完成:",
+            //     name: "is_finish",
+            //     type:  "radio",
+            //     options: [
+            //         { label: "否", value: '' },
+            //         { label: "是",  value: true }
+            //     ],
+            //     def: 0
+            // },
             {
                 label: "note:",
                 name: "note"
@@ -205,7 +193,7 @@ $(document).ready(function() {
   var table =   $('#example').DataTable( {
         dom: "Bfrtip",
         ajax: "{{ url_for('genetron.sample_table') }}",
-        "order": [[ 11, 'asc' ], [ 5, 'desc' ],[ 10, 'asc' ]],
+        // "order": [[ 11, 'asc' ], [ 5, 'desc' ],[ 10, 'asc' ]],
         "class": "center",
         "pageLength": 20,
         columns: [
@@ -227,13 +215,13 @@ $(document).ready(function() {
             { data: "name" },
             { data: "hospital_alias" },
             { data: "panel" },
-            {
-                "class": "center",
-                "data": "bioinfo",
-                "render": function (val, type, row) {
-                    return val == true ? "是" : "否";
-                }
-            },
+            // {
+            //     "class": "center",
+            //     "data": "bioinfo",
+            //     "render": function (val, type, row) {
+            //         return val == true ? "是" : "否";
+            //     }
+            // },
             {
             "data": "ask_histology",
             "class": "center",
@@ -257,13 +245,13 @@ $(document).ready(function() {
                     }
                 }
             },
-            {
-                "class": "center",
-                "data": "is_finish",
-                "render": function (val, type, row) {
-                    return val == true ? "是" : "否";
-                }
-            },
+            // {
+            //     "class": "center",
+            //     "data": "is_finish",
+            //     "render": function (val, type, row) {
+            //         return val == true ? "是" : "否";
+            //     }
+            // },
             { data: "note" }
 
         ],
@@ -276,33 +264,10 @@ $(document).ready(function() {
         ]
     } );
 
-
-//        $('#example tbody').on('click', 'td.details-control', function () {
-//         var tr = $(this).closest('tr');
-//         var row = table.row( tr );
-
-//         if ( row.child.isShown() ) {
-//             // This row is already open - close it
-//             row.child.hide();
-//             tr.removeClass('shown');
-
-//         }
-//         else {
-//             // Open this row
-//             row.child( format(row.data()) ).show();
-//             tr.addClass('shown');
-//         }
-//     } );
-
-    //    $('#example tbody').on('click', 'td.click a', function () {
-    //     var tr = $(this).closest('a');
-    //     location.href = "{{url_for('genetron.sample_info')}}" + '?id=' + $(this).text();
-    // } );
-
 } );
 
 
 </script>
-{% endblock %}
 
+{% endblock %}
 

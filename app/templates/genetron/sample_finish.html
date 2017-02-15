@@ -8,7 +8,7 @@
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.bootstrap.min.css')}}" rel="stylesheet">
-<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
@@ -148,7 +148,7 @@ var gridElement = $("#grid");
                                 width: 100,
                                 filterable: true,
                                 //{{url_for('genetron.sample_info')}}" + '?id='
-                                template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'>#=sample_id#</a>'
+                                template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'  target="_blank">#=sample_id#</a>'
    
 
                             },
@@ -347,5 +347,3 @@ var gridElement = $("#grid");
 
     {% endblock %}
 
-    {% block scripts %}
-    {% endblock %}

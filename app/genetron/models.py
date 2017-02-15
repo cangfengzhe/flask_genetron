@@ -473,6 +473,7 @@ class Sample_flowcell_info(db.Model):
     def json(self):
         print(self.sample_flowcell_id.sample.sample_id)
         return {
+            'id':self.id,
             'sample_id': self.sample_flowcell_id.sample.sample_id,
             'flowcell': self.sample_flowcell_id.flowcell.flowcell_id,
             'panel': self.sample_flowcell_id.panel,

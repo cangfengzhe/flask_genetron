@@ -39,12 +39,20 @@
        height:90%;
       }
     
+    .problem{
+     background-color: #FFC0A9;
+    }
+    
     .finish{
-     background-color: #BEDB39;
+     background-color: #BEEB9F;
+    }
+    
+    tr.problem:hover{
+     background-color: #FF8598;
     }
     
  tr.finish:hover{
-     background-color: #BEDB39;  
+     background-color: #A1E29F;  
     }
    
 
@@ -52,6 +60,7 @@
 </style>
 
 <div id='parent'>
+    <div class="alert alert-warning" role="alert">注：绿色表示生信分析完成，交由报告组处理；红色表示问题样本（质控不合格、配对问题...）。目前，panel51、CT_DNA样本统计不全</div>
     <div id="grid"></div>
 </div>
 
@@ -61,14 +70,13 @@ var gridElement = $("#grid");
     
 
                     $("#grid").kendoGrid({
-                        toolbar: ["excel"],
-                       
                         dataSource: {
                             transport: {
                                 read:  {
                                 url: "/api/sample_flowcell",
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
                                 },
+                            
                                 update: {
                                     url: '/api/sample_flowcell',
                                     type: 'post',
@@ -79,38 +87,52 @@ var gridElement = $("#grid");
                                     dataType: "json",
                                     type: 'delete'
                                 },
+                            parameterMap: function(data, operation) {
+                                if (operation === "update" || operation === "create") {
+                                    data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
+                                    if (data.end_time != ''){
+                                        data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
+                                    }
+                                    
+                                }
+                                return data;
+                            }
                            
                             },
+                            batch: false,
+                            autoSync: true,
                             schema: {
 
-                            type: 'json',
-                            data: "data",
-                            total: function(data) {
-                                return data.data.length;
-                                
+                                type: 'json',
+                                data: "data",
+                                total: function(data) {
+                                    return data.data.length;
+
                             },
                             model: {
+                                id:'id',
                                  fields: {
-                                    id: { type: "string" },
-                                    flowcell: {type: "string"},
-                                     name: { type: "string" },
-                                     hospital: { type: "string" },
-                                     panel: { type: "string" },
+                                    sample_id: { type: "string" , editable: false},
+                                    flowcell: {type: "string", editable: false,},
+                                     name: { type: "string",editable: false },
+                                     hospital: { type: "string", editable: false},
+                                     panel: { type: "string" , editable: false},
                                      //blts: { type: "string" },
-                                     tumor: { type: "string" },
-                                     tissue: { type: "string" },
+                                     tumor: { type: "string" , editable: false},
+                                     tissue: { type: "string", editable: false },
                                      //collect_time: { type: "date" },
                                      //accept_time: { type: "date" },
-                                     class_time: { type: "date" },
-                                     submit_time: { type: "date" },
-                                     bioinfo_finish_time: { type: "date" },
-                                     bioinfo_report_time: { type: "date" },
+                                     class_time: { type: "date" , editable: false},
+                                     submit_time: { type: "date", editable: false },
+                                     bioinfo_finish_time: { type: "date", editable: false },
+                                     bioinfo_report_time: { type: "date", editable: false },
                                      //ask_histology_time: { type: "date" },
-                                     is_problem: { type: "boolean" },
-                                     is_finish_time: { type: "date" },
-                                     end_time: { type: "date" },
-                                     xj_time: { type: "date" },
-                                     note: { type: "string" },
+                                     is_problem: { type: "boolean", editable: true },
+                                     finish: { type: "boolean", editable: true },
+                                     is_finish_time: { type: "date", editable: false },
+                                     end_time: { type: "date", editable: false },
+                                     xj_time: { type: "date", editable: false },
+                                     note: { type: "string", editable: false },
                                      
                                     }
                                 }
@@ -128,29 +150,37 @@ var gridElement = $("#grid");
                                    var uid = dataView[i].uid;
                                    $("#grid tbody").find("tr[data-uid=" + uid + "]").addClass("finish");
                                  }
+                                
+                                if(dataView[i].is_problem === true) {
+                                   var uid = dataView[i].uid;
+                                   $("#grid tbody").find("tr[data-uid=" + uid + "]").addClass("problem");
+                                 }
                             }
                             
                              if (this.dataSource.totalPages() <= 1) {
                               this.pager.element.hide();
                              }
                         },
+                        
                         scrollable: true,
-                        editable: "inline",
                         sortable:true,
                         pageable: true,
+                        editable: "inline",
+                        autoSync: true,
                         columns: [
-                        { command: ["edit"], title: "&nbsp;", width: "120px" },
+                        { command: ["edit","destroy"], title: "&nbsp;", width: "200px" },
                             {
                                 field:"sample_id",
                                 title: "ID",
                                 width: 100,
                                 filterable: true,
-                                template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'>#=sample_id#</a>'
+                                template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'  target="_blank">#=sample_id#</a>'
                             },
                              {
                                  field:"flowcell",
                                  title: "Flowcell",
                                  width: 100,
+                                 editable:false,
                                  
                              },
                             {
@@ -166,9 +196,11 @@ var gridElement = $("#grid");
                             {
                                 field:"is_problem",
                                 title: "问题样本",
-                                width: 120,
+                                width: 80,
+                                template: '#= is_problem == true ? "是" : "否" #',
                                 
                             },
+                           
                              {
                                  field:"tumor",
                                  title: "癌种",

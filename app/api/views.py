@@ -116,7 +116,6 @@ class Check_info(Resource):
             check_info.result = result
             check_info.note = note
             db.session.commit()
-            print('update')
             return jsonify(data=[check_info.json])
             # return jsonify(data={})
             # return '{}'
@@ -261,7 +260,32 @@ class Sample_Sate(Resource):
 class Sample_Flowcell_Info(Resource):
     def get(self):
         return jsonify(data=[xx.json for xx in Sample_flowcell_info.query.all() if get_todo_sample(xx)])
-
+    
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', type=int, help='id')
+        parser.add_argument('is_problem', type=str)
+        args = parser.parse_args()
+        id = args.id
+        is_problem = args.is_problem
+        sf = Sample_flowcell_info.query.get(id)
+        if is_problem == 'true':
+            sf.is_problem = True
+        if is_problem == 'false':
+            sf.is_problem = False
+        db.session.commit()
+        return jsonify(data=[sf.json])
+            
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', type=int, help='id')
+        parser.add_argument('is_problem', type=str)
+        args = parser.parse_args()
+        id = args.id
+        sf = Sample_flowcell_info.query.get(id)
+        sf.finish = True
+        return jsonify(data=[{'id': id}])
+        
     
 class Sample_Stat(Resource):
     

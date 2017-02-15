@@ -111,3 +111,10 @@ div.flask-pagedown-preview h3 {
     border-color: #042634;
     box-shadow: 0 3px 7px 0 #042a3a;
 }
+
+.navbar{
+    z-index:99999;
+}
+
+
+

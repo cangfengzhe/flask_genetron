@@ -1,0 +1,15 @@
+{% extends "genetron/base.html" %}
+
+{% block head %}
+{{ super() }}
+
+
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+
+{% endblock %}
+
+{% block content %}
+ <div class="alert alert-warning" role="alert">帮助文档很快上线。。。。</div>
+
+{% endblock %}
+

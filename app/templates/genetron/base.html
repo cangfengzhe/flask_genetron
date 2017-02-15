@@ -9,6 +9,8 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='sb-admin/css/sb-admin-2.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='font-awesome/css/font-awesome.min.css') }}">
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
 {% endblock %}
 
 {% block navbar %}
@@ -26,9 +28,26 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('genetron.index') }}">Home</a></li>
-                 <li ><a href="{{url_for('genetron.sample')}}">样本信息</a></li>
-                <li ><a href="{{url_for('genetron.sample_finish')}}">样本统计</a></li>
-                <li ><a href="{{url_for('genetron.unfinish')}}">未完成样本</a></li>
+                <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                  样本库 <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li ><a href="{{url_for('genetron.sample')}}">样本信息</a></li>
+                    <li ><a href="{{url_for('genetron.sample_finish')}}">样本统计</a></li>
+                    <li ><a href="{{url_for('genetron.unfinish')}}">未完成样本</a></li>
+                </ul>
+              </li>
+                
+                  <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                  热点库 <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                   <li ><a href="#">建设中</a></li>
+                </ul>
+              </li>
+            <li ><a href="{{url_for('genetron.help')}}">Help</a></li>
 
             </ul>
             <ul class="nav navbar-nav navbar-right">
@@ -80,7 +99,4 @@
 </div>
 {% endblock %}
 
-{% block scripts %}
-{{ super() }}
-{{ moment.include_moment() }}
-{% endblock %}
+
