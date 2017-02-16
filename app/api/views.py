@@ -359,7 +359,7 @@ FROM sample_flowcell
      sample_id,
      panel,
      group_concat(
-         concat(flowcell_id, '下机样本于 ', start_time, ' 申请进行', gene_name, ' ', check_type, '验证, ', end_time, ' 反馈结果：',
+         concat(flowcell_id, '下机样本于 ', start_time, ' 申请进行', if(gene_name is null , '', gene_name), ' ', check_type, '验证, ', end_time, ' 反馈结果：',
                 result) SEPARATOR ';') AS check_info
    FROM sample_check_info
    GROUP BY sample_id, panel) AS check_info

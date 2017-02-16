@@ -294,9 +294,9 @@ table.dataTable thead .sorting:after {
 .show-grid {
     margin: 15px 0;
 }
-
+/* fds */
 .huge {
-    font-size: 40px;
+    font-size: 30px;
 }
 
 .panel-green {
