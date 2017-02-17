@@ -20,8 +20,7 @@
 <style>
       html,
       body,
-      #parent,
-      #grid
+      #parent
       {
         margin: 0;
         padding: 0;
@@ -35,8 +34,12 @@
         font: 13px sans-serif;
       }
 
-      #grid{
-       height:90%;
+       #grid
+      {
+        margin: 0;
+        padding: 0;
+        border-width: 0;
+        height: 80%; /* DO NOT USE !important for setting the Grid height! */
       }
     
     .problem{
@@ -66,9 +69,6 @@
 
 <script>
 var gridElement = $("#grid");
-
-    
-
                     $("#grid").kendoGrid({
                         dataSource: {
                             transport: {
@@ -88,13 +88,13 @@ var gridElement = $("#grid");
                                     type: 'delete'
                                 },
                             parameterMap: function(data, operation) {
-                                if (operation === "update" || operation === "create") {
-                                    data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
-                                    if (data.end_time != ''){
-                                        data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
-                                    }
+//                                 if (operation === "update" || operation === "create") {
+//                                     data.start_time = kendo.toString(kendo.parseDate(data.start_time), "s");
+//                                     if (data.end_time != ''){
+//                                         data.end_time = kendo.toString(kendo.parseDate(data.end_time), "s");
+//                                     }
                                     
-                                }
+//                                 }
                                 return data;
                             }
                            
@@ -141,7 +141,7 @@ var gridElement = $("#grid");
                                 field: "class_time",
                                 dir: "desc"
                             },
-                            // pageSize: 20,
+                            pageSize: 20,
                         },
                         dataBound: function () {
                             dataView = this.dataSource.view();
@@ -163,8 +163,8 @@ var gridElement = $("#grid");
                         },
                         
                         scrollable: true,
-                        sortable:true,
                         pageable: true,
+                        sortable:true,
                         editable: "inline",
                         autoSync: true,
                         columns: [
