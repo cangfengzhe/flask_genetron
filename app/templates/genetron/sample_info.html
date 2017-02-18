@@ -286,6 +286,50 @@
 
 
 <script>
+    
+    var textEditorInitialize = function(container, options) {
+        $('<textarea rows="10" data-bind="value: ' + options.field + '"></textarea>').appendTo(container);
+};
+    
+       function UserDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            dataTextField: "user_name",
+                            dataValueField: "user_id",
+                            dataSource: {
+                                type: "json",
+                                transport: {
+                                    read: "/api/user/Reporter"
+                                },
+                            },
+                        });
+                }
+    
+      function PanelDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            dataSource: {
+                                type: "json",
+                                data: ['panel203','panel51',"panel509",'panel63', "panel88", 'WES'],
+                            },
+                        });
+                }
+    
+    function ReportTypeDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            dataSource: {
+                                type: "json",
+                                data: ["初稿", "审核", "复核"],
+                            },
+                        });
+                }
  $("#snp_indel").kendoGrid({
                         dataSource: {
                             transport: {
@@ -552,7 +596,7 @@
                                      start_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", },
                                      end_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", nullable: true },
                                      result: { type: "string", nullable: true },
-                                     note: { type: "string", nullable: true },
+                                     note: { type: "string", nullable: true, },
                                     }
                                 }
                             },
@@ -578,6 +622,7 @@
                                 field:"panel",
                                 title: "panel",
                                 width: 50,
+                                editor:PanelDropDownEditor
                             },
                             {
                                 field:"gene_name",
@@ -609,7 +654,8 @@
                             {
                                 field:"note",
                                 title: "备注",
-                                width: 130,                        
+                                width: 130,
+                                editor: textEditorInitialize ,
                             },
                             { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
                        ],
@@ -695,12 +741,14 @@
                                 field:"panel",
                                 title: "panel",
                                 width: 50,
+                                editor:PanelDropDownEditor
                             },
                           
                             {
                                 field:"note",
                                 title: "备注",
-                                width: 300,                        
+                                width: 300,  
+                                editor: textEditorInitialize ,
                             },
                             { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
                        ],
@@ -786,45 +834,7 @@
                        ],
                     });
         
-       function UserDropDownEditor(container, options) {
-                    $('<input required name="' + options.field + '"/>')
-                        .appendTo(container)
-                        .kendoDropDownList({
-                            autoBind: false,
-                            dataTextField: "user_name",
-                            dataValueField: "user_id",
-                            dataSource: {
-                                type: "json",
-                                transport: {
-                                    read: "/api/user/Reporter"
-                                },
-                            },
-                        });
-                }
     
-      function PanelDropDownEditor(container, options) {
-                    $('<input required name="' + options.field + '"/>')
-                        .appendTo(container)
-                        .kendoDropDownList({
-                            autoBind: false,
-                            dataSource: {
-                                type: "json",
-                                data: ['panel203','panel51',"panel509",'panel63', "panel88", 'WES'],
-                            },
-                        });
-                }
-    
-    function ReportTypeDropDownEditor(container, options) {
-                    $('<input required name="' + options.field + '"/>')
-                        .appendTo(container)
-                        .kendoDropDownList({
-                            autoBind: false,
-                            dataSource: {
-                                type: "json",
-                                data: ["初稿", "审核", "复核"],
-                            },
-                        });
-                }
     
     $("#report").kendoGrid({
                         dataSource: {
@@ -891,7 +901,7 @@
                         {% if current_user.is_reporter() %}
                             toolbar: ["create"],
                            editable: "popup",
-                         {% endif %}
+                        {% endif %}
                         scrollable: false,
                         sortable: true,
                         pageable: true,
@@ -939,7 +949,11 @@
                                 title: "备注",
                                 width: 130,                        
                             },
-                            { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
+                            
+                            {% if current_user.is_reporter() %}
+                           { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" },
+                        {% endif %}
+                            
                        ],
                     });
     
@@ -971,7 +985,6 @@
          "/genetron/filelist?sample={{sample.sample_id}}",
          function(data){
              data['data'].forEach(function(item){
-                 console.log(item);
                  $('#filelist').append('<li class="list-group-item"><a href="{{url_for('static', filename='upload/')}}' +item + '">' + item + '</a></li>');
              })
 
