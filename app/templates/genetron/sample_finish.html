@@ -34,12 +34,40 @@
         overflow: hidden;
         font: 13px sans-serif;
       }
+
 #grid{
  height:90%;
 }
+
+ #grid .k-grid-toolbar
+                {
+                    padding: .6em 1.3em;
+                }
+                .category-label
+                {
+                    vertical-align: middle;
+                    padding-right: .5em;
+                }
+                #search
+                {
+                    vertical-align: middle;
+                }
+                .toolbar {
+                    float: right;
+                }
     </style>
 
- <div id='parent'>           <div id="grid"></div> </div>
+ <div id='parent'>
+     <div id="grid"></div> </div>
+
+ <script type="text/x-kendo-template" id="template">
+
+                <div class="toolbar">
+                    <label class="category-label" for="category">Search:</label>
+                    <input type="search" id="search" style="width: 150px"/>
+                </div>
+ </script>
+
 <script>
 
 var gridElement = $("#grid");
@@ -65,6 +93,9 @@ var gridElement = $("#grid");
                         toolbar: ["excel",
                                  {
                               template: '<a class="k-button" href="\\#" onclick="return toolbar_click()">Mutation Info</a>'
+                                    },
+                                    {
+                               template:kendo.template($("#template").html()),
                                     }
                                  ],
                         excel: {
@@ -129,8 +160,8 @@ var gridElement = $("#grid");
                             extra: false,
                             operators: {
                                 string: {
-                                    startswith: "Starts with",
-                                    eq: "Is equal to",
+                                   // startswith: "Starts with",
+                                   // eq: "Is equal to",
                                     neq: "Is not equal to"
                                 }
                             }
@@ -144,7 +175,6 @@ var gridElement = $("#grid");
                                 title: "ID",
                                 width: 100,
                                 filterable: true,
-                                //{{url_for('genetron.sample_info')}}" + '?id='
                                 template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'  target="_blank">#=sample_id#</a>'
    
 
@@ -330,10 +360,27 @@ var gridElement = $("#grid");
                        ],
                     });
 
-
+$("#search").keyup(function () {
+    var val = $('#search').val();
+    gridElement.data("kendoGrid").dataSource.filter({
+        logic  : "or",
+        filters: [
+            {
+                field   : "sample_id",
+                operator: "contains",
+                value   : val
+            },
+            {
+                field   : "name",
+                operator: "contains",
+                value   : val
+            }
+        ]
+    });
+});
 		
             </script>
-      
+
 
     {% endblock %}
 
