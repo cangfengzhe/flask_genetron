@@ -14,9 +14,7 @@ from .configure import Configure as configure
 @genetron.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     sample_id = request.args.get('sample')
-    print(sample_id)
-    print(request.method)
-    print(request.files)
+
     if request.method == 'POST':
         file = request.files['file']
         filename = file.filename

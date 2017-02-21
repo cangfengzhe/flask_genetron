@@ -378,3 +378,7 @@ def mut_stat():
 @genetron.route('/help',  methods=['GET', 'POST'])
 def help():          
     return render_template('genetron/help.html')
+
+@genetron.route('/barcode',  methods=['GET'])
+def barcode():          
+    return render_template('genetron/barcode.html')

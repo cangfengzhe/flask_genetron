@@ -1,0 +1,58 @@
+{% extends "genetron/base.html" %}
+
+{% block head %}
+{{ super() }}
+
+
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+
+{% endblock %}
+
+{% block content %}
+<style>
+    #barcode{
+      margin-top:20px;
+    }    
+</style>
+<div class="container" >
+ <div class="alert alert-warning" role="alert">北大肿瘤医院条形码生成器</div>
+
+<div class="row">
+   <div class="col-lg-5">
+    <div class="input-group">
+      <input type="text" id='input' class="form-control" placeholder="输入编号，点击Submit">
+      <span class="input-group-btn">
+        <button class="btn btn-default" id='btn' type="button">Submit</button>
+      </span>
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+    
+
+</div>
+    <div id='barcode'>
+</div>
+
+    
+</div>
+<script>
+$(function(){
+$('#btn').click(function(){
+    code = $('input').val()
+    if(code == ''){
+       return 0
+    }
+    $.get("/api/barcode/" + code, function(data){
+      if(data['data'][0]['status'] == 'error'){
+        alert('条形码生成错误， 请联系pidong.li@genetronhealth.com')
+        return 0
+      }
+      file_path = '{{ url_for('static', filename='barcode/') }}' + data['data'][0]['file_name']
+      console.log(file_path)
+      $('#barcode').append('<img src="' + file_path + '"/>')
+    });
+})
+
+})    
+</script>
+{% endblock %}
+

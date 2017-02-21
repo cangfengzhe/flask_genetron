@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from json import dumps
+import os
 
 from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
@@ -10,7 +11,7 @@ from . import api
 from ..genetron.configure import Configure as configure
 from ..models import *
 from ..tips import *
-
+from .. import app_dir
 
 def get_todo_sample(xx):
     sample_id = xx.sample_flowcell_id.sample.sample_id
@@ -109,7 +110,6 @@ class Check_info(Resource):
             check_info.flowcell_id = flowcell_id
             check_info.panel = panel
             check_info.check_type = check_type
-            print(check_type)
             check_info.gene_name = gene_name
             check_info.start_time = start_time
             check_info.end_time = end_time
@@ -126,7 +126,6 @@ class Check_info(Resource):
                                            start_time=start_time, end_time=end_time, result=result, note=note)
             db.session.add(check_info)
             db.session.commit()
-            print(type(check_info))
             return jsonify(data=[check_info.json])
 
     def delete(self, sample_id):
@@ -134,7 +133,6 @@ class Check_info(Resource):
         parser.add_argument('id', type=str, help='id')
         args = parser.parse_args()
         id = args.id
-        print('del', id)
         check_info = Sample_check_info.query.get(id)
         db.session.delete(check_info)
         db.session.commit()
@@ -197,7 +195,6 @@ class Report_info(Resource):
             report_info.note = note
             if report_type == '复核' and report_info.finish_time:
                 proc_finish_time(sample, panel, report_info.finish_time)
-                print('proc_time finish')
                 
             db.session.commit()
             return jsonify(data=[report_info.json])
@@ -218,7 +215,6 @@ class Report_info(Resource):
             db.session.add(report_info)
             if report_type == '复核' and report_info.finish_time:
                 proc_finish_time(sample, panel, report_info.finish_time)
-                print('proc_time finish')
             
             db.session.commit()
             return jsonify(data=[report_info.json])
@@ -458,7 +454,6 @@ class Note_info(Resource):
                                            note=note)
             db.session.add(note_info)
             db.session.commit()
-            print(type(note_info))
             return jsonify(data=[note_info.json])
 
     def delete(self, sample_id):
@@ -466,11 +461,38 @@ class Note_info(Resource):
         parser.add_argument('id', type=str, help='id')
         args = parser.parse_args()
         id = args.id
-        print('del', id)
         note_info = Sample_note_info.query.get(id)
         db.session.delete(note_info)
         db.session.commit()
         return jsonify(data=[{'id': id}])
+
+class Barcode(Resource):
+    
+    def barcodepng(self, code, outdir):
+        import barcode
+        from barcode.writer import ImageWriter
+        
+        for xx in os.listdir(outdir):
+            os.remove(os.path.join(outdir, xx))
+        
+        try:
+            x = barcode.get_barcode_class('code39')
+            x.default_writer_options['module_height']=5.128205128205129
+            x.default_writer_options['module_width']=0.1
+            x.default_writer_options['font_size'] = 0
+            x.default_writer_options['quiet_zone'] = 0
+            y = x(code,writer=ImageWriter(),add_checksum=False)
+            fullname = y.save(os.path.join(outdir,code))
+            return code + '.png'
+        except barcode.errors.WrongCountryCodeError:
+            pass
+        
+    def get(self, code):
+        pic_name = self.barcodepng(code, os.path.join(app_dir,'static', 'barcode'))
+        if pic_name:
+            return jsonify(data=[{'file_name': pic_name, 'stutas':'success'}])
+        else:
+            return jsonify(data=[{'stutas':'error'}])
     
 
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
@@ -482,3 +504,4 @@ api.add_resource(Report_info, '/report/<string:sample_id>')
 api.add_resource(Report_User, '/user/<string:role_name>')
 api.add_resource(Sample_Flowcell_Info, '/sample_flowcell')
 api.add_resource(Sample_Stat, '/sample_stat')
+api.add_resource(Barcode, '/barcode/<string:code>')
