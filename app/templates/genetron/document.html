@@ -2,13 +2,10 @@
 
 {% block head %}
 {{ super() }}
-
-
-<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
-
 {% endblock %}
 
 {% block content %}
+{{ super() }}
 <div class='container'>
 
     <header class="post-header">
@@ -19,6 +16,10 @@
         {% if doc.change_time%}
         最后一次修改：{{doc.change_time | datetimeformat("%Y-%m-%d %H:%M:%S")}} 
        {% endif %}
+        
+        {% if doc.user_id == current_user.id%}
+        <a href="{{url_for('genetron.edit_doc', id=doc.id)}}"> edit </a>
+        {% endif %}
     </p>
 </header>
 <div class="article pure-u-22-24">

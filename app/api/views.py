@@ -490,6 +490,7 @@ class Note_info(Resource):
         db.session.commit()
         return jsonify(data=[{'id': id}])
 
+    
 class Barcode(Resource):
     
     def barcodepng(self, code, outdir):
@@ -517,8 +518,8 @@ class Barcode(Resource):
             return jsonify(data=[{'file_name': pic_name, 'stutas':'success'}])
         else:
             return jsonify(data=[{'stutas':'error'}])
+  
     
-
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
 api.add_resource(Sv, '/sv/<string:id>')

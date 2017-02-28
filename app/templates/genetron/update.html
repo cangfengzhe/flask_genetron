@@ -10,21 +10,22 @@
 
 {% block content %}
      <div class='container'>
+         <h2>更新日志</h2>
+         
 {%for xx in items%}
     
     <header class="post-header">
     
-    <h2 class="post-title"> <a href="{{url_for('genetron.document',id=xx.id )}}">{{ xx.title }}</a></h2>
+    <h4 class="post-title"> ## {{xx.create_time | datetimeformat("%Y-%m-%d %H:%M:%S")}} -- {{ xx.title }}</h4>
 
-    <p class="post-meta">By {{xx.user.username}} {{xx.create_time | datetimeformat("%Y-%m-%d %H:%M:%S")}} 
-       
-    </p>
+    {{xx.body_html| safe}}
+       <p></p>
 </header>
     {% endfor %}
     
  {% if pagination %}
 <div class="pagination">
-    {{ macros.pagination_widget(pagination, 'genetron.help') }}
+    {{ macros.pagination_widget(pagination, 'genetron.update') }}
 </div>
  {% endif %}
 </div>

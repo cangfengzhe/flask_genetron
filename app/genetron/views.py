@@ -377,8 +377,33 @@ def mut_stat():
 
 
 @genetron.route('/help',  methods=['GET', 'POST'])
-def help():          
-    return render_template('genetron/help.html')
+def help():
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (post.comments.count() - 1) // \
+            current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+            
+    # doc_type_id=1 means Help
+    pagination = Document.query.filter_by(doc_type_id=1).order_by(Document.create_time.asc()).paginate(
+        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
+        error_out=False)
+    items = pagination.items
+    return render_template('genetron/help.html', items=items, pagination=pagination)
+
+
+@genetron.route('/update',  methods=['GET', 'POST'])
+def update():
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (post.comments.count() - 1) // \
+            current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+            
+    # doc_type_id=1 means Help
+    pagination = Document.query.filter_by(doc_type_id=2).order_by(Document.create_time.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
+        error_out=False)
+    items = pagination.items
+    return render_template('genetron/update.html', items=items, pagination=pagination)
 
 @genetron.route('/barcode',  methods=['GET'])
 def barcode():          
@@ -390,11 +415,11 @@ def barcode():
 
 
 @genetron.route('/submit/', methods=['GET', 'POST'])
+@login_required
 def submit():
     # D = Post.query.get_or_404(id)
     form = DocumentForm()
     if form.validate_on_submit():
-        print current_user._get_current_object()
         document = Document(title=form.title.data,
                      body=form.body.data,
                      doc_type_id=form.doc_type_id.data,
@@ -414,10 +439,35 @@ def submit():
         error_out=False)
     items = pagination.items
     return render_template('genetron/submit.html', form=form, items=items, pagination=pagination)
-
+  
 
 @genetron.route('/document/<int:id>', methods=['GET', 'POST'])
 def document(id):
     doc = Document.query.get_or_404(id)
     
     return render_template('genetron/document.html', doc=doc)
+
+
+@genetron.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_doc(id):
+    doc = Document.query.get_or_404(id)
+    if doc.user_id != current_user.id:
+        flash('You cannt edit others document')
+        return redirect(url_for('.document', id=id))
+    form = EditDocumentForm()
+    if form.validate_on_submit():
+        print form
+        doc.title = form.title.data
+        doc.body = form.body.data
+        doc.doc_type_id = form.doc_type_id.data
+        doc.change_time = datetime.datetime.now()
+        # db.session.add(doc)
+        db.session.commit()
+        flash('Your document has been update.')
+        return redirect(url_for('.document', id=id))
+    else:
+        form.title.data = doc.title
+        form.body.data = doc.body 
+        form.doc_type_id.data = doc.doc_type
+        return render_template('genetron/edit_document.html', doc=doc, form=form)

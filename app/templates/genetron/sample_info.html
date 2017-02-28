@@ -83,10 +83,16 @@
                             <td>肿瘤样本接受日期: {{ sample.accept_time|datetimeformat("%Y-%m-%d %H:%M:%S") }}</td>
                         </tr>
                         <tr>
+                            <td>更新病理时间:  {{ sample.get_histology_time}}
+                            </td>
+                            <td>备注: {{ sample.note}} </td>
+                        </tr>
+                        <tr>
                             <td>组织:  {{ sample.tumor}}
                             </td>
                             <td>癌种: {{ sample.tissue}} </td>
                         </tr>
+                        
 
                     </table>
                 </div>

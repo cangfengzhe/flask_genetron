@@ -32,5 +32,15 @@ class DocumentForm(Form):
         super(DocumentForm, self).__init__(*args, **kwargs)
         self.doc_type_id.choices = [(doc_type.id, doc_type.type_name)
                              for doc_type in Doc_type.query.all()]
-       
+
+        
+class EditDocumentForm(Form):
+    title = StringField('title', validators=[DataRequired()])
+    doc_type_id = SelectField('type', coerce=int)
+    body = PageDownField("content", validators=[Required()])
+    submit = SubmitField('Submit')
     
+    def __init__(self, *args, **kwargs):
+        super(EditDocumentForm, self).__init__(*args, **kwargs)
+        self.doc_type_id.choices = [(doc_type.id, doc_type.type_name)
+                             for doc_type in Doc_type.query.all()]   
