@@ -1,7 +1,7 @@
 #coding=utf-8
 
 from flask import jsonify, request, flash
-from flask import render_template
+from flask import render_template,redirect, url_for, current_app
 from collections import defaultdict
 
 from flask_login import login_required
@@ -299,7 +299,8 @@ def api():
             panel = 'WES'
         if ('_' in panel) and ('CT' not in panel) and 'germline' not in panel:  # 转平台panel处理
             panel = 'panel' + panel.split('_')[1]
-        
+        if panel == 'ctdna' or panel == 'panel63' or panel == 'CT_SEQ' or panel == 'CT_STR' or ('CT' in panel):
+            panel == 'CT_DNA'
     # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02
     if api_type == 'sj_time':
         if not flowcell_id:
@@ -382,3 +383,41 @@ def help():
 @genetron.route('/barcode',  methods=['GET'])
 def barcode():          
     return render_template('genetron/barcode.html')
+
+# @genetron.route('/submit',  methods=['GET'])
+# def submit():          
+#     return render_template('genetron/submit.html')
+
+
+@genetron.route('/submit/', methods=['GET', 'POST'])
+def submit():
+    # D = Post.query.get_or_404(id)
+    form = DocumentForm()
+    if form.validate_on_submit():
+        print current_user._get_current_object()
+        document = Document(title=form.title.data,
+                     body=form.body.data,
+                     doc_type_id=form.doc_type_id.data,
+                     user_id=current_user.id,
+                     create_time = datetime.datetime.now()
+                     )
+        db.session.add(document)
+        db.session.commit()
+        flash('Your comment has been published.')
+        return redirect(url_for('.submit'))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (post.comments.count() - 1) // \
+            current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+    pagination = Document.query.order_by(Document.create_time.asc()).paginate(
+        page, per_page=5,  # current_app.config['FLASKY_COMMENTS_PER_PAGE']
+        error_out=False)
+    items = pagination.items
+    return render_template('genetron/submit.html', form=form, items=items, pagination=pagination)
+
+
+@genetron.route('/document/<int:id>', methods=['GET', 'POST'])
+def document(id):
+    doc = Document.query.get_or_404(id)
+    
+    return render_template('genetron/document.html', doc=doc)

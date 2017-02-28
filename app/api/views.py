@@ -37,6 +37,16 @@ class SnpIndel(Resource):
             return jsonify(data=[xx.json for xx in snp_indel_info])
         else:
             return jsonify(data='error')
+        
+    def delete(self, id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', type=int)
+        args = parser.parse_args()
+        snv_indel_id = args.id
+        print snv_indel_id
+        snv_indel = Sample_snp_indel_info.query.get(snv_indel_id)
+        db.session.delete(snv_indel)
+        return {'id': snv_indel_id}
 
 
 class Cnv(Resource):
@@ -48,15 +58,17 @@ class Cnv(Resource):
         else:
             return jsonify(data='error')
 
-    def put(self, id):
-        return {'aa': 'bb'}
 
     def delete(self, id):
         parser = reqparse.RequestParser()
-        parser.add_argument('age', type=int, help='Rate cannot be converted')
-        parser.add_argument('panel')
+        parser.add_argument('id', type=int, help='Rate cannot be converted')
         args = parser.parse_args()
-        return {'type': [args.age, args.panel]}
+        print args
+        cnv_id = args.id
+        cnv = Sample_cnv_info.query.get(cnv_id)
+        db.session.delete(cnv)
+        db.session.commit()
+        return jsonify({'id':cnv_id})
 
 
 class Sv(Resource):
@@ -67,6 +79,18 @@ class Sv(Resource):
             return jsonify(data=[xx.json for xx in sv_info])
         else:
             return jsonify(data='error')
+        
+    def delete(self, id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', type=int)
+        
+        args = parser.parse_args()
+        print args
+        sv_id = args.id
+        sv = Sample_sv_info.query.get(sv_id)
+        db.session.delete(sv)
+        db.session.commit()
+        return jsonify({'id':sv_id})
 
 
 class Check_info(Resource):

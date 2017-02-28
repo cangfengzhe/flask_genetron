@@ -5,9 +5,9 @@ from wtforms import StringField, TextAreaField, BooleanField, HiddenField, Selec
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask_pagedown.fields import PageDownField
-
+from flask_login import login_required, current_user
 from wtforms.validators import DataRequired
-
+from .models import Doc_type
 
 
 class CheckForm(Form):
@@ -20,4 +20,17 @@ class CheckForm(Form):
     end_time = StringField('end_time')
     result = StringField('result')
     note = StringField('note')
+    
+    
+class DocumentForm(Form):
+    title = StringField('title', validators=[DataRequired()])
+    doc_type_id = SelectField('type', coerce=int)
+    body = PageDownField("content", validators=[Required()])
+    submit = SubmitField('Submit')
+    
+    def __init__(self, *args, **kwargs):
+        super(DocumentForm, self).__init__(*args, **kwargs)
+        self.doc_type_id.choices = [(doc_type.id, doc_type.type_name)
+                             for doc_type in Doc_type.query.all()]
+       
     

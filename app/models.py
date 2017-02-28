@@ -90,21 +90,21 @@ class User(UserMixin, db.Model):
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     followed = db.relationship('Follow',
-                               foreign_keys=[Follow.follower_id],
-                               backref=db.backref('follower', lazy='joined'),
-                               lazy='dynamic',
-                               cascade='all, delete-orphan')
+                    foreign_keys=[Follow.follower_id],
+                    backref=db.backref('follower', lazy='joined'),
+                    lazy='dynamic',
+                    cascade='all, delete-orphan')
     followers = db.relationship('Follow',
-                                foreign_keys=[Follow.followed_id],
-                                backref=db.backref('followed', lazy='joined'),
-                                lazy='dynamic',
-                                cascade='all, delete-orphan')
+                    foreign_keys=[Follow.followed_id],
+                    backref=db.backref('followed', lazy='joined'),
+                    lazy='dynamic',
+                    cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
     biomarker_mk_user = db.relationship('Biomarker',
-                                        backref='mk_user',
-                                 foreign_keys=[Biomarker.mk_user_id],
-                                 lazy="dynamic"
-                                 )
+                            backref='mk_user',
+                            foreign_keys=[Biomarker.mk_user_id],
+                            lazy="dynamic"
+                            )
     biomarker_check_user = db.relationship('Biomarker',
                                            backref='check_user',
                                         foreign_keys=[Biomarker.check_user_id],

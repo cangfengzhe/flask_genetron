@@ -330,23 +330,31 @@
                             },
                         });
                 }
+    
+    
  $("#snp_indel").kendoGrid({
                         dataSource: {
                             transport: {
                                 read:  {
                                 url: '/api/snpindel/{{sample.sample_id}}',
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
-                                }
+                                },
+                                destroy: {
+                                    url: '/api/snpindel/{{sample.sample_id}}',
+                                    dataType: "json",
+                                    type: 'delete'
+                                },
+                               
                             },
                             schema: {
-                            type: 'json',
-                            data: "data",
-                            total: function(data) {
-                                return data.data.length;
+                                type: 'json',
+                                data: "data",
+                                total: function(data) {
+                                    return data.data.length;
                             },
                             model: {
+                                id: "id",
                                  fields: {
-                                    
                                      panel: { type: "string" },
                                      gene: { type: "string" },
                                      refseq: { type: "string" },
@@ -372,6 +380,7 @@
                         serverFiltering: false,
                         serverPaging: false,
                         serverSorting: false,
+                        editable: "popup",
                         dataBound: function() {
                             console.log(this.dataSource.totalPages())
                             if (this.dataSource.totalPages() <= 1) {
@@ -390,10 +399,6 @@
                                 field:"gene_name",
                                 title: "基因名称",
                                 width: 100,
-                                
-                                
-                                
-
                             },
                             {
                                 field:"refseq_id",
@@ -407,30 +412,27 @@
                                 width: 50,
 
                             },
-                            {
-                                field:"start",
-                                title: "起始位置",
-                                width: 100,
+//                             {
+//                                 field:"start",
+//                                 title: "起始位置",
+//                                 width: 100,
 
-                            },
-                            {
-                                field:"end",
-                                title: "终止位置",
-                                width: 100,
+//                             },
+//                             {
+//                                 field:"end",
+//                                 title: "终止位置",
+//                                 width: 100,
 
-                            },
+//                             },
                             {
                                 field:"cDNA_change",
                                 title: "核苷酸变化",
                                 width: 100,
-                               
                             },
                             {
                                 field:"aa_change",
                                 title: "氨基酸变化",
                                 width: 120,
-                               
-
                             },
                              {
                                 field:"mut_type",
@@ -443,10 +445,9 @@
                                 title: "突变频率",
                                 width: 100,
                                 template: '#=t_freq#%'
-
                             },
                             
-                           
+                          { command: [ "destroy"], title: "&nbsp;", width: "250px" }, 
                        ],
                     });
 
@@ -458,16 +459,21 @@
                                 read:  {
                                 url: '/api/cnv/{{sample.sample_id}}',
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
-                                }
+                                },
+                                destroy: {
+                                    url: '/api/cnv/{{sample.sample_id}}',
+                                    dataType: "json",
+                                    type: 'delete'
+                                },
                             },
                             schema: {
-
                             type: 'json',
                             data: "data",
                             total: function(data) {
                                 return data.data.length;
                             },
                             model: {
+                                id: "id",
                                  fields: {
                                     
                                      panel: { type: "string" },
@@ -533,9 +539,7 @@
                                 width: 120,
 
                             },
-                           
-                            
-                           
+                             { command: [ "destroy"], title: "&nbsp;", width: "250px" }, 
                        ],
                     });
 
@@ -763,7 +767,13 @@
                                 read:  {
                                 url: '/api/sv/{{sample.sample_id}}',
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                },
+                                destroy:  {
+                                url: '/api/sv/{{sample.sample_id}}',
+                                dataType: "json", // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                type: 'delete'
                                 }
+                                
                             },
                             schema: {
 
@@ -773,6 +783,7 @@
                                 return data.data.length;
                             },
                             model: {
+                                 id:'id',
                                  fields: {
                                     
                                      panel: { type: "string" },
@@ -793,6 +804,7 @@
                         scrollable: false,
                         sortable:true,
                         pageable: true,
+                        editable: 'popup',
                         dataBound: function() {
                             console.log(this.dataSource.totalPages())
                             if (this.dataSource.totalPages() <= 1) {
@@ -828,7 +840,7 @@
                                 width: 100,                        
                             },
                         
-                           
+                           { command: [ "destroy"], title: "&nbsp;", width: "250px" }, 
                             
                            
                        ],

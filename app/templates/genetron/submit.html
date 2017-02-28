@@ -1,0 +1,35 @@
+{% extends "genetron/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+{% block head %}
+{{ super() }}
+
+
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+
+{% endblock %}
+
+{% block content %}
+<div class='container'>
+    {%for xx in items%}
+    
+    <header class="post-header">
+    
+    <h2 class="post-title"> <a href="{{url_for('genetron.document',id=xx.id )}}">{{ xx.title }}</a></h2>
+
+    <p class="post-meta">By {{xx.user.username}} {{xx.create_time | datetimeformat("%Y-%m-%d %H:%M:%S")}} 
+       
+    </p>
+</header>
+    {% endfor %}
+    
+ {% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, 'genetron.submit') }}
+</div>
+{% endif %}
+    
+     {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}
+

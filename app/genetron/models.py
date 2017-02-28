@@ -4,6 +4,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 import datetime
+from markdown import markdown
+import bleach
 
 import  sqlalchemy
 
@@ -39,6 +41,9 @@ class Patient_info(db.Model):
     ask_histology = db.Column(db.Boolean, default=False)
     note = db.Column(db.Text)
     sample = db.relationship('Sample_info', backref='patient', lazy="dynamic")
+    
+    def __repr__(self):
+        return str(self.id)
 
 
 class Sample_info(db.Model):
@@ -252,7 +257,9 @@ class Sample_snp_indel_info(db.Model):
     
     @property
     def json(self):
-        return {'sample_id': self.sample.sample_id,
+        return {
+               'id': self.id,
+               'sample_id': self.sample.sample_id,
                'panel': self.panel,
                'gene_name': self.gene_name,
                'refseq_id': self.refseq_id,
@@ -500,7 +507,7 @@ class Sample_flowcell_info(db.Model):
 #     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
 class Sample_note_info(db.Model):
     """
-    样本验证时间
+    样本备注
     """
     __tablename__ = 'sample_note_info'
     id = db.Column(db.Integer, primary_key=True)
@@ -519,4 +526,38 @@ class Sample_note_info(db.Model):
            'panel': self.panel,
            'note': self.note
              } 
+
+    
+class Doc_type(db.Model):
+
+    __tablename__ = 'doc_type'
+    id = db.Column(db.Integer, primary_key=True)
+    type_name = db.Column(db.String(300))
+    
+    
+class Document(db.Model):
+    __tablename__ = 'document'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(300))
+    body = db.Column(db.Text)
+    body_html = db.Column(db.Text)
+    create_time = db.Column(db.DateTime)
+    change_time =  db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='document', lazy="joined", foreign_keys=[user_id])
+    
+    doc_type_id = db.Column(db.Integer, db.ForeignKey('doc_type.id'))
+    doc_type = db.relationship('Doc_type', backref='document', lazy="joined", foreign_keys=[doc_type_id])
+    
+    
+    @staticmethod
+    def on_changed_body(target, value, oldvalue, initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                        'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                        'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value, output_format='html'),
+            tags=allowed_tags, strip=True))
+        
+db.event.listen(Document.body, 'set', Document.on_changed_body)
     

@@ -22,7 +22,7 @@ login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
-from admin.app import MyModelView, ProjectView
+from admin.app import MyModelView, ProjectView, SampleModelView
 from genetron.models import *
 import sqlalchemy
 
@@ -65,7 +65,7 @@ def create_app(config_name):
     admin=Admin(app,  template_mode='bootstrap3')
     admin.add_view(MyModelView(User, db.session))
     admin.add_view(MyModelView(Role, db.session))
-    admin.add_view(MyModelView(Biomarker, db.session))
+    admin.add_view(SampleModelView(Sample_info, db.session))
     # admin.add_view(ProjectView(Project, db.session))
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask_sslify import SSLify

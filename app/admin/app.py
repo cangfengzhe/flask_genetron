@@ -13,17 +13,33 @@ from ..models import User, Role
 class MyModelView(sqla.ModelView):
 
     # inline_models = ['Role']
+    # column_searchable_list = (
+    #     B.a1,  # (or the string "a1")
+    # )
     column_hide_backrefs = False
     def is_accessible(self):
-        return True
+        return login.current_user.is_authenticated
 
+class SampleModelView(sqla.ModelView):
 
+    # inline_models = ['Role']
+    column_searchable_list = (
+        'sample_id',  # (or the string "a1")
+    )
+    can_create = False
+    can_delete = False
+    column_list = ('sample_id', 'panel', 'sample_id.patient_id')
+    column_hide_backrefs = False
+    def is_accessible(self):
+        return login.current_user.is_authenticated
+    
 
 class ProjectView(sqla.ModelView):
 
     # inline_models = ['Role']
-    column_list = ['patient_id', 'patient.name', 'patient.age']
+    column_list = ('patient_id', 'patient.name', 'patient.age')
     column_hide_backrefs = False
+    
     # form_extra_fields = {
     #     'role': sqla.fields.QuerySelectField(
     #         label='name',

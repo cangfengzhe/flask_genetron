@@ -86,7 +86,7 @@
             <!-- /.dropdown-user -->
         </li>
                 {% else %}
-                <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
+                <li><a href="{{ url_for('auth.login') }}?next={{request.url}}" >Log In</a></li>
 
                 {% endif %}
             </ul>
