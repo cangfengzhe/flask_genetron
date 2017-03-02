@@ -1,7 +1,7 @@
 #coding=utf-8
 from flask_wtf import Form
 from wtforms import StringField, TextAreaField, BooleanField, HiddenField, SelectField,\
-    SubmitField
+    SubmitField, DateTimeField
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from flask_pagedown.fields import PageDownField
@@ -43,4 +43,12 @@ class EditDocumentForm(Form):
     def __init__(self, *args, **kwargs):
         super(EditDocumentForm, self).__init__(*args, **kwargs)
         self.doc_type_id.choices = [(doc_type.id, doc_type.type_name)
-                             for doc_type in Doc_type.query.all()]   
+                             for doc_type in Doc_type.query.all()] 
+        
+        
+class PGMForm(Form):
+    pgm_id = StringField('pgm_id', validators=[DataRequired()])
+    xj_time = DateTimeField('xj_time',validators=[DataRequired()], format='%Y-%m-%d %H:%M:%S')
+    sample_list = PageDownField("sample_list", validators=[Required()])
+    submit = SubmitField('Submit')
+    

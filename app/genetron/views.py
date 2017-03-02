@@ -161,17 +161,11 @@ def sample_response():
     return jsonify(data=[dt.json])
 
 
-@genetron.route('/kendo')
-def kendo():
-    return render_template('genetron/grid2.html')
-
-
 
 def check_sample(sample_id):
     # 检查sample， 如果sample不在lims中，则添加信息
     sample_id = sample_id.split('-')[0].split('NEW')[0]
     sample_index = Sample_info.query.filter_by(sample_id=sample_id).first()
-    print(sample_id)
     if not sample_index:
         sample = Sample_info(sample_id=sample_id)
         db.session.add(sample)
@@ -225,7 +219,7 @@ def set_sample_flowcell_time(sample_flowcell, item, value=None):
     db.session.commit()         
 
 
-def sample_time(sample_id, flowcell_id, panel, item_type, dt,item_note):
+def sample_time(sample_id, flowcell_id, panel, item_type, dt, item_note):
     
     if not sample_id:
         return jsonify(info={'status':'error', 'msg':'sample is null', 'type':item_type})
@@ -299,7 +293,7 @@ def api():
             panel = 'WES'
         if ('_' in panel) and ('CT' not in panel) and 'germline' not in panel:  # 转平台panel处理
             panel = 'panel' + panel.split('_')[1]
-        if panel == 'ctdna' or panel == 'panel63' or panel == 'CT_SEQ' or panel == 'CT_STR' or ('CT' in panel):
+        if 'CT' in panel:
             panel == 'CT_DNA'
     # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02
     if api_type == 'sj_time':
@@ -307,10 +301,10 @@ def api():
             return jsonify(info={'status':'error', 'msg':'flowcell is null', 'type':api_type})
         flowcell = Flowcell_info.query.filter_by(flowcell_id=flowcell_id).first()
         if flowcell:
-            flowcell.sj_time=dt
+            flowcell.sj_time = dt
             db.session.commit()
         else:
-            flowcell=Flowcell_info(flowcell_id=flowcell_id, sj_time=dt)
+            flowcell = Flowcell_info(flowcell_id=flowcell_id, sj_time=dt)
             db.session.add(flowcell)
             db.session.commit()
         return jsonify(info={'status':'success', 'type':api_type})
@@ -446,6 +440,35 @@ def document(id):
     doc = Document.query.get_or_404(id)
     
     return render_template('genetron/document.html', doc=doc)
+
+
+@genetron.route('/pgm-submit/', methods=['GET', 'POST'])
+def pgm_submit():
+    form = PGMForm()
+    #pgm = Flowcell_info.query.filter(Flowcell_info.flowcell_id.like('PGM%'))
+    
+    if form.validate_on_submit():        
+        flowcell = Flowcell_info(flowcell_id=form.pgm_id.data, xj_time=form.xj_time.data)
+        db.session.add(flowcell)
+        db.session.commit()
+        flowcell_id = form.pgm_id.data
+        sample_list = set([xx.split('-')[0] for xx in form.sample_list.data.strip().split('\n')])
+        for sample_id in sample_list:
+            print(sample_id)
+            link(sample_id, flowcell_id, 'panel51')
+        db.session.commit()
+        flash('The PGM Info has been created.')
+        return redirect(url_for('.pgm_submit'))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (post.comments.count() - 1) // \
+            current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+    pagination = Flowcell_info.query.filter(Flowcell_info.flowcell_id.like('%PGM')).order_by(Flowcell_info.xj_time.asc()).paginate(
+        page, per_page=5,  # current_app.config['FLASKY_COMMENTS_PER_PAGE']
+        error_out=False)
+    items = pagination.items
+    
+    return render_template('genetron/PGM.html', form=form, items=items, pagination=pagination)
 
 
 @genetron.route('/edit/<int:id>', methods=['GET', 'POST'])

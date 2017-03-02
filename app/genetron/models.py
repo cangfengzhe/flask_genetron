@@ -210,7 +210,7 @@ class Sample_info(db.Model):
 class Flowcell_info(db.Model):
     __tablename__='flowcell_info'
     id = db.Column(db.Integer, primary_key=True)
-    flowcell_id = db.Column(db.String(10))
+    flowcell_id = db.Column(db.String(50))
     sj_time = db.Column(db.DateTime)
     xj_time = db.Column(db.DateTime)
     cf_time = db.Column(db.DateTime)

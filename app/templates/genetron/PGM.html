@@ -11,15 +11,14 @@
 
 {% block content %}
 {{ super() }}
-
 <div class='container'>
     {%for xx in items%}
     
     <header class="post-header">
     
-    <h2 class="post-title"> <a href="{{url_for('genetron.document',id=xx.id )}}">{{ xx.title }}</a></h2>
+    <h2 class="post-title"> </h2>
 
-    <p class="post-meta">By {{xx.user.username}} {{xx.create_time | datetimeformat("%Y-%m-%d %H:%M:%S")}} 
+    <p class="post-meta"> {{xx.flowcell_id}} 
        
     </p>
 </header>
