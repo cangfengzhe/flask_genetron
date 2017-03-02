@@ -291,10 +291,11 @@ def api():
     if panel:
         if panel == 'exome' or panel == 'WES+88' or panel == 'WES+panel88':
             panel = 'WES'
-        if ('_' in panel) and ('CT' not in panel) and 'germline' not in panel:  # 转平台panel处理
+        if ('_' in panel) and ('CT' not in panel) and ('germline' not in panel):  # 转平台panel处理
             panel = 'panel' + panel.split('_')[1]
         if 'CT' in panel:
-            panel == 'CT_DNA'
+            print('panel',panel)
+            panel = 'CT_DNA'
     # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02
     if api_type == 'sj_time':
         if not flowcell_id:
@@ -402,10 +403,6 @@ def update():
 @genetron.route('/barcode',  methods=['GET'])
 def barcode():          
     return render_template('genetron/barcode.html')
-
-# @genetron.route('/submit',  methods=['GET'])
-# def submit():          
-#     return render_template('genetron/submit.html')
 
 
 @genetron.route('/submit/', methods=['GET', 'POST'])
