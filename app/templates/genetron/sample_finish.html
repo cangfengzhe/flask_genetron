@@ -143,7 +143,8 @@ var gridElement = $("#grid");
                                      frist_bioinfo_finish_time: {type:'date'},
                                      // note: { type: "string" },
                                      check_info: {type:'string'},
-                                     note_info: { type: "string" }
+                                     note_info: { type: "string" },
+                                     report_note: { type: "string" }
                                      
                                     }
                                 }
@@ -177,8 +178,6 @@ var gridElement = $("#grid");
                                 width: 100,
                                 filterable: true,
                                 template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'  target="_blank">#=sample_id#</a>'
-   
-
                             },
                             {
                                 field:"name",
@@ -229,7 +228,7 @@ var gridElement = $("#grid");
                                 title: "收样时间",
                                 width: 100,
                                 filterable: true,
-                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+                                format: "{0:yyyy-MM-dd}",
 
                             },
                             {
@@ -353,6 +352,12 @@ var gridElement = $("#grid");
                             {
                                 field: "note_info",
                                 title: "备注",
+                                width: 200,
+
+                            },
+                             {
+                                field: "report_note",
+                                title: "报告组备注",
                                 width: 200,
 
                             },

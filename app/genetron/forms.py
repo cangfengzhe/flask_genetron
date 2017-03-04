@@ -47,8 +47,8 @@ class EditDocumentForm(Form):
         
         
 class PGMForm(Form):
-    pgm_id = StringField('pgm_id', validators=[DataRequired()])
-    xj_time = DateTimeField('xj_time',validators=[DataRequired()], format='%Y-%m-%d %H:%M:%S')
-    sample_list = PageDownField("sample_list", validators=[Required()])
+    pgm_id = StringField('PGM_ID', validators=[DataRequired()])
+    xj_time = DateTimeField('下机时间',validators=[DataRequired()], format='%Y-%m-%d %H:%M:%S')
+    sample_list = PageDownField("样本列表", validators=[Required()])
     submit = SubmitField('Submit')
     

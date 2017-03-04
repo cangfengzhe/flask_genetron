@@ -338,10 +338,11 @@ SELECT
   first_xj.xj_time,
   first_xj.bioinfo_finish_time,
   check_info.check_info, #25
-  note_info.note_info
+  note_info.note_info,
+  sample_info.note # 27
 FROM sample_flowcell
   # 选择最近一次的下机信息
-  INNER JOIN (SELECT
+  left JOIN (SELECT
                 max(sample_flowcell.id)                 AS id,
                 count(sample_flowcell.id)               AS count,
                 group_concat(flowcell_info.flowcell_id) AS flowcell_concat
@@ -394,7 +395,9 @@ FROM sample_flowcell
     ON note_info.sample_id = sample_flowcell.sample_id AND note_info.panel = sample_flowcell.panel
 HAVING sample_flowcell.panel IN ('panel203', 'panel509', 'panel51', 'panel88', 'WES', 'CT_DNA', 'CT_SEQ') AND
        ((sample_info.sample_id LIKE '%T%' AND sample_info.sample_id NOT LIKE 'LAA%') OR
-        (substring(sample_info.sample_id, 7, 1) = 'T' AND sample_info.sample_id LIKE 'LAA%')) AND
+        (substring(sample_info.sample_id, 7, 1) = 'T' AND sample_info.sample_id LIKE 'LAA%') OR
+        (sample_flowcell.panel like 'CT%')
+        ) AND
        sample_info.tissue IS NOT NULL;
 
 """)
@@ -431,7 +434,8 @@ HAVING sample_flowcell.panel IN ('panel203', 'panel509', 'panel51', 'panel88', '
                 'first_xj_time': datetime2str(row[23]),
                 'frist_bioinfo_finish_time': datetime2str(row[24]),
                 'check_info': row[25],
-                'note_info': row[26]
+                'note_info': row[26],
+                'report_note': row[27]
             }
 
             sample_list.append(sample_dict)

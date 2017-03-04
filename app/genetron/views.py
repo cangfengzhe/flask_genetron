@@ -293,7 +293,7 @@ def api():
             panel = 'WES'
         if ('_' in panel) and ('CT' not in panel) and ('germline' not in panel):  # 转平台panel处理
             panel = 'panel' + panel.split('_')[1]
-        if 'CT' in panel:
+        if ('CT' in panel) or ('ct' in panel):
             print('panel',panel)
             panel = 'CT_DNA'
     # http://127.0.0.1:5000/genetron/api?type=sj_time&time=2016-11-26_12:00:00&flowcell=S02
@@ -345,6 +345,8 @@ def api():
     
 @genetron.route('/check_info',  methods=['GET', 'POST'])    
 def check_info():
+    '''添加验证（CNV、MSI）信息
+    '''
     flowcell = request.values.get('flowcell', '')
     panel = request.values.get('panel', '')
     sample_id = request.values.get('sample','')
@@ -399,6 +401,7 @@ def update():
         error_out=False)
     items = pagination.items
     return render_template('genetron/update.html', items=items, pagination=pagination)
+
 
 @genetron.route('/barcode',  methods=['GET'])
 def barcode():          
