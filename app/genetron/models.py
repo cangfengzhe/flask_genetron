@@ -96,19 +96,21 @@ class Sample_info(db.Model):
             return panel
         panel_name = []
         if '88' in panel:
-            panel_name.append('panel88')
+            panel_name.append('88')
         if '203' in panel:
-            panel_name.append('panel203')
+            panel_name.append('203')
         if '509' in panel:
-            panel_name.append('panel509')
+            panel_name.append('509')
         if '51' in panel:
             panel_name.append(panel)
         if '49' in panel:
-            panel_name.append('panel49')
+            panel_name.append('49')
         if '泛生子1号' in panel:
             panel_name.append('WES')
-        if 'ct' in panel:
-            panel_name.append('CT_DNA')
+        if 'ct' in panel or '63' in panel :
+            panel_name.append('63')
+        if '六项' in panel:
+            panel_name.append('6项')
         if panel_name:
             return '+'.join(panel_name)
         else:
@@ -476,8 +478,8 @@ class Sample_flowcell_info(db.Model):
             'flowcell': self.sample_flowcell_id.flowcell.flowcell_id,
             'panel': self.sample_flowcell_id.panel,
             'hospital': proc_hospital(self.sample_flowcell_id.sample.patient.hospital),
-            'tissue': self.sample_flowcell_id.sample.tumor,
-            'tumor': self.sample_flowcell_id.sample.tissue,
+            'tissue': self.sample_flowcell_id.sample.tissue,
+            'tumor': self.sample_flowcell_id.sample.tumor,
             'sj_time': proc_time(self.sample_flowcell_id.flowcell.sj_time),
             'xj_time': proc_time(self.sample_flowcell_id.flowcell.xj_time),
             'cf_time': proc_time(self.sample_flowcell_id.flowcell.cf_time),
