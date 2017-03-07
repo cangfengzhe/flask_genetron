@@ -102,7 +102,6 @@ var gridElement = $("#grid");
                             batch: false,
                             autoSync: true,
                             schema: {
-
                                 type: 'json',
                                 data: "data",
                                 total: function(data) {
@@ -167,6 +166,7 @@ var gridElement = $("#grid");
                         sortable:true,
                         editable: "inline",
                         autoSync: true,
+                        filterable:true,
                         columns: [
                         { command: ["edit","destroy"], title: "&nbsp;", width: "200px" },
                             {

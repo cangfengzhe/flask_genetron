@@ -6,6 +6,7 @@ import os
 from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
 from sqlalchemy import text
+import datetime
 
 from . import api
 from ..genetron.configure import Configure as configure
@@ -522,7 +523,58 @@ class Barcode(Resource):
             return jsonify(data=[{'file_name': pic_name, 'stutas':'success'}])
         else:
             return jsonify(data=[{'stutas':'error'}])
-  
+
+class Sample(Resource):
+    
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', type=str, help='id')
+        parser.add_argument('tissue', type=str)
+        parser.add_argument('tumor', type=str, )
+        parser.add_argument('indication', type=str)
+        parser.add_argument('note', type=str)
+        parser.add_argument('ask_histology', type=str)
+        args = parser.parse_args()
+        row_id = args.id
+        sample = Sample_info.query.get(row_id)
+        args.pop('id')
+        if '[object Object]' in [args['tissue'],  args['tumor']]:
+            return 'error'
+        
+        
+        if args['ask_histology'] == 'true':
+            args['ask_histology'] = True
+            sample.ask_histology_time = datetime.datetime.now()
+        elif args['ask_histology'] == 'false':
+            args['ask_histology'] = False
+            
+        else:
+            args['ask_histology'] = False
+        
+        for xx in args:
+            setattr(sample, xx, args[xx])
+            if xx in ['tissue','tumor']:
+                sample.get_histology_time = datetime.datetime.now()
+                      
+        db.session.commit()
+        return jsonify(data=[sample.json])
+
+class Tissue(Resource):
+    
+    def get(self):
+        tissues = Tissue_info.query.all()
+        response = make_response(dumps([xx.json for xx in tissues]))
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    
+class Tumor(Resource):
+    
+    def get(self):
+        tumors = Tumor_info.query.all()
+        response = make_response(dumps([xx.json for xx in tumors]))
+        response.headers['Content-Type'] = 'application/json'
+        return response
     
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
@@ -534,3 +586,7 @@ api.add_resource(Report_User, '/user/<string:role_name>')
 api.add_resource(Sample_Flowcell_Info, '/sample_flowcell')
 api.add_resource(Sample_Stat, '/sample_stat')
 api.add_resource(Barcode, '/barcode/<string:code>')
+api.add_resource(Sample, '/sample/')
+api.add_resource(Tissue, '/tissue/')
+api.add_resource(Tumor, '/tumor/')
+

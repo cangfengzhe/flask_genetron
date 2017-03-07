@@ -284,11 +284,6 @@
         </div>
     </div>
     
-    
-  
-
-
-</div>
 
 
 <script>
@@ -452,8 +447,9 @@
                                 width: 100,
                                 template: '#=t_freq#%'
                             },
-                            
+                             {% if current_user.is_reporter() %}
                           { command: [ "destroy"], title: "&nbsp;", width: "250px" }, 
+                           {% endif %}
                        ],
                     });
 
@@ -546,7 +542,9 @@
                                 width: 120,
 
                             },
+                             {% if current_user.is_reporter() %}
                              { command: [ "destroy"], title: "&nbsp;", width: "250px" }, 
+                         {% endif %}
                        ],
                     });
 
@@ -846,9 +844,9 @@
                                 title: "频率",
                                 width: 100,                        
                             },
-                        
+                         {% if current_user.is_reporter() %}
                            { command: [ "destroy"], title: "&nbsp;", width: "250px" }, 
-                            
+                       {% endif %}
                            
                        ],
                     });
@@ -906,7 +904,7 @@
                                 id: "id",
                                 fields: {
                                      id: {type: "numeric", nullable: true},
-                                     panel: { type: "string", validation: { required: true }, defaultValue: 'panel509' },
+                                     panel: { type: "string", validation: { required: true } },
                                      report_type: { type: "string", validation: { required: true }, defaultValue: '初稿' },
                                      start_time: { type: "date", format: "{0: yyyy-MM-dd HH:mm:ss}", },
                                      reporter: { nullable: false,},

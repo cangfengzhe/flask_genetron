@@ -68,8 +68,8 @@ def patient_table():
     )
 
 
-@genetron.route('/sample')
-def sample():
+@genetron.route('/sample2')
+def sample2():
     return render_template('genetron/sample.html')
 
 
@@ -454,8 +454,11 @@ def pgm_submit():
         flowcell_id = form.pgm_id.data
         sample_list = set([xx.split('-')[0] for xx in form.sample_list.data.strip().split('\n')])
         for sample_id in sample_list:
-            print(sample_id)
             link(sample_id, flowcell_id, 'panel51')
+            try:
+                sample_time(sample_id, flowcell_id, 'panel51', 'class', form.xj_time.data, '')
+            except:
+                pass
         db.session.commit()
         flash('The PGM Info has been created.')
         return redirect(url_for('.pgm_submit'))
@@ -494,3 +497,7 @@ def edit_doc(id):
         form.body.data = doc.body 
         form.doc_type_id.data = doc.doc_type
         return render_template('genetron/edit_document.html', doc=doc, form=form)
+
+@genetron.route('/sample/', methods=['GET', 'POST'])
+def sample():
+    return render_template('genetron/sample2.html')

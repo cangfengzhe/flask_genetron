@@ -169,7 +169,7 @@ class Sample_info(db.Model):
             if not self.tumor:
                 self.tumor = self.patient.tumor
         
-        return {'DT_RowId' : self.id,
+        return {'id' : self.id,
                'sample_id' : self.sample_id,
                'name' : self.patient.name,
                'age' : self.patient.age,
@@ -178,24 +178,14 @@ class Sample_info(db.Model):
                'hospital_alias': self.proc_hospital(self.patient.hospital), 
                'panel': self.proc_panel(self.panel),
                'indication':self.indication,
-               'tissue' : self.tissue,
-               'tumor' : self.tumor,
+               'tissue' : self.tissue if self.tissue else '',
+               'tumor' : self.tumor if self.tumor else '',
                'tumor_pos':self.tumor_pos,
                'tumor_type': self.tumor_type,
-               # 'collect_time':self.proc_time(self.collect_time,"%Y-%m-%d %H:%M:%S"),
-               # 'accept_time': self.proc_time(self.accept_time,"%Y-%m-%d %H:%M:%S"),
-               #  'end_time':self.proc_time(self.end_time,"%Y-%m-%d"),
-               #  'xj_time': self.get_flowcell_time('xj_time'),
-               #  'class_time': self.get_item_time('class'),
-               #  'submit_time':self.get_item_time('submit'),
+               'accept_time': self.proc_time(self.accept_time,"%Y-%m-%d %H:%M:%S"),
                'bioinfo': self.bioinfo,
-               # 'bioinfo_time': self.get_item_time('bioinfo_finish'),
-               #  'bioinfo_report_time':self.get_item_time('bioinfo_report'),
                 'ask_histology': self.ask_histology,
-                # 'ask_histology_time': self.proc_time(self.ask_histology_time, "%Y-%m-%d %H:%M:%S"),
-                # 'get_histology_time': self.proc_time(self.get_histology_time, "%Y-%m-%d %H:%M:%S"),
                 'is_finish': self.is_finish,
-                # 'is_finish_time': self.proc_time(self.is_finish_time, "%Y-%m-%d %H:%M:%S"),
                 'note' : self.note
                }
 
@@ -481,6 +471,7 @@ class Sample_flowcell_info(db.Model):
         print(self.sample_flowcell_id.sample.sample_id)
         return {
             'id':self.id,
+            'Row_Id': self.id,
             'sample_id': self.sample_flowcell_id.sample.sample_id,
             'flowcell': self.sample_flowcell_id.flowcell.flowcell_id,
             'panel': self.sample_flowcell_id.panel,
@@ -560,4 +551,23 @@ class Document(db.Model):
             tags=allowed_tags, strip=True))
         
 db.event.listen(Document.body, 'set', Document.on_changed_body)
+
+class Tissue_info(db.Model):
+    __tablename__ = 'tissue_info'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(300))
+    
+    @property
+    def json(self):
+        return {'text': self.name, 'value': self.name}
+    
+class Tumor_info(db.Model):
+    __tablename__ = 'tumor_info'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(300))
+    
+    @property
+    def json(self):
+        return {'text': self.name, 'value': self.name}
+    
     
