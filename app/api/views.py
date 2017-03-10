@@ -23,7 +23,7 @@ def get_todo_sample(xx):
     panel = xx.sample_flowcell_id.panel
     if (('LAA' in sample_id and sample_id[-2] == 'T') or \
                 ('LAA' not in sample_id and 'T' in sample_id) or \
-                panel == 'CT_DNA') and \
+                panel == 'CT_DNA' or  panel == 'panel51')  and \
                     panel in configure.panel_clinical and \
             not is_finish:
         return True
