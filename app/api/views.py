@@ -574,6 +574,11 @@ class Tumor(Resource):
         response.headers['Content-Type'] = 'application/json'
         return response
 
+class My_Work(Resource):
+    
+    def get(self,user_id):
+        sample_flowcell = Sample_flowcell_info.query.filter_by(user_id=user_id)
+        return jsonify(data=[xx.my_work_json for xx in sample_flowcell])
 
 class Mut_Info(Resource):
     
@@ -667,4 +672,5 @@ api.add_resource(Sample, '/sample/')
 api.add_resource(Tissue, '/tissue/')
 api.add_resource(Tumor, '/tumor/')
 api.add_resource(Mut_Info, '/mut_info/')
+api.add_resource(My_Work, '/my_work/<int:user_id>')
 

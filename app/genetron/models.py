@@ -496,7 +496,16 @@ class Sample_flowcell_info(db.Model):
             'note': self.note,
             'is_problem':self.is_problem
         }
-
+    
+    @property
+    def my_work_json(self):
+        return {
+        'sample_id': self.sample_flowcell_id.sample.sample_id,
+        'flowcell': self.sample_flowcell_id.flowcell.flowcell_id,
+        'panel': self.sample_flowcell_id.panel,
+        'submit_time': proc_time(self.submit_time),
+        'bioinfo_report_time':  proc_time(self.bioinfo_report_time)
+        }
 # class Sample_Note_Info():
 #     __tablename__ = 'sample_note_info'
 #     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))

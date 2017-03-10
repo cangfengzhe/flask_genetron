@@ -507,3 +507,8 @@ def edit_doc(id):
 @genetron.route('/sample/', methods=['GET', 'POST'])
 def sample():
     return render_template('genetron/sample2.html')
+
+@login_required
+@genetron.route('/my-work/', methods=['GET', 'POST'])
+def my_work():
+    return render_template('genetron/my_work.html')

@@ -1,0 +1,117 @@
+{% extends "genetron/base.html" %}
+{% import "_macros.html" as macros %}
+{% block head %}
+{{ super() }}
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.common.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.rtl.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.bootstrap.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='kendo_ui/styles/kendo.dataviz.bootstrap.min.css')}}" rel="stylesheet">
+
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/jszip.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/kendo.all.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='kendo_ui/js/console.js')}}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+ <div class="row">
+        <div class="col-lg-10 col-lg-offset-1">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    我的工作
+                </div>
+                
+                <div class="panel-body">
+                    <div id='mywork'> </div>
+                </div>
+
+
+            </div>
+            <!-- /.panel --> 
+        </div>
+    </div>
+</div>
+
+    <script>
+         $("#mywork").kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read:  {
+                                url: '/api/my_work/{{current_user.id}}',
+                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                },
+                                
+                            },
+                            schema: {
+                            type: 'json',
+                            data: "data",
+                            total: function(data) {
+                                return data.data.length;
+                            },
+                            model: {
+                                id: "id",
+                                 fields: {
+                                    
+                                     sample: { type: "string" },
+                                     flowcell: {type: "string"},
+                                     panel: { type: "string" },
+                                     submit_time: { type: "date" },
+                                     bioinfo_report_time: { type: "date" },
+                                    }
+                                }
+                            },
+                            sort: {
+                                field: "bioinfo_report_time",
+                                dir: "desc"
+                            },
+                            pageSize: 10,
+                        },
+                        scrollable: false,
+                        sortable:true,
+                        pageable: true,
+                        filterable:true,
+                        dataBound: function() {
+                            console.log(this.dataSource.totalPages())
+                            if (this.dataSource.totalPages() <= 1) {
+                              this.pager.element.hide();
+                             }
+                         },
+                        columns: [                    
+                            {
+                                field:"sample_id",
+                                title: "样本ID",
+                                width: 80,
+                                template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'  target="_blank">#=sample_id#</a>'
+                            },
+                            {
+                                field:"flowcell",
+                                title: "Run ID",
+                                width: 100,
+                            },
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 100,
+                                filterable: true,
+                            },
+                          
+                            {
+                                field:"submit_time",
+                                title: "提交时间",
+                                width: 100,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+                                filterable: true,
+                            },
+                            {
+                                field:"bioinfo_report_time",
+                                title: "报告时间",
+                                width: 100,
+                                format: "{0:yyyy-MM-dd HH:mm:ss}",
+                                filterable: true,
+                            }
+                       ]
+                    });
+        </script>
+{% endblock %}
+
