@@ -638,7 +638,7 @@ WHERE sample_info.is_show = 1;
                'sample_id' : row[0],
                'name' : row[1],
                'age' : row[2],
-               'sex': row[3],
+               'sex': proc_sex(row[3]),
                'dept': row[4],
                'doctor' : row[5],
                'indication' : row[6], 

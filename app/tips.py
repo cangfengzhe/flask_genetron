@@ -21,4 +21,8 @@ def proc_hospital(name):
         if '郑州大学第一附属医院' in name:
             return '郑大一附院'
     return '其他'
+
+
+def proc_sex(sex):
+    return '男' if sex == 1 else '女'
     
