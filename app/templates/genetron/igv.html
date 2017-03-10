@@ -1,0 +1,91 @@
+{% extends "genetron/base.html" %}
+{% import "_macros.html" as macros %}
+{% block head %}
+{{ super() }}
+
+
+<script type="text/javascript" src="{{ url_for('static', filename='datatable/js/jquery.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='igv/igv-1.0.7.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='igv/igv-1.0.7.css')}}">
+{% endblock %}
+{% block content %}
+
+    <title>Integrative Genomics Viewer - BAM Example</title>
+
+    <!-- Bootstrap CSS - for demo only, NOT REQUIRED FOR IGV -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" type="text/css"
+          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
+
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
+
+    <!-- IGV CSS -->
+    <link rel="stylesheet" type="text/css" href="https://igv.org/web/beta/igv.css">
+
+    <!-- bam.css n - for demo only, NOT REQUIRED FOR IGV -->
+    <link rel="stylesheet" type="text/css" href="css/bam.css">
+
+    <!-- jQuery JS -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+    <!-- Bootstrap JS - for demo only, NOT REQUIRED FOR IGV -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <!-- IGV JS-->
+    <script type="text/javascript" src="https://igv.org/web/beta/igv-beta.min.js"></script>
+
+
+
+
+<div class="jumbotron">
+
+    <div class="container">
+        <h2>IGV.js embedded in a Bootstrap page opened on a BAM file.</h2>
+    </div>
+    <!-- container -->
+
+</div>
+<!-- jumbotron -->
+
+<div class="container-fluid" id="igvDiv" style="padding:5px; border:1px solid lightgray"></div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var div = $("#igvDiv")[0],
+                options = {
+                    showNavigation: true,
+                    showRuler: true,
+                    genome: "hg19",
+                    locus: "chr2:209113102-209113122",
+                    tracks: [
+                        {
+                            name: "Genes",
+                            type: "annotation",
+                            format: "bed",
+                            sourceType: "file",
+                            url: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz",
+                            indexURL: "https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi",
+                            order: Number.MAX_VALUE,
+                            visibilityWindow: 300000000,
+                            displayMode: "EXPANDED"
+                        }, {
+                            url: "{{url_for('static', filename='igv/recal.bam')}}",
+                            name: 'Brain (BodyMap)'
+                        }
+                    ]
+                };
+        igv.createBrowser(div, options);
+    });
+</script>
+
+
+
+{% endblock %}
+

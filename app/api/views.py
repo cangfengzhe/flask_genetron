@@ -11,6 +11,7 @@ import datetime
 from . import api
 from ..genetron.configure import Configure as configure
 from ..models import *
+from app.genetron.models import *
 from ..tips import *
 from .. import app_dir
 
@@ -44,7 +45,6 @@ class SnpIndel(Resource):
         parser.add_argument('id', type=int)
         args = parser.parse_args()
         snv_indel_id = args.id
-        print snv_indel_id
         snv_indel = Sample_snp_indel_info.query.get(snv_indel_id)
         db.session.delete(snv_indel)
         return {'id': snv_indel_id}
@@ -64,7 +64,6 @@ class Cnv(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('id', type=int, help='Rate cannot be converted')
         args = parser.parse_args()
-        print args
         cnv_id = args.id
         cnv = Sample_cnv_info.query.get(cnv_id)
         db.session.delete(cnv)
@@ -86,7 +85,6 @@ class Sv(Resource):
         parser.add_argument('id', type=int)
         
         args = parser.parse_args()
-        print args
         sv_id = args.id
         sv = Sample_sv_info.query.get(sv_id)
         db.session.delete(sv)
@@ -575,7 +573,86 @@ class Tumor(Resource):
         response = make_response(dumps([xx.json for xx in tumors]))
         response.headers['Content-Type'] = 'application/json'
         return response
+
+
+class Mut_Info(Resource):
     
+    def get(self):
+        sql = text("""
+SELECT
+  sample_info.sample_id, # 0
+  patient_info.name,
+  patient_info.age,
+  patient_info.sex,
+  patient_info.dept,
+  patient_info.doctor, # 5
+  sample_info.indication,
+  sample_info.tumor_type,
+  sample_info.panel,
+  mut_info.gene_name,
+  mut_info.mut_type, # 10 
+  mut_info.freq,
+  mut_info.aa_change,
+  mut_info.cDNA_change,
+  sample_info.accept_time
+FROM sample_info
+  LEFT JOIN patient_info ON sample_info.patient_id = patient_info.id
+  LEFT JOIN ((SELECT DISTINCT
+                sample_id,
+                gene_name,
+                cDNA_change,
+                aa_change,
+                mut_type,
+                concat(t_freq, '%') AS freq
+              FROM sample_snp_indel_info)
+             UNION (SELECT DISTINCT
+                      sample_id,
+                      gene_name,
+                      '',
+                      '',
+                      '扩增',
+                      concat(fold, '倍') AS freq
+                    FROM sample_cnv_info)
+             UNION (SELECT DISTINCT
+                      sample_id,
+                      gene_name,
+                      '',
+                      break_pos,
+                      '结构变异',
+                      concat(freq * 100, '%') AS freq
+                    FROM sample_sv_info)) AS mut_info
+    ON mut_info.sample_id = sample_info.id
+WHERE sample_info.is_show = 1;
+        
+        """)
+        result = db.engine.execute(sql).fetchall()
+        mut_list = []
+        
+        for row in result:
+            mut_dict = {
+               'sample_id' : row[0],
+               'name' : row[1],
+               'age' : row[2],
+               'sex': row[3],
+               'dept': row[4],
+               'doctor' : row[5],
+               'indication' : row[6], 
+                'tumor_type': row[7],
+                'panel': row[8],
+                'gene_name': row[9],
+                'mut_type': row[10],
+                'freq': row[11],
+                'aa_change':row[12],
+                'cDNA_change':row[13],
+                'accept_time': datetime2str(row[14]),
+                
+                }
+            mut_list.append(mut_dict)
+        return jsonify(data=[xx for xx in mut_list]) 
+        
+ 
+
+
 api.add_resource(SnpIndel, '/snpindel/<string:id>')
 api.add_resource(Cnv, '/cnv/<string:id>')
 api.add_resource(Sv, '/sv/<string:id>')
@@ -589,4 +666,5 @@ api.add_resource(Barcode, '/barcode/<string:code>')
 api.add_resource(Sample, '/sample/')
 api.add_resource(Tissue, '/tissue/')
 api.add_resource(Tumor, '/tumor/')
+api.add_resource(Mut_Info, '/mut_info/')
 

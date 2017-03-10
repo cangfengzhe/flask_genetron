@@ -8,6 +8,7 @@ from flask_login import login_required
 import sqlalchemy
 import datetime
 
+from ..models import User
 from forms import *
 from models import *
 from . import genetron
@@ -81,7 +82,8 @@ def sample_info():
 
 @genetron.route('/sample_table')
 def sample_table():
-    data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') |  Sample_info.panel.like('%ctDNA%') | Sample_info.panel.like('%63%'))
+    # data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') |  Sample_info.panel.like('%ctDNA%') | Sample_info.panel.like('%63%'))
+    data = Sample_info.query.filter_by(is_show=1)
     return jsonify(
         data=[i.json for i in data if i.patient]
     )
@@ -206,12 +208,17 @@ def link(sample_id, flowcell_id, panel):
         return jsonify(info={'status':'exists', 'type':'link'})
 
     
-def set_sample_flowcell_time(sample_flowcell, item, value=None):
+def set_sample_flowcell_time(sample_flowcell, item, value=None, user='bioinfo'):
     sf = Sample_flowcell_info.query.filter_by(sample_flowcell=sample_flowcell.id).first()
     if  sf:
         if item == 'bioinfo_report_time':
             sf.bioinfo_finish = True
-        setattr(sf, item, value)  
+            if User.query.filter_by(nickname=user).first():
+                user_id = User.query.filter_by(nickname=user).first().id
+            else:
+                user_id = User.query.filter_by(nickname='bioinfo').first().id
+            sf.user_id = user_id
+        setattr(sf, item, value) 
     else:
         sf = Sample_flowcell_info(sample_flowcell=sample_flowcell.id)
         setattr(sf, item, value)
@@ -219,7 +226,7 @@ def set_sample_flowcell_time(sample_flowcell, item, value=None):
     db.session.commit()         
 
 
-def sample_time(sample_id, flowcell_id, panel, item_type, dt, item_note):
+def sample_time(sample_id, flowcell_id, panel, item_type, dt, item_note, user):
     
     if not sample_id:
         return jsonify(info={'status':'error', 'msg':'sample is null', 'type':item_type})
@@ -260,7 +267,7 @@ def sample_time(sample_id, flowcell_id, panel, item_type, dt, item_note):
         if item_type in ['class', 'submit', 'bioinfo_finish', 'bioinfo_report']:
             print(item_type)
             item_type_time = item_type + '_time'
-            set_sample_flowcell_time(sample_flowcell, item_type_time, dt)
+            set_sample_flowcell_time(sample_flowcell, item_type_time, dt, user)
             
         return jsonify(info={'status':'success', 'type':item_type})
     else:
@@ -279,15 +286,15 @@ def api():
     api_type = request.args.get('type')
     if not api_type:
         return jsonify(info={'status':'error', 'msg':'type is null', 'type':api_type})
-        
+
     flowcell_id = request.args.get('flowcell')
-    
     sample_id = request.args.get('sample')
     import datetime
     dt = request.args.get('time', datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')) # 传入时间使用 %Y-%m-%d_%H:%M:%S
     dt = datetime.datetime.strptime(dt, '%Y-%m-%d_%H:%M:%S')
     item_note = request.args.get('note')
     panel = request.args.get('panel')
+    user = request.args.get('user', 'bioinfo')
     if panel:
         if panel == 'exome' or panel == 'WES+88' or panel == 'WES+panel88':
             panel = 'WES'
@@ -336,11 +343,10 @@ def api():
             db.session.add(flowcell)
             db.session.commit()
         return jsonify(info={'status':'success', 'type':api_type})
-    
     elif api_type == 'link':
         return link(sample_id, flowcell_id, panel)
     else:
-        return sample_time(sample_id, flowcell_id,panel, api_type, dt,item_note )
+        return sample_time(sample_id, flowcell_id, panel, api_type, dt,item_note, user)
 
     
 @genetron.route('/check_info',  methods=['GET', 'POST'])    

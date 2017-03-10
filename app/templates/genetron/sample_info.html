@@ -26,27 +26,29 @@
                 </div>
                 {% if sample.patient != None %}
                 <div class="panel-body">
-                    <table class="table table-condensed">
+                    <table class="table table-condensed" style="TABLE-LAYOUT:fixed;WORD-BREAK:break-all">
                         <tr>
                             <td>患者信息: {{sample.patient.name}}</td>
                             <td>患者编号: {{sample.patient.patient_id}}</td>
                         </tr>
                         <tr>
                             <td>性别:{% if sample.patient.sex == 1 %}
-                                男
-                                {% else %}
                                 女
+                                {% else %}
+                                男
                                 {% endif %}
                             </td>
                             <td>年龄: {{sample.patient.age}}</td>
                         </tr>
                         <tr>
                             <td>既往诊断结果: {{sample.indication}}</td>
-                            <td>既往治疗方案:</td>
+                        
+                            <td>既往治疗方案: {{sample.patient.therapy_history}}</td>
                         </tr>
                         <tr>
-                            <td>靶向药物服用史:</td>
-                            <td>癌症家族史:</td>
+                            <td>靶向药物服用史:{{sample.patient.drug_history}}</td>
+                         
+                            <td>癌症家族史:{{sample.patient.family_history}}</td>
                         </tr>
 
                     </table>
@@ -116,7 +118,7 @@
                 <div class="panel-body">
                     <table class="table table-condensed">
                         <tr>
-                            <th>Flowcell_ID</th>
+                            <th>Run_ID</th>
                             <th>Panel</th>
                             <th>下机时间</th>
                             <th>拆分时间</th>
@@ -624,7 +626,7 @@
                         columns: [
                             {
                                 field:"flowcell_id",
-                                title: "Flowcell",
+                                title: "Run_ID",
                                 width: 50,
                             },
                             {
@@ -743,7 +745,7 @@
                         columns: [
                             {
                                 field:"flowcell_id",
-                                title: "Flowcell",
+                                title: "Run_ID",
                                 width: 50,
                             },
                             {

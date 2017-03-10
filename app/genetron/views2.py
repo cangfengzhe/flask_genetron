@@ -11,12 +11,6 @@ import datetime
 # from ..models import User
 
 
-@genetron.route('/sample_table2')
-def sample_table2():
-    data = Sample_info.query.filter(Sample_info.sample_id.like('%T%') |  Sample_info.panel.like('%ctDNA%'))
-    return jsonify(
-        [i.json for i in data if i.patient]
-    )
 @genetron.route('/msg')
 def msg():
     return render_template('msg.html')
@@ -30,3 +24,12 @@ def msg_response():
     info_count = info.count()
 
     return jsonify(data= [xx.json() for xx in info if xx])
+
+@genetron.route('/igv')
+def igv():
+    return render_template('genetron/igv.html')
+    
+    
+
+
+

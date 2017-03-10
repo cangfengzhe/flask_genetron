@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_pagedown import PageDown
 from config import config
-from flask_admin import Admin
+# from flask_admin import Admin
 from flask_restful import Api
 
 
@@ -22,7 +22,7 @@ login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 app_dir = os.path.abspath(os.path.dirname(__file__))
 
-from admin.app import MyModelView, ProjectView, SampleModelView
+# from admin.app import MyModelView, ProjectView, SampleModelView
 from genetron.models import *
 import sqlalchemy
 
@@ -60,12 +60,12 @@ def create_app(config_name):
     # from flask.ext import restful
     
     # api.init_app(app)
-    from .models import User,Role
+    # from .models import User,Role
     # from genetron.models import *
-    admin=Admin(app,  template_mode='bootstrap3')
-    admin.add_view(MyModelView(User, db.session))
-    admin.add_view(MyModelView(Role, db.session))
-    admin.add_view(SampleModelView(Sample_info, db.session))
+    # admin=Admin(app,  template_mode='bootstrap3')
+    # admin.add_view(MyModelView(User, db.session))
+    # admin.add_view(MyModelView(Role, db.session))
+    # admin.add_view(SampleModelView(Sample_info, db.session))
     # admin.add_view(ProjectView(Project, db.session))
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask_sslify import SSLify

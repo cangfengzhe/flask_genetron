@@ -72,6 +72,7 @@ class Sample_info(db.Model):
     #flowcell_id = db.Column(db.Integer, db.ForeignKey('flowcell_info.id'))
     sample_flowcell = db.relationship('Sample_flowcell', backref='sample', lazy="dynamic")
     note = db.Column(db.String(200))
+    is_show = db.Column(db.Boolean, default=False)
     snp_indel_info = db.relationship('Sample_snp_indel_info', backref='sample', lazy="dynamic")
     cnv_info = db.relationship('Sample_cnv_info', backref='sample', lazy="dynamic")
     sv_info = db.relationship('Sample_sv_info', backref='sample', lazy="dynamic")
@@ -79,6 +80,7 @@ class Sample_info(db.Model):
     note_info =  db.relationship('Sample_note_info', backref='sample', lazy="dynamic")
     report_info =  db.relationship('Sample_report_info', backref='sample', lazy="dynamic")
     send_info = db.relationship('Send_info', backref='sample', lazy="dynamic")
+    
     
     def __init__(self, **kwargs):
         super(Sample_info, self).__init__(**kwargs)
@@ -105,9 +107,9 @@ class Sample_info(db.Model):
             panel_name.append(panel)
         if '49' in panel:
             panel_name.append('49')
-        if '泛生子1号' in panel:
+        if '泛生子1号' in panel or '外显子' in panel:
             panel_name.append('WES')
-        if 'ct' in panel or '63' in panel :
+        if 'ct' in panel or 'CT' in panel or '63' in panel :
             panel_name.append('63')
         if '六项' in panel:
             panel_name.append('6项')
@@ -467,10 +469,11 @@ class Sample_flowcell_info(db.Model):
     finish = db.Column(db.Boolean, default=False)
     note = db.Column(db.String(1000))
     is_problem = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='sample_flowcell_info', lazy="joined", foreign_keys=[user_id])
     
     @property
     def json(self):
-        print(self.sample_flowcell_id.sample.sample_id)
         return {
             'id':self.id,
             'Row_Id': self.id,
@@ -494,7 +497,6 @@ class Sample_flowcell_info(db.Model):
             'is_problem':self.is_problem
         }
 
-    
 # class Sample_Note_Info():
 #     __tablename__ = 'sample_note_info'
 #     sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
