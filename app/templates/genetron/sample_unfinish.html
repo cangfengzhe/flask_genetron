@@ -57,7 +57,22 @@
  tr.finish:hover{
      background-color: #A1E29F;  
     }
-   
+    #grid .k-grid-toolbar
+                {
+                  padding: .6em 1.3em;
+                }
+                .category-label
+                {
+                    vertical-align: middle;
+                    padding-right: .5em;
+                }
+                #search
+                {
+                    vertical-align: middle;
+                }
+                .toolbar {
+                    float: right;
+                }
 
 
 </style>
@@ -66,10 +81,27 @@
     <div class="alert alert-warning" role="alert">注：绿色表示生信分析完成，交由报告组处理；红色表示问题样本（质控不合格、配对问题...）。目前，panel51、CT_DNA样本统计不全</div>
     <div id="grid"></div>
 </div>
+ <script type="text/x-kendo-template" id="template">
+
+                <div class="toolbar">
+                    <label class="category-label" for="category">Search:</label>
+                    <input type="search" id="search" style="width: 150px"/>
+                </div>
+ </script>
+
 
 <script>
-var gridElement = $("#grid");
+                    var gridElement = $("#grid");
                     $("#grid").kendoGrid({
+                         toolbar: ["excel",
+                                 
+                                    {
+                               template:kendo.template($("#template").html()),
+                                    }
+                                 ],
+                        excel: {
+                            allPages: true
+                            },
                         dataSource: {
                             transport: {
                                 read:  {
@@ -252,11 +284,28 @@ var gridElement = $("#grid");
                                 field: "note",
                                 title: "备注",
                                 width: 130,
-
                             },
                            
                        ],
                     }); 
+$("#search").keyup(function () {
+    var val = $('#search').val();
+    gridElement.data("kendoGrid").dataSource.filter({
+        logic  : "or",
+        filters: [
+            {
+                field   : "sample_id",
+                operator: "contains",
+                value   : val
+            },
+            {
+                field   : "panel",
+                operator: "contains",
+                value   : val
+            }
+        ]
+    });
+});
 
 
 

@@ -512,3 +512,8 @@ def sample():
 @genetron.route('/my-work/', methods=['GET', 'POST'])
 def my_work():
     return render_template('genetron/my_work.html')
+
+
+@genetron.route('/mut-info/', methods=['GET', 'POST'])
+def mut_info():
+    return render_template('genetron/sample_mut_info.html')

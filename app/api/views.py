@@ -192,8 +192,6 @@ class Report_info(Resource):
         args = parser.parse_args()
         id = args.id
         panel = args.panel
-        if panel == 'panel63':
-            panel = 'CT_DNA'
         start_time = args.start_time
         reporter = args['reporter']
         report_type = args.report_type
@@ -576,9 +574,19 @@ class Tumor(Resource):
 
 class My_Work(Resource):
     
-    def get(self,user_id):
-        sample_flowcell = Sample_flowcell_info.query.filter_by(user_id=user_id)
-        return jsonify(data=[xx.my_work_json for xx in sample_flowcell])
+    def get(self,user_id, work_type):
+        if work_type == 'bioinfo':
+            sample_flowcell = Sample_flowcell_info.query.filter_by(user_id=user_id)
+            return jsonify(data=[xx.my_work_json for xx in sample_flowcell])
+        if work_type == 'report':
+            dt = Sample_report_info.query.filter_by(report_user_id=user_id)
+            return jsonify(data = [{
+                    'sample_id': xx.sample.sample_id,
+                    'panel': xx.panel,
+                    'type': xx.report_type,
+                    'start_time': datetime2str(xx.start_time),
+                    'finish_time': datetime2str(xx.finish_time),
+                    } for xx in dt])
 
 class Mut_Info(Resource):
     
@@ -599,7 +607,11 @@ SELECT
   mut_info.freq,
   mut_info.aa_change,
   mut_info.cDNA_change,
-  sample_info.accept_time
+  sample_info.accept_time,
+  sample_info.tissue, #15
+  sample_info.tumor, #16
+  report_time.finish_time,
+  patient_info.xiaoshou 
 FROM sample_info
   LEFT JOIN patient_info ON sample_info.patient_id = patient_info.id
   LEFT JOIN ((SELECT DISTINCT
@@ -627,6 +639,8 @@ FROM sample_info
                       concat(freq * 100, '%') AS freq
                     FROM sample_sv_info)) AS mut_info
     ON mut_info.sample_id = sample_info.id
+    left join (select sample_id, finish_time from sample_report_info where report_type = '复核') as report_time
+    on report_time.sample_id = sample_info.id
 WHERE sample_info.is_show = 1;
         
         """)
@@ -650,7 +664,10 @@ WHERE sample_info.is_show = 1;
                 'aa_change':row[12],
                 'cDNA_change':row[13],
                 'accept_time': datetime2str(row[14]),
-                
+                'tissue':row[15],
+                'tumor':row[16],
+                'finish_time': datetime2str(row[17]),
+                'xiaoshou': row[18]
                 }
             mut_list.append(mut_dict)
         return jsonify(data=[xx for xx in mut_list]) 
@@ -672,5 +689,5 @@ api.add_resource(Sample, '/sample/')
 api.add_resource(Tissue, '/tissue/')
 api.add_resource(Tumor, '/tumor/')
 api.add_resource(Mut_Info, '/mut_info/')
-api.add_resource(My_Work, '/my_work/<int:user_id>')
+api.add_resource(My_Work, '/my_work/<string:work_type>/<int:user_id>')
 

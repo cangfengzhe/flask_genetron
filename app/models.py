@@ -327,6 +327,9 @@ class User(UserMixin, db.Model):
     
     def is_reporter(self):
         return self.can(Permission.CREATE_DB)
+    
+    def is_role(self, role):
+        pass
 
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):

@@ -15,17 +15,28 @@
 
 {% block content %}
 <div class="container-fluid">
+    
  <div class="row">
+     
         <div class="col-lg-10 col-lg-offset-1">
             <div class="panel panel-info">
                 <div class="panel-heading">
                     我的工作
                 </div>
                 
+                
+                {% if current_user.is_reporter() %}
+                <div class="panel-body">
+                    <div id='mywork-report'> </div>
+                </div>
+                {% else%}
+                
                 <div class="panel-body">
                     <div id='mywork'> </div>
                 </div>
-
+                {% endif %}
+                
+                
 
             </div>
             <!-- /.panel --> 
@@ -38,7 +49,7 @@
                         dataSource: {
                             transport: {
                                 read:  {
-                                url: '/api/my_work/{{current_user.id}}',
+                                url: '/api/my_work/bioinfo/{{current_user.id}}',
                                 dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
                                 },
                                 
@@ -108,6 +119,83 @@
                                 title: "报告时间",
                                 width: 100,
                                 format: "{0:yyyy-MM-dd HH:mm:ss}",
+                                filterable: true,
+                            }
+                       ]
+                    });
+        
+        
+         $("#mywork-report").kendoGrid({
+                        dataSource: {
+                            transport: {
+                                read:  {
+                                url: '/api/my_work/report/{{current_user.id}}',
+                                dataType: "json" // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                                },
+                                
+                            },
+                            schema: {
+                            type: 'json',
+                            data: "data",
+                            total: function(data) {
+                                return data.data.length;
+                            },
+                            model: {
+                                id: "id",
+                                 fields: {
+                                    
+                                     sample: { type: "string" },
+                                     panel: {type: "string"},
+                                     type: {type: 'string'},
+                                     start_time: { type: "date" },
+                                     finish_time: { type: "date" },
+                                    }
+                                }
+                            },
+                            sort: {
+                                field: "start_time",
+                                dir: "desc"
+                            },
+                            pageSize: 10,
+                        },
+                        scrollable: false,
+                        sortable:true,
+                        pageable: true,
+                        filterable:true,
+                     
+                        columns: [                    
+                            {
+                                field:"sample_id",
+                                title: "样本ID",
+                                width: 80,
+                                template: '<a href=\'{{url_for("genetron.sample_info")}}?id=#=sample_id#\'  target="_blank">#=sample_id#</a>'
+                            },
+                           
+                            {
+                                field:"panel",
+                                title: "panel",
+                                width: 100,
+                                filterable: true,
+                            },
+                             {
+                                field:"type",
+                                title: "类型",
+                                width: 100,
+                                filterable: true,
+                            },
+                          
+                            {
+                                field:"start_time",
+                                title: "开始时间",
+                                width: 100,
+                                format: "{0:yyyy-MM-dd}",
+                                filterable: true,
+                            },
+                            {
+                                field:"finish_time",
+                                title: "完成时间",
+                                width: 100,
+                                format: "{0:yyyy-MM-dd}",
                                 filterable: true,
                             }
                        ]
