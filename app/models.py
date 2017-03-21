@@ -101,24 +101,7 @@ class User(UserMixin, db.Model):
                     lazy='dynamic',
                     cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-    biomarker_mk_user = db.relationship('Biomarker',
-                            backref='mk_user',
-                            foreign_keys=[Biomarker.mk_user_id],
-                            lazy="dynamic"
-                            )
-    biomarker_check_user = db.relationship('Biomarker',
-                                           backref='check_user',
-                                        foreign_keys=[Biomarker.check_user_id],
-                                        lazy="dynamic"
-                                        )
-    molecular_function_mk_user = db.relationship('Molecular_function',
-                                              backref='mk_user',
-                                              foreign_keys=[Molecular_function.mk_user_id],
-                                              lazy="dynamic")
-    molecular_function_check_user = db.relationship('Molecular_function',
-                                              backref='check_user',
-                                              foreign_keys=[Molecular_function.check_user_id],
-                                              lazy="dynamic")
+    
     send_info_user = db.relationship('Send_info',
                                               backref='send_user',
                                               foreign_keys=[Send_info.send_user_id],

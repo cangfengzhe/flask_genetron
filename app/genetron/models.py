@@ -10,7 +10,7 @@ import bleach
 import  sqlalchemy
 
 from .. import db
-from ..tips import *
+from app.utils import *
 
 def proc_time(time_var, time_fmt = "%Y-%m-%d %H:%M:%S"):
     if time_var:
@@ -248,6 +248,9 @@ class Sample_snp_indel_info(db.Model):
     t_freq = db.Column(db.Numeric(5,2))
     n_depth = db.Column(db.Integer)
     n_freq = db.Column(db.Numeric(5,2))
+    removed = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='sample_snp_indel_info', lazy="joined", foreign_keys=[user_id])
     
     @property
     def json(self):
@@ -322,49 +325,6 @@ class Sample_sv_info(db.Model):
            'freq': str(self.freq)
                }
 
-
-class Biomarker(db.Model):
-    """
-    基因	Tissue	Tissue (中文)	基因描述	临床意义	Glossary (Gene review)	Summary	Incidence in disease	Effect on drug sensitivity	Effect on drug resistance
-"""
-    __tablename__='biomarker'
-    id = db.Column(db.Integer, primary_key=True)
-    gene_name = db.Column(db.String(100))
-    tissue_cn = db.Column(db.String(100))
-    tissue_en = db.Column(db.String(100))
-    gene_info = db.Column(db.Text)
-    clinical_info = db.Column(db.Text)
-    glossary = db.Column(db.Text)
-    summary = db.Column(db.Text)
-    incidence_in_disease = db.Column(db.Text)
-    effect_of_drug_sensitivity = db.Column(db.Text)
-    effect_on_drug_resistance = db.Column(db.Text)
-    mk_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    mk_time = db.Column(db.DateTime)
-    checked = db.Column(db.Boolean, default=False)
-    check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    check_time = db.Column(db.DateTime)
-
-    
-    
-class Molecular_function(db.Model):
-    """
-    Gene	Tissue	Tissue (中文)	核苷酸变化	AA(abb)	AA	molecular function	位点解析（中文）	 更新记录
-"""
-    __tablename__='molecular_function'
-    id = db.Column(db.Integer, primary_key=True)
-    gene_name = db.Column(db.String(50))
-    tissue_cn = db.Column(db.String(100))
-    tissue_en = db.Column(db.String(100))
-    aa_change = db.Column(db.String(50))
-    pos_info = db.Column(db.Text)
-    mf = db.Column(db.Text)
-    update_log = db.Column(db.String(200))
-    mk_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    mk_time = db.Column(db.DateTime)
-    checked = db.Column(db.Boolean, default=False)
-    check_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    check_time = db.Column(db.DateTime)
 
     
 class Sample_report_info(db.Model):

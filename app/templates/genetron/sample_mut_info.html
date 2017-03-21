@@ -144,7 +144,7 @@ var gridElement = $("#grid");
                                 field: "class_time",
                                 dir: "desc"
                             },
-                            pageSize: 20,
+                            pageSize: 30,
 
                         },
      //                   height: 800,
@@ -239,15 +239,22 @@ var gridElement = $("#grid");
                             },
                             {
                                 field:"cDNA_change",
-                                title: "cDNA_change",
+                                title: "碱基变化",
                                 width: 160,
                                 filterable: true,
 
                             },
                             {
                                 field: "aa_change",
-                                title: "aa_change",
+                                title: "氨基酸变化",
                                 width: 160,
+                                filterable: true,
+
+                            },
+                            {
+                                field: "freq",
+                                title: "频率",
+                                width: 100,
                                 filterable: true,
 
                             },

@@ -1,19 +1,22 @@
 # coding=utf-8
 
-from json import dumps
+
 import os
+import datetime
+
+
 
 from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
 from sqlalchemy import text
-import datetime
+from json import dumps
 
 from . import api
-from ..genetron.configure import Configure as configure
-from ..models import *
+from app.genetron.configure import Configure as configure
+from app.models import *
 from app.genetron.models import *
-from ..tips import *
 from .. import app_dir
+from app.utils import *
 
 def get_todo_sample(xx):
     sample_id = xx.sample_flowcell_id.sample.sample_id
@@ -62,7 +65,7 @@ class Cnv(Resource):
 
     def delete(self, id):
         parser = reqparse.RequestParser()
-        parser.add_argument('id', type=int, help='Rate cannot be converted')
+        parser.add_argument('id', type=int)
         args = parser.parse_args()
         cnv_id = args.id
         cnv = Sample_cnv_info.query.get(cnv_id)
@@ -520,6 +523,7 @@ class Barcode(Resource):
         else:
             return jsonify(data=[{'stutas':'error'}])
 
+
 class Sample(Resource):
     
     def post(self):
@@ -657,7 +661,7 @@ WHERE sample_info.is_show = 1;
                'doctor' : row[5],
                'indication' : row[6], 
                 'tumor_type': row[7],
-                'panel': row[8],
+                'panel': proc_panel(row[8]),
                 'gene_name': row[9],
                 'mut_type': row[10],
                 'freq': row[11],
