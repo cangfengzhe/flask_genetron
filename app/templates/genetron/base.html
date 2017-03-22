@@ -40,20 +40,27 @@
                 <li><a href="{{ url_for('genetron.index') }}">主页</a></li>
                 <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                  样本库 <span class="caret"></span>
+                  生产运营库 <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li ><a href="{{url_for('genetron.sample_finish')}}">样本统计</a></li>
+                    <li ><a href="{{url_for('genetron.unfinish')}}">未完成样本</a></li>
+                     <li ><a href="{{url_for('genetron.pgm_submit')}}">PGM信息导入</a></li>
+                </ul>
+              </li>
+                <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                  样本信息库 <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                     <li ><a href="{{url_for('genetron.sample')}}">样本信息</a></li>
-                    <li ><a href="{{url_for('genetron.sample_finish')}}">样本统计</a></li>
-                    <li ><a href="{{url_for('genetron.mut_info')}}">样本突变信息</a></li>
-                    <li ><a href="{{url_for('genetron.unfinish')}}">未完成样本</a></li>
-                     <li ><a href="{{url_for('genetron.pgm_submit')}}">PGM信息导入</a></li>
+                    <li ><a href="{{url_for('genetron.mut_info')}}">突变信息</a></li>
                 </ul>
               </li>
                 
                   <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                  热点库 <span class="caret"></span>
+                 知识数据库  <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
                    <li ><a href="#">建设中</a></li>

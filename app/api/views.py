@@ -17,6 +17,7 @@ from app.models import *
 from app.genetron.models import *
 from .. import app_dir
 from app.utils import *
+from flask_login import current_user
 
 def get_todo_sample(xx):
     sample_id = xx.sample_flowcell_id.sample.sample_id
@@ -39,7 +40,7 @@ class SnpIndel(Resource):
         sample = Sample_info.query.filter_by(sample_id=id).first()
         if sample:
             snp_indel_info = sample.snp_indel_info
-            return jsonify(data=[xx.json for xx in snp_indel_info])
+            return jsonify(data=[xx.json for xx in snp_indel_info if not xx.removed])
         else:
             return jsonify(data='error')
         
@@ -49,7 +50,11 @@ class SnpIndel(Resource):
         args = parser.parse_args()
         snv_indel_id = args.id
         snv_indel = Sample_snp_indel_info.query.get(snv_indel_id)
-        db.session.delete(snv_indel)
+        
+        snv_indel.removed = True
+        print(snv_indel_id, snv_indel.removed)
+        snv_indel.user_id = current_user.id
+        db.session.commit()
         return {'id': snv_indel_id}
 
 
@@ -58,7 +63,7 @@ class Cnv(Resource):
         sample = Sample_info.query.filter_by(sample_id=id).first()
         if sample:
             cnv_info = sample.cnv_info
-            return jsonify(data=[xx.json for xx in cnv_info])
+            return jsonify(data=[xx.json for xx in cnv_info if not xx.removed])
         else:
             return jsonify(data='error')
 
@@ -69,7 +74,8 @@ class Cnv(Resource):
         args = parser.parse_args()
         cnv_id = args.id
         cnv = Sample_cnv_info.query.get(cnv_id)
-        db.session.delete(cnv)
+        cnv.removed = True
+        cnv.user_id = current_user.id
         db.session.commit()
         return jsonify({'id':cnv_id})
 
@@ -79,7 +85,7 @@ class Sv(Resource):
         sample = Sample_info.query.filter_by(sample_id=id).first()
         if sample:
             sv_info = sample.sv_info
-            return jsonify(data=[xx.json for xx in sv_info])
+            return jsonify(data=[xx.json for xx in sv_info if not xx.removed])
         else:
             return jsonify(data='error')
         
@@ -90,7 +96,8 @@ class Sv(Resource):
         args = parser.parse_args()
         sv_id = args.id
         sv = Sample_sv_info.query.get(sv_id)
-        db.session.delete(sv)
+        sv.removed = True
+        sv.user_id = current_user.id
         db.session.commit()
         return jsonify({'id':sv_id})
 
@@ -164,6 +171,7 @@ class Check_info(Resource):
         db.session.commit()
         return jsonify(data=[{'id': id}])
 
+    
 def proc_finish_time(sample, panel, finish_time):
     sf = Sample_flowcell.query.filter_by(sample_id=sample.id, panel=panel).order_by(
     sqlalchemy.desc(Sample_flowcell.id)).first()
@@ -171,6 +179,7 @@ def proc_finish_time(sample, panel, finish_time):
     sf.sample_flowcell_info.first().finish_time = finish_time
     db.session.commit()
 
+    
 class Report_info(Resource):
     def get(self, sample_id):
         sample = Sample_info.query.filter_by(sample_id=sample_id).first()
@@ -263,18 +272,6 @@ class Report_User(Resource):
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
-class Sample_Panel(Resource):
-    def get(self):
-        pass
-
-
-class Sample_Sate(Resource):
-    def json(self):
-        pass
-
-    def get(self):
-        pass
 
 
 class Sample_Flowcell_Info(Resource):
@@ -625,7 +622,7 @@ FROM sample_info
                 aa_change,
                 mut_type,
                 concat(t_freq, '%') AS freq
-              FROM sample_snp_indel_info)
+              FROM sample_snp_indel_info where removed = 0)
              UNION (SELECT DISTINCT
                       sample_id,
                       gene_name,
@@ -633,7 +630,7 @@ FROM sample_info
                       '',
                       '扩增',
                       concat(fold, '倍') AS freq
-                    FROM sample_cnv_info)
+                    FROM sample_cnv_info where removed = 0)
              UNION (SELECT DISTINCT
                       sample_id,
                       gene_name,
@@ -641,7 +638,7 @@ FROM sample_info
                       break_pos,
                       '结构变异',
                       concat(freq * 100, '%') AS freq
-                    FROM sample_sv_info)) AS mut_info
+                    FROM sample_sv_info where removed = 0)) AS mut_info
     ON mut_info.sample_id = sample_info.id
     left join (select sample_id, finish_time from sample_report_info where report_type = '复核') as report_time
     on report_time.sample_id = sample_info.id

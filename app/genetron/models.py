@@ -286,7 +286,9 @@ class Sample_cnv_info(db.Model):
     end = db.Column(db.BigInteger)
     fold = db.Column(db.Numeric(6,2))
     cnv_type = db.Column(db.String(50))
-    
+    removed = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='sample_cnv_info', lazy="joined", foreign_keys=[user_id])
     @property
     def json(self):
         return {
@@ -312,6 +314,9 @@ class Sample_sv_info(db.Model):
     break_pos = db.Column(db.String(250))
     extron_pos = db.Column(db.String(10))
     freq = db.Column(db.Numeric(5,2))
+    removed = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', backref='sample_sv_info', lazy="joined", foreign_keys=[user_id])
     
     @property
     def json(self):
