@@ -454,17 +454,19 @@ def pgm_submit():
     #pgm = Flowcell_info.query.filter(Flowcell_info.flowcell_id.like('PGM%'))
     
     if form.validate_on_submit():        
-        flowcell = Flowcell_info(flowcell_id=form.pgm_id.data, xj_time=form.xj_time.data)
+        flowcell = Flowcell_info(flowcell_id=form.pgm_id.data, xj_time=form.xj_time.data, cf_time=form.xj_time.data)
         db.session.add(flowcell)
         db.session.commit()
         flowcell_id = form.pgm_id.data
         sample_list = set([xx.split('-')[0] for xx in form.sample_list.data.strip().split('\n')])
         for sample_id in sample_list:
             link(sample_id, flowcell_id, 'panel51')
-            try:
-                sample_time(sample_id, flowcell_id, 'panel51', 'class', form.xj_time.data, '')
-            except:
-                pass
+            # try:
+            # sample_time(sample_id, flowcell_id, 'panel51', 'cf', form.xj_time.data, '', 'bioinfo')
+            sample_time(sample_id, flowcell_id, 'panel51', 'class', form.xj_time.data, '', 'bioinfo')
+                # sample_time(sample_id, flowcell_id, panel, item_type, dt, item_note, user)
+            # except:
+            #     print('panel51 class error')
         db.session.commit()
         flash('The PGM Info has been created.')
         return redirect(url_for('.pgm_submit'))
@@ -472,7 +474,7 @@ def pgm_submit():
     if page == -1:
         page = (post.comments.count() - 1) // \
             current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
-    pagination = Flowcell_info.query.filter(Flowcell_info.flowcell_id.like('%PGM')).order_by(Flowcell_info.xj_time.asc()).paginate(
+    pagination = Flowcell_info.query.filter(Flowcell_info.flowcell_id.like('%PGM')).order_by(Flowcell_info.xj_time.desc()).paginate(
         page, per_page=5,  # current_app.config['FLASKY_COMMENTS_PER_PAGE']
         error_out=False)
     items = pagination.items
