@@ -40,6 +40,7 @@
                             </td>
                             <td>年龄: {{sample.patient.age}}</td>
                         </tr>
+                       
                         <tr>
                             <td>既往诊断结果: {{sample.indication}}</td>
                         
@@ -73,8 +74,19 @@
                     <table class="table table-condensed">
                          <tr>
                             <td>肿瘤样本ID: {{sample.sample_id}}</td>
-                            <td>医院: {{sample.patient.hospital}}</td>
+                            <td>医院-科室: {{sample.patient.dept}}</td>
                         </tr>
+                          <tr>
+                            <td>项目: {{sample.panel}}</td>
+                        
+                            <td>销售: {{sample.patient.xiaoshou}}</td>
+                        </tr>
+                        <tr>
+                           <td>医生: {{sample.patient.doctor}}</td>
+                        
+                            <td></td>
+                        </tr>
+                        
                         <tr>
                             <td>肿瘤样本类型: {{sample.tumor_type}}</td>
                             <td>肿瘤样本采集部位: {{sample.tumor_pos}}</td>
@@ -84,6 +96,8 @@
                             </td>
                             <td>肿瘤样本接受日期: {{ sample.accept_time|datetimeformat("%Y-%m-%d %H:%M:%S") }}</td>
                         </tr>
+                       
+                        
                         <tr>
                             <td>更新病理时间:  {{ sample.get_histology_time}}
                             </td>

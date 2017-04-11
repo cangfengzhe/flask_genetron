@@ -40,6 +40,11 @@ class Patient_info(db.Model):
     get_histology_time = db.Column(db.DateTime)
     ask_histology = db.Column(db.Boolean, default=False)
     note = db.Column(db.Text)
+    
+    dept = db.Column(db.String(150))
+    doctor = db.Column(db.String(150))
+    xiaoshou = db.Column(db.String(150))
+    region = db.Column(db.String(150))
     sample = db.relationship('Sample_info', backref='patient', lazy="dynamic")
     
     def __repr__(self):
