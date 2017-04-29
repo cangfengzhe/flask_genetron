@@ -43,3 +43,4 @@ env
 .idea/*
 app/static/upload/*
 app/static/barcode/*
+app/static/*
