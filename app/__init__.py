@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_pagedown import PageDown
 from config import config
-# from flask_admin import Admin
+from flask_admin import Admin
 from flask_restful import Api
 
 

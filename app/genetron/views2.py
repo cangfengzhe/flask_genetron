@@ -27,7 +27,7 @@ def msg_response():
 
 @genetron.route('/igv')
 def igv():
-    return render_template('genetron/igv.html')
+    return render_template('genetron/bam.html')
     
     
 
