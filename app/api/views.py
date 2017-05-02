@@ -390,12 +390,11 @@ FROM sample_flowcell
    FROM sample_note_info
    GROUP BY sample_id, panel) AS note_info
     ON note_info.sample_id = sample_flowcell.sample_id AND note_info.panel = sample_flowcell.panel
-HAVING sample_flowcell.panel IN ('panel203', 'panel509', 'panel51', 'panel88', 'WES', 'CT_DNA', 'CT_SEQ') AND
+HAVING sample_flowcell.panel IN ('panel203', 'panel509', 'panel51', 'panel88', 'WES', 'CT_DNA', 'CT_SEQ', 'panel68', 'panel63', 'panel18') AND
        ((sample_info.sample_id LIKE '%T%' AND sample_info.sample_id NOT LIKE 'LAA%') OR
         (substring(sample_info.sample_id, 7, 1) = 'T' AND sample_info.sample_id LIKE 'LAA%') OR
         (sample_flowcell.panel like 'CT%')
-        ) AND
-       sample_info.tissue IS NOT NULL;
+        ) 
 
 """)
 
