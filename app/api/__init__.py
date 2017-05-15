@@ -6,3 +6,4 @@ api = Api()
 api.init_app(restful_api)
 
 from . import views
+from . import email

@@ -41,7 +41,7 @@ def datetime2str(dt, format='%Y-%m-%d %H:%M:%S'):
         return ''
     
 def date2str(dt, format='%Y-%m-%d'):
-    return datetime2str(dt)
+    return datetime2str(dt, format=format)
 
 
 def proc_hospital(name):

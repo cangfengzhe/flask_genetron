@@ -395,8 +395,48 @@ class Sample_check_info(db.Model):
                 'check_type':self.check_type,
                'result': self.result,
                'note': self.note,
+               
                }   
 
+
+class Sample_check_cnv_info(db.Model):
+    """
+    样本验证时间
+    """
+    __tablename__ = 'sample_check_cnv_info'
+    id = db.Column(db.Integer, primary_key=True)
+    gene_name = db.Column(db.String(200))
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
+    result = db.Column(db.String(100))
+    note = db.Column(db.String(500))
+    in_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    in_user = db.relationship('User', backref='check_cnv_in_user', lazy="joined", foreign_keys=[in_user_id])
+    
+    out_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    out_user = db.relationship('User', backref='check_cnv_out_user', lazy="joined", foreign_keys=[out_user_id])
+    
+    sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    sample = db.relationship('Sample_info', backref='check_cnv_sample', lazy="joined", foreign_keys=[sample_id])
+    # sample_id = db.Column(db.Integer, db.ForeignKey('sample_info.id'))
+    # check_cnv_info =  db.relationship('Sample_info', backref='check_cnv', lazy="joined", foreign_keys=[sample_id])
+    # in_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # in_user =  db.relationship('User', backref='in_user', lazy="joined", foreign_keys=[in_user_id])
+    # out_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # out_user =  db.relationship('User', backref='out_user', lazy="joined", foreign_keys=[out_user_id])
+    
+    @property
+    def json(self):
+        return {'id':self.id,
+            'sample_id': self.sample_id.sample_id,
+                'gene_name': self.gene_name,
+               'start_time': proc_time(self.start_time),
+               'end_time': proc_time(self.end_time),
+               'result': self.result,
+               'note': self.note,
+                 'in_user': self.in_user.nickname,
+                'out_user':self.out_user.nickname,
+               }   
 
     
 class Send_info(db.Model):

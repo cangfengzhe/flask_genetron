@@ -1,13 +1,14 @@
 Dear {{ user.username }},
 
-Welcome to Flasky!
+欢迎使用泛生子基因 临床样本管理平台。
 
-To confirm your account please click on the following link:
+为了确保您更加安全、快捷的使用，我们需要确认您的邮箱，请点击:
 
 {{ url_for('auth.confirm', token=token, _external=True) }}
 
-Sincerely,
 
-The Flasky Team
+生物信息部
+
+
 
 Note: replies to this email address are not monitored.

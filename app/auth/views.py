@@ -1,3 +1,5 @@
+#coding=utf-8
+
 from flask import render_template, redirect, request, url_for, flash
 from flask_login import login_user, logout_user, login_required, \
     current_user
@@ -13,10 +15,10 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
 def before_request():
     if current_user.is_authenticated:
         current_user.ping()
-        # if not current_user.confirmed \
-        #         and request.endpoint[:5] != 'auth.' \
-        #         and request.endpoint != 'static':
-        #     return redirect(url_for('auth.unconfirmed'))
+        if not current_user.confirmed \
+                and request.endpoint[:5] != 'auth.' \
+                and request.endpoint != 'static':
+            return redirect(url_for('auth.unconfirmed'))
 
 
 @auth.route('/unconfirmed')
@@ -59,9 +61,9 @@ def register():
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()
-        send_email(user.email, 'Confirm Your Account',
+        send_email(user.email, u'邮箱确认',
                    'auth/email/confirm', user=user, token=token)
-        flash('A confirmation email has been sent to you by email.')
+        flash(u'一封确认邮件已发送至您的邮箱，请及时查收')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
@@ -84,7 +86,7 @@ def resend_confirmation():
     token = current_user.generate_confirmation_token()
     send_email(current_user.email, 'Confirm Your Account',
                'auth/email/confirm', user=current_user, token=token)
-    flash('A new confirmation email has been sent to you by email.')
+    flash('一封确认邮件已发送至您的邮箱，请及时查收')
     return redirect(url_for('main.index'))
 
 
@@ -116,8 +118,7 @@ def password_reset_request():
                        'auth/email/reset_password',
                        user=user, token=token,
                        next=request.args.get('next'))
-        flash('An email with instructions to reset your password has been '
-              'sent to you.')
+        flash('一封确认邮件已发送至您的邮箱，请及时查收')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html', form=form)
 
