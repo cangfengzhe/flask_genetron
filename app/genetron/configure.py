@@ -13,8 +13,8 @@ class Configure():
     cnv_email_list = ['yaling.yang@genetronhealth.com', 'qinglin.ding@genetronhealth.com', 'xiaomei.liu@genetronhealth.com',
                 'genetron-pm@genetronhealth.com', 'medicalinfo@genetronhealth.com', 'zexiong.niu@genetronhealth.com',
                 'hongling.yuan@genetronhealth.com', 'pidong.li@genetronhealth.com', 'can.yang@genetronhealth.com',
-               'yali.yan@genetronhealth.com', 'sihui.zhu@genetronhealth.com']
-    # cnv_email_list = ['pidong.li@genetronhealth.com', 'bioinfo-auto@genetronhealth.com']
+               'yali.yan@genetronhealth.com', 'sihui.zhu@genetronhealth.com', 'qingbo.zhang@genetronhealth.com', 'yingfei.shi@genetronhealth.com']
+    #cnv_email_list = ['pidong.li@genetronhealth.com', 'can.yang@genetronhealth.com']
     
-    wes_period = 21
-    panel_period = 14
+    wes_period = 11
+    panel_period = 9
