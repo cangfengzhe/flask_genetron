@@ -32,7 +32,7 @@ def server_shutdown():
     return 'Shutting down...'
 
 
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/post', methods=['GET', 'POST'])
 def index():
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and \
