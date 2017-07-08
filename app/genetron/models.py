@@ -85,7 +85,8 @@ class Sample_info(db.Model):
     note_info =  db.relationship('Sample_note_info', backref='sample', lazy="dynamic")
     report_info =  db.relationship('Sample_report_info', backref='sample', lazy="dynamic")
     send_info = db.relationship('Send_info', backref='sample', lazy="dynamic")
-    
+    blts_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    blts_user = db.relationship('User', backref='sample_info', lazy="joined", foreign_keys=[blts_user_id])
     
     def __init__(self, **kwargs):
         super(Sample_info, self).__init__(**kwargs)

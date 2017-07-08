@@ -551,6 +551,7 @@ class Sample(Resource):
             setattr(sample, xx, args[xx])
             if xx in ['tissue','tumor']:
                 sample.get_histology_time = datetime.datetime.now()
+                sample.blts_user_id = current_user.id
                       
         db.session.commit()
         return jsonify(data=[sample.json])

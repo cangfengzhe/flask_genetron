@@ -13,6 +13,7 @@ from forms import *
 from models import *
 from . import genetron
 from  configure import Configure as configure
+from flask_login import current_user
 
 
 @genetron.route('/')
@@ -127,6 +128,7 @@ def proc_now(var_dict, keys):
 
 @genetron.route('/sample_response', methods=['GET', 'POST'])
 def sample_response():
+    # 弃用
     form_data = get_request_data(request.form)
     var = [form_data[x] for x in form_data if x != 'type'][0]
     DT_RowId = var['DT_RowId']
@@ -141,23 +143,27 @@ def sample_response():
     var = proc_date(var, ['accept_time', 'end_time'])
     if form_data['type'] == 'create':
         var.pop('DT_RowId')
-
+        var['blts_user_id'] = current_user.id
         sample = Sample_info(**var)
         db.session.add(sample)
         db.session.flush()
         db.session.refresh(sample)
         DT_RowId = sample.id
         var['DT_RowId'] = sample.id
+        
         if (('histology' in var) and (not var['histology'] == '')) or (('tissue' in var) and (not var['tissue'] == '')):
             var['get_histology_time'] = datetime.datetime.now()
             var['ask_histology_time'] = True
+            
     elif form_data['type'] == 'edit':
         sample = Sample_info.query.filter_by(id=var['DT_RowId']).first()
         var = proc_now(var, ['bioinfo', 'is_finish', 'ask_histology'])
         if ( ('histology' in var) and (not var['histology'] == '') ) or  (('tissue' in var) and (not var['tissue'] == '')):
             var['get_histology_time'] = datetime.datetime.now()
+            var['blts_user_id'] = current_user.id
+            print vars
         sample.from_dict(var)
-    print(var)
+    # print(var)
     db.session.commit()
     dt = Sample_info.query.filter_by(id=DT_RowId).first()
     return jsonify(data=[dt.json])
